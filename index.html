@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Abyssal Siege — 심해 습격</title>
+<style>
+  :root{
+    --cyan:#00e5ff; --teal:#26ffe9; --gold:#ffd86b;
+    --red:#ff4d6d; --purple:#9d7bff; --amber:#ffb830;
+    --dark:#06101e; --darker:#020812;
+    --hud-bg:rgba(5,18,34,.82);
+    --hud-border:rgba(0,229,255,.35);
+    --ok:#26ffa8; --warn:#ffb830; --danger:#ff4d6d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:#e6f3ff;user-select:none}
+
+  #stage{position:relative;width:1280px;height:720px;margin:0 auto;
+    background:url("AS_Assets/bg/castle_gate.png") center/cover no-repeat, var(--darker);
+    box-shadow:0 0 60px rgba(0,229,255,.3);overflow:hidden;cursor:crosshair}
+
+  #bgFx{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,.12),transparent 60%),
+               radial-gradient(ellipse at 50% 100%,rgba(5,10,30,.6),transparent 70%);
+    mix-blend-mode:screen}
+
+  #world{position:absolute;inset:0}
+  .obj{position:absolute;transform:translate(-50%,-50%);pointer-events:none;will-change:transform,left,top}
+  .obj img{display:block;width:100%;height:100%;object-fit:contain}
+
+  #player{width:120px;height:120px;filter:drop-shadow(0 0 12px rgba(0,229,255,.6))}
+  #player.dashing{filter:drop-shadow(0 0 22px var(--cyan)) brightness(1.35)}
+  #player.hit{filter:drop-shadow(0 0 14px var(--red)) brightness(1.6)}
+
+  .enemy{filter:drop-shadow(0 0 8px rgba(255,80,80,.4))}
+  .enemy .hpbar{position:absolute;left:50%;top:-8px;transform:translateX(-50%);
+    width:60px;height:4px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.3);border-radius:2px}
+  .enemy .hpbar .fill{height:100%;background:linear-gradient(90deg,#ff4d6d,#ffb347);border-radius:2px;transition:width .1s}
+
+  /* === 수문 오브젝트 === */
+  #gate{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);width:252px;height:147px;
+    pointer-events:none;z-index:2;filter:drop-shadow(0 0 16px rgba(0,229,255,.4))}
+  #gate .gate-img{width:100%;height:100%;object-fit:contain;display:block}
+  #gate .gate-svg{width:100%;height:100%}
+  #gate.hit{animation:gateShake .35s ease-out}
+  #gate.danger{filter:drop-shadow(0 0 24px rgba(255,77,109,.6))}
+  #gate.danger .gate-svg .stone{fill:#3a2020}
+  #gate.danger .gate-svg .crack{opacity:1}
+  @keyframes gateShake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 8px))}75%{transform:translateX(calc(-50% + 8px))}}
+  #gate .barrier{position:absolute;inset:0;pointer-events:none;opacity:.6;
+    background:radial-gradient(ellipse at center top,rgba(0,229,255,.25),transparent 70%);
+    animation:barrierPulse 2.4s ease-in-out infinite}
+  @keyframes barrierPulse{0%,100%{opacity:.4}50%{opacity:.75}}
+  #gate .gate-label{position:absolute;top:-28px;left:50%;transform:translateX(-50%);
+    font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:900;
+    color:var(--cyan);text-shadow:0 0 8px var(--cyan),0 2px 3px #000;
+    letter-spacing:.18em;white-space:nowrap;background:rgba(5,18,34,.7);
+    padding:2px 10px;border-radius:10px;border:1px solid rgba(0,229,255,.5)}
+  #gate .gate-hp-mini{position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+    width:160px;height:5px;background:rgba(0,0,0,.6);border:1px solid rgba(0,229,255,.5);border-radius:3px;overflow:hidden}
+  #gate .gate-hp-mini-fill{height:100%;background:linear-gradient(90deg,#00d4ff,#00ffbb);transition:width .3s}
+  #gate.danger .gate-hp-mini-fill{background:linear-gradient(90deg,#ff4d6d,#ffb347)}
+
+  .item{width:44px;height:44px;filter:drop-shadow(0 0 10px var(--cyan));animation:bob 1.2s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translate(-50%,-50%) translateY(0)}50%{transform:translate(-50%,-50%) translateY(-6px)}}
+
+  #fx{position:absolute;inset:0;pointer-events:none}
+
+  /* ═══════════════════ HUD ═══════════════════ */
+  #hud{position:absolute;inset:0;pointer-events:none;font-weight:700}
+  .panel{position:absolute;background:var(--hud-bg);border:1px solid var(--hud-border);
+    border-radius:10px;padding:10px 14px;backdrop-filter:blur(8px);
+    box-shadow:0 4px 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)}
+  .panel .p-label{font-size:10px;color:var(--cyan);letter-spacing:.18em;margin-bottom:5px;
+    text-shadow:0 0 6px var(--cyan);text-transform:uppercase;font-weight:900}
+
+  /* === 상단 중앙 — WAVE 정보 (컴팩트) === */
+  #hudWave{top:14px;left:50%;transform:translateX(-50%);padding:6px 14px;text-align:center;display:flex;align-items:center;gap:10px}
+  #hudWave .wv-tag{font-size:10px;color:var(--gold);letter-spacing:.18em;font-weight:900;text-shadow:0 0 6px var(--gold)}
+  #hudWave .wv-num{font-family:'Outfit',sans-serif;font-size:16px;color:#fff;font-weight:900;letter-spacing:.04em}
+  #hudWave .wv-num .slash{color:#6cc5ff;font-weight:400;margin:0 2px}
+  #hudWave .wv-sep{width:1px;height:14px;background:rgba(0,229,255,.3)}
+  #hudWave .wv-rem{font-size:10px;color:#9cd8ff;font-weight:400}
+  #hudWave .wv-rem .n{font-family:'Outfit',sans-serif;color:var(--amber);font-weight:900;font-size:14px;text-shadow:0 0 5px var(--amber);margin-right:2px}
+
+  /* === 좌상단 — 수문 HP === */
+  #hudGate{top:14px;left:14px;min-width:300px}
+  #hudGate .label-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  #hudGate .p-label{margin-bottom:0}
+  #hudGate .hp-num{font-family:'Outfit',sans-serif;font-size:13px;color:#fff;font-weight:900;letter-spacing:.02em}
+  #hudGate .hp-num .total{color:#6cc5ff;font-size:11px;font-weight:400;margin-left:2px}
+  .hpbar-outer{width:100%;height:20px;background:rgba(0,0,0,.55);border:1px solid var(--hud-border);border-radius:10px;overflow:hidden;position:relative}
+  .hpbar-fill{height:100%;background:linear-gradient(90deg,#00d4ff,#00ffbb);transition:width .3s;box-shadow:inset 0 2px 4px rgba(255,255,255,.25)}
+  #hudGate.danger .hpbar-fill{background:linear-gradient(90deg,#ff4d6d,#ffb347);animation:flicker .5s infinite}
+  @keyframes flicker{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4)}}
+
+  /* === 우상단 — 가호 게이지 === */
+  #hudGauge{top:14px;right:14px;min-width:240px}
+  #hudGauge .label-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  #hudGauge .p-label{color:#9cf0ff;margin-bottom:0}
+  #hudGauge .g-num{font-family:'Outfit',sans-serif;font-size:13px;color:#fff;font-weight:900}
+  #hudGauge .status{font-size:10px;color:var(--ok);letter-spacing:.1em;margin-top:4px;text-align:right}
+  #hudGauge.warn .status{color:var(--warn)}
+  #hudGauge.critical .status{color:var(--danger);animation:blink 0.5s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .gbar-outer{height:16px;background:rgba(0,0,0,.5);border:1px solid rgba(0,229,255,.4);border-radius:8px;overflow:hidden;position:relative}
+  .gbar-fill{height:100%;background:linear-gradient(90deg,#0a84ff,#00e5ff,#7af5ff);transition:width .2s}
+  #hudGauge.critical{border-color:var(--red);animation:pulse .6s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,109,.6)}50%{box-shadow:0 0 0 8px rgba(255,77,109,0)}}
+
+  /* === 좌측 — 스탯 패널 (킬/콤보/획득) === */
+  #hudStats{top:120px;left:14px;min-width:160px;font-size:12px}
+  #hudStats .stat-row{display:flex;justify-content:space-between;align-items:center;margin:3px 0;gap:10px}
+  #hudStats .stat-row .lbl{color:#8fcfff;font-size:11px;font-weight:400;letter-spacing:.04em}
+  #hudStats .stat-row .val{font-family:'Outfit',sans-serif;color:#fff;font-weight:900;font-size:15px;text-shadow:0 0 6px rgba(0,229,255,.5)}
+  #hudStats .combo.hot .val{color:var(--gold);text-shadow:0 0 10px var(--gold);animation:hot .4s}
+  @keyframes hot{0%{transform:scale(1.4)}100%{transform:scale(1)}}
+
+  /* === 우측 — 다음 Wave 미리보기 === */
+  #hudWaveInfo{top:120px;right:14px;min-width:200px;font-size:12px}
+  #hudWaveInfo .enemy-list{display:flex;flex-direction:column;gap:5px;margin-top:3px}
+  #hudWaveInfo .e-row{display:flex;align-items:center;gap:8px;padding:3px 0}
+  #hudWaveInfo .e-row img{width:28px;height:28px;object-fit:contain;border-radius:4px;background:rgba(255,255,255,.03);padding:2px}
+  #hudWaveInfo .e-row .name{flex:1;font-size:11px;color:#b6e8ff;font-weight:400}
+  #hudWaveInfo .e-row .cnt{font-family:'Outfit',sans-serif;color:#fff;font-weight:900;font-size:13px}
+  #hudWaveInfo .e-row.done{opacity:.35}
+  #hudWaveInfo .e-row.done .cnt{color:var(--ok)}
+
+  /* === 좌하단 — 컨트롤 가이드 === */
+  #hudControls{bottom:14px;left:14px;font-size:11px;color:#9cd8ff;max-width:220px;line-height:1.6}
+  #hudControls .p-label{margin-bottom:6px}
+  #hudControls .k{display:inline-block;background:rgba(0,229,255,.15);border:1px solid rgba(0,229,255,.5);
+    border-radius:4px;padding:1px 6px;font-family:'Outfit',sans-serif;font-weight:900;
+    color:#fff;font-size:10px;letter-spacing:.05em;text-shadow:0 0 4px var(--cyan);margin-right:4px}
+
+  /* === 우하단 — 발키리 정보 === */
+  #hudPlayer{bottom:14px;right:14px;min-width:180px;font-size:11px}
+  #hudPlayer .p-label{margin-bottom:5px}
+  #hudPlayer .prow{display:flex;justify-content:space-between;color:#9cd8ff;margin:2px 0;font-weight:400}
+  #hudPlayer .prow .v{color:#fff;font-family:'Outfit',sans-serif;font-weight:900;font-size:12px}
+
+  /* === 우하단 — 스킬 아이콘 (발키리 스탯 위) === */
+  #skillHud{position:absolute;bottom:132px;right:14px;display:flex;gap:10px;pointer-events:auto;align-items:flex-end;
+    background:var(--hud-bg);border:1px solid var(--hud-border);border-radius:10px;padding:10px 12px 8px;
+    backdrop-filter:blur(8px);box-shadow:0 4px 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)}
+  #skillHud::before{content:'🗡 스킬';position:absolute;top:-9px;left:10px;font-size:10px;color:var(--cyan);
+    letter-spacing:.15em;font-weight:900;text-shadow:0 0 6px var(--cyan);background:var(--hud-bg);padding:0 5px}
+  .skill-slot{display:flex;flex-direction:column;align-items:center;gap:3px;width:66px}
+  .skill-btn{width:58px;height:58px;background:linear-gradient(180deg,rgba(10,40,70,.95),rgba(5,18,34,.95));
+    border:2px solid var(--hud-border);border-radius:12px;position:relative;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;
+    cursor:pointer;transition:transform .1s,box-shadow .2s,filter .15s;
+    color:var(--cyan);text-shadow:0 0 10px var(--cyan);
+    box-shadow:0 4px 12px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.1)}
+  .skill-btn:not(.cooling):hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,229,255,.5),inset 0 1px 0 rgba(255,255,255,.15);border-color:var(--cyan)}
+  .skill-btn:active{transform:scale(.95)}
+  .skill-btn.cooling{filter:grayscale(0.8) brightness(0.55)}
+  .skill-btn .key{position:absolute;top:1px;left:3px;font-family:'Outfit',sans-serif;font-size:10px;color:var(--gold);font-weight:900;text-shadow:0 0 4px var(--gold);z-index:3}
+  .skill-btn .skill-img{width:50px;height:50px;object-fit:contain;border-radius:8px;position:absolute;inset:4px}
+  .skill-btn .skill-emoji{font-size:26px}
+  .skill-btn .cd{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;font-family:'Outfit',sans-serif;font-weight:900;text-shadow:0 2px 4px #000;z-index:4;border-radius:10px}
+  .skill-btn .cd-ring{position:absolute;inset:0;pointer-events:none;z-index:2}
+  .skill-btn .cd-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .skill-btn .cd-ring .cd-track{fill:none;stroke:rgba(0,0,0,.25);stroke-width:4}
+  .skill-btn .cd-ring .cd-fill{fill:none;stroke:var(--gold);stroke-width:4;stroke-linecap:round;stroke-dasharray:163;stroke-dashoffset:163;transition:stroke-dashoffset .1s linear;filter:drop-shadow(0 0 4px var(--gold))}
+  .skill-btn.ready{border-color:var(--gold);box-shadow:0 4px 16px rgba(255,216,107,.5),inset 0 1px 0 rgba(255,255,255,.15);animation:rdy 1.4s infinite}
+  @keyframes rdy{0%,100%{box-shadow:0 4px 16px rgba(255,216,107,.4)}50%{box-shadow:0 4px 22px rgba(255,216,107,.8)}}
+  .skill-info{text-align:center;width:100%;line-height:1.1}
+  .skill-info .name{font-size:9px;color:var(--gold);font-weight:900;letter-spacing:.02em;text-shadow:0 0 3px rgba(255,216,107,.5);margin-top:2px}
+  .skill-info .status{display:block;margin-top:1px;font-size:8.5px;font-weight:900;letter-spacing:.04em;padding:1px 4px;border-radius:5px}
+  .skill-info .status.ready{color:#06131f;background:linear-gradient(90deg,#ffd86b,#ffb347)}
+  .skill-info .status.cooling{color:#ffb6c0;background:rgba(255,77,109,.2);border:1px solid rgba(255,77,109,.5)}
+  .skill-ready-badge{position:absolute;top:-6px;right:-4px;background:linear-gradient(180deg,#ffd86b,#ffb347);color:#06131f;
+    font-size:7.5px;font-weight:900;letter-spacing:.05em;padding:1px 4px;border-radius:5px;z-index:5;
+    box-shadow:0 0 6px rgba(255,216,107,.8);animation:rdyBlink 1s infinite}
+  @keyframes rdyBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(.94)}}
+
+  /* === Wave 배너 === */
+  #waveBanner{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);
+    font-size:54px;font-weight:900;color:var(--cyan);
+    text-shadow:0 0 24px var(--cyan),0 3px 8px #000;
+    letter-spacing:.12em;pointer-events:none;opacity:0;transition:opacity .35s;text-align:center;white-space:nowrap}
+  #waveBanner .sub{display:block;font-size:18px;color:var(--gold);letter-spacing:.2em;margin-top:6px;text-shadow:0 0 12px var(--gold)}
+  #waveBanner.show{opacity:1}
+
+  /* === 브레이크 타임 바 === */
+  #breakBar{position:absolute;top:96px;left:50%;transform:translateX(-50%);
+    min-width:360px;background:var(--hud-bg);border:1px solid rgba(255,216,107,.5);border-radius:10px;padding:10px 16px;
+    box-shadow:0 4px 16px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter:blur(8px);display:none;text-align:center}
+  #breakBar.show{display:block}
+  #breakBar .bb-title{font-size:12px;color:var(--gold);letter-spacing:.2em;text-shadow:0 0 6px var(--gold);font-weight:900}
+  #breakBar .bb-msg{font-size:11px;color:#d4e8ff;margin:4px 0 6px;font-weight:400}
+  #breakBar .bb-out{width:100%;height:10px;background:rgba(0,0,0,.5);border:1px solid rgba(255,216,107,.3);border-radius:5px;overflow:hidden}
+  #breakBar .bb-fill{height:100%;background:linear-gradient(90deg,#ffd86b,#ffb347);transition:width .1s linear}
+  #breakBar .bb-time{font-family:'Outfit',sans-serif;font-size:13px;color:#fff;font-weight:900;margin-top:4px}
+
+  /* === 다이얼로그 === */
+  .screen{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(10,30,60,.88),rgba(0,5,15,.97));
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:50;pointer-events:auto;padding:40px 60px}
+  .screen h1{font-size:56px;color:var(--cyan);text-shadow:0 0 30px var(--cyan),0 4px 12px #000;letter-spacing:.1em;text-align:center}
+  .screen h2{font-size:26px;color:var(--gold);text-shadow:0 0 14px var(--gold);text-align:center}
+  .screen .sub{color:#8fcfff;font-size:15px;max-width:740px;text-align:center;line-height:1.7}
+  .screen .sub strong{color:var(--teal)}
+
+  /* 시작 화면 조작 설명 */
+  .ctrl-card{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:10px;max-width:740px;width:100%}
+  .ctrl-card .it{background:rgba(5,18,34,.7);border:1px solid rgba(0,229,255,.3);border-radius:8px;padding:12px 10px;text-align:center}
+  .ctrl-card .it .k{font-family:'Outfit',sans-serif;font-size:22px;font-weight:900;color:var(--gold);text-shadow:0 0 10px var(--gold);letter-spacing:.08em}
+  .ctrl-card .it .n{font-size:12px;color:#fff;margin-top:4px;font-weight:700}
+  .ctrl-card .it .d{font-size:10px;color:#9cd8ff;margin-top:3px;line-height:1.3}
+
+  .btn{background:linear-gradient(180deg,#0080cc,#004a80);border:2px solid var(--cyan);
+    color:#fff;padding:14px 42px;font-size:18px;font-weight:900;border-radius:10px;
+    cursor:pointer;letter-spacing:.1em;text-shadow:0 1px 2px #000;
+    box-shadow:0 4px 16px rgba(0,229,255,.4),inset 0 1px 0 rgba(255,255,255,.3);transition:transform .1s}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,229,255,.6)}
+  .btn:active{transform:translateY(0)}
+  .btn.gold{background:linear-gradient(180deg,#d69b00,#7a5400);border-color:var(--gold);box-shadow:0 4px 16px rgba(255,216,107,.4)}
+  .btn.red{background:linear-gradient(180deg,#aa2244,#661326);border-color:var(--red)}
+
+  /* ═══════ 시설 슬롯 ═══════ */
+  .fslot{position:absolute;width:72px;height:72px;transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;z-index:3}
+  .fslot .slot-ring{width:100%;height:100%;border-radius:50%;border:3px dashed rgba(0,229,255,.5);
+    background:radial-gradient(circle,rgba(0,229,255,.08),rgba(0,0,0,.35));
+    display:flex;align-items:center;justify-content:center;position:relative;
+    box-shadow:inset 0 0 14px rgba(0,229,255,.2);transition:all .2s}
+  .fslot .slot-icon{font-size:24px;filter:drop-shadow(0 2px 4px #000);opacity:.85}
+  .fslot .slot-cost{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+    font-family:'Outfit',sans-serif;font-size:11px;color:var(--gold);font-weight:900;
+    background:rgba(5,18,34,.85);border:1px solid rgba(255,216,107,.5);border-radius:8px;
+    padding:1px 8px;white-space:nowrap;text-shadow:0 0 4px var(--gold);letter-spacing:.03em}
+  .fslot .slot-label{position:absolute;top:-18px;left:50%;transform:translateX(-50%);
+    font-size:9px;color:#9cd8ff;letter-spacing:.15em;font-weight:900;white-space:nowrap;
+    background:rgba(5,18,34,.75);padding:1px 6px;border-radius:6px;border:1px solid rgba(0,229,255,.3)}
+  .fslot.ready .slot-ring{border-color:var(--gold);border-style:solid;
+    background:radial-gradient(circle,rgba(255,216,107,.25),rgba(255,184,48,.1));
+    box-shadow:0 0 18px rgba(255,216,107,.55),inset 0 0 18px rgba(255,216,107,.3);
+    animation:slotPulse 1.4s ease-in-out infinite}
+  .fslot.ready .slot-icon{opacity:1;animation:slotIconBounce 1.2s ease-in-out infinite}
+  .fslot.ready .slot-cost{color:#06131f;background:linear-gradient(90deg,#ffd86b,#ffb347);border-color:var(--gold)}
+  .fslot:hover .slot-ring{transform:scale(1.06)}
+  @keyframes slotPulse{0%,100%{box-shadow:0 0 18px rgba(255,216,107,.5),inset 0 0 18px rgba(255,216,107,.3)}50%{box-shadow:0 0 28px rgba(255,216,107,.9),inset 0 0 24px rgba(255,216,107,.5)}}
+  @keyframes slotIconBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+  .fslot.built{cursor:default}
+  .fslot.built .slot-ring{border-color:rgba(0,229,255,.75);border-style:solid;
+    background:radial-gradient(circle,rgba(0,30,60,.95),rgba(5,18,34,.95));
+    box-shadow:0 4px 14px rgba(0,229,255,.4),inset 0 0 12px rgba(0,229,255,.3)}
+  .fslot.built .slot-cost{display:none}
+  .fslot.built .slot-label{top:-16px;color:var(--cyan);border-color:rgba(0,229,255,.5);background:rgba(5,18,34,.85)}
+  .fslot.built .facility-icon{font-size:32px;filter:drop-shadow(0 0 6px var(--cyan))}
+  .fslot.built .slot-hp{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:56px;height:4px;background:rgba(0,0,0,.6);border-radius:2px;overflow:hidden;border:1px solid rgba(0,229,255,.4)}
+  .fslot.built .slot-hp-fill{height:100%;background:linear-gradient(90deg,#00d4ff,#00ffbb);transition:width .3s}
+  .fslot.firing .slot-ring{animation:slotFire .2s}
+  @keyframes slotFire{0%{transform:scale(1)}50%{transform:scale(1.12);box-shadow:0 0 24px var(--cyan)}100%{transform:scale(1)}}
+
+  /* 골드 HUD (좌 스탯 아래) */
+  #hudGold{top:260px;left:14px;min-width:160px;display:flex;align-items:center;gap:10px}
+  #hudGold .gold-ico{font-size:22px;filter:drop-shadow(0 0 6px var(--gold))}
+  #hudGold .gold-label{font-size:10px;color:var(--gold);letter-spacing:.15em;font-weight:900;text-shadow:0 0 4px var(--gold)}
+  #hudGold .gold-value{font-family:'Outfit',sans-serif;font-size:22px;color:#fff;font-weight:900;text-shadow:0 0 8px var(--gold);margin-left:auto;letter-spacing:.03em}
+
+  /* 우측 Wave 구성 위치 아래로 */
+
+  /* ═══════ 로그라이크 카드 선택 UI ═══════ */
+  #cardDraft{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(10,30,60,.92),rgba(0,5,15,.98));
+    display:none;flex-direction:column;align-items:center;justify-content:center;gap:28px;z-index:60;pointer-events:auto;padding:30px}
+  #cardDraft.show{display:flex}
+  #cardDraft .draft-title{text-align:center}
+  #cardDraft .draft-title .dt-sub{font-size:12px;color:var(--gold);letter-spacing:.3em;font-weight:900;text-shadow:0 0 10px var(--gold)}
+  #cardDraft .draft-title .dt-main{font-size:36px;color:var(--cyan);letter-spacing:.1em;font-weight:900;text-shadow:0 0 20px var(--cyan),0 3px 8px #000;margin-top:6px}
+  #cardDraft .draft-title .dt-desc{font-size:13px;color:#9cd8ff;margin-top:8px;font-weight:400;letter-spacing:.05em}
+  #cardDraft .card-row{display:flex;gap:22px}
+  .draft-card{width:220px;height:300px;background:linear-gradient(180deg,rgba(15,35,60,.98),rgba(5,15,30,.98));
+    border:2px solid var(--hud-border);border-radius:14px;padding:18px 16px;cursor:pointer;position:relative;overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform .18s,box-shadow .18s,border-color .18s;
+    box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);pointer-events:auto}
+  .draft-card:hover{transform:translateY(-8px) scale(1.03);border-color:var(--cyan);box-shadow:0 16px 40px rgba(0,229,255,.45),inset 0 1px 0 rgba(255,255,255,.15)}
+  .draft-card.r-teal{border-color:rgba(38,255,233,.55)}
+  .draft-card.r-teal:hover{border-color:var(--teal);box-shadow:0 16px 40px rgba(38,255,233,.5)}
+  .draft-card.r-amber{border-color:rgba(255,184,48,.65)}
+  .draft-card.r-amber:hover{border-color:var(--amber);box-shadow:0 16px 40px rgba(255,184,48,.55)}
+  .draft-card.r-violet{border-color:rgba(157,123,255,.75)}
+  .draft-card.r-violet:hover{border-color:var(--purple);box-shadow:0 18px 48px rgba(157,123,255,.7)}
+  .draft-card .rarity-tag{position:absolute;top:10px;right:10px;font-size:9.5px;font-weight:900;letter-spacing:.2em;padding:2px 8px;border-radius:10px}
+  .draft-card.r-teal .rarity-tag{color:#06131f;background:var(--teal)}
+  .draft-card.r-amber .rarity-tag{color:#06131f;background:var(--amber)}
+  .draft-card.r-violet .rarity-tag{color:#fff;background:var(--purple);text-shadow:0 0 6px rgba(255,255,255,.5)}
+  .draft-card .card-icon{font-size:72px;margin-top:18px;filter:drop-shadow(0 4px 10px rgba(0,229,255,.4))}
+  .draft-card .card-name{font-size:18px;font-weight:900;color:#fff;margin-top:14px;letter-spacing:.05em;text-shadow:0 2px 4px #000}
+  .draft-card .card-desc{font-size:12px;color:#b6e8ff;margin-top:10px;line-height:1.5;flex:1;display:flex;align-items:center;font-weight:400}
+  .draft-card .card-stack{font-size:10px;color:var(--gold);margin-top:6px;letter-spacing:.1em;font-weight:900;text-shadow:0 0 6px rgba(255,216,107,.6)}
+  .draft-card .card-key{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+    font-family:'Outfit',sans-serif;font-size:10px;color:#7ab5dd;letter-spacing:.15em;font-weight:900;
+    border:1px solid rgba(0,229,255,.3);padding:2px 8px;border-radius:6px;background:rgba(0,0,0,.4)}
+  .draft-card.selected{animation:cardPick .5s ease-out forwards}
+  @keyframes cardPick{0%{transform:scale(1)}50%{transform:scale(1.12);box-shadow:0 0 60px var(--gold)}100%{transform:scale(0) rotate(8deg);opacity:0}}
+
+  /* 획득한 카드 HUD (우중단) */
+  #hudCards{position:absolute;top:260px;right:14px;max-width:200px;font-size:11px;display:none}
+  #hudCards.show{display:block}
+  #hudCards .cards-list{display:flex;flex-direction:column;gap:3px;margin-top:3px}
+  #hudCards .c-row{display:flex;align-items:center;gap:6px;padding:2px 4px;border-radius:4px;background:rgba(0,229,255,.06)}
+  #hudCards .c-row.r-teal{border-left:2px solid var(--teal)}
+  #hudCards .c-row.r-amber{border-left:2px solid var(--amber)}
+  #hudCards .c-row.r-violet{border-left:2px solid var(--purple)}
+  #hudCards .c-ico{font-size:14px}
+  #hudCards .c-nm{flex:1;font-size:10px;color:#d4e8ff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #hudCards .c-stk{font-family:'Outfit',sans-serif;font-size:10px;color:var(--gold);font-weight:900}
+
+  .hidden{display:none!important}
+
+  .dmg{position:absolute;transform:translate(-50%,-50%);font-size:18px;font-weight:900;
+    color:#fff;text-shadow:0 0 6px #ff4d6d,0 2px 2px #000;pointer-events:none;
+    animation:dmgFloat .8s ease-out forwards;font-family:'Outfit',sans-serif}
+  .dmg.crit{color:var(--gold);font-size:24px;text-shadow:0 0 10px var(--gold),0 2px 3px #000}
+  .dmg.heal{color:var(--teal);text-shadow:0 0 6px var(--teal),0 2px 2px #000}
+  .dmg.gate{color:var(--red);font-size:22px;text-shadow:0 0 10px var(--red),0 2px 3px #000}
+  @keyframes dmgFloat{0%{opacity:1;transform:translate(-50%,-50%) translateY(0)}100%{opacity:0;transform:translate(-50%,-50%) translateY(-60px)}}
+
+  #ver{position:absolute;bottom:4px;right:10px;font-size:10px;color:rgba(255,255,255,.3);pointer-events:none;font-family:'Outfit',sans-serif}
+
+  /* 결과 화면 통계 */
+  .result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:560px;width:100%;margin-top:8px}
+  .result-stats .it{background:rgba(5,18,34,.7);border:1px solid rgba(0,229,255,.3);border-radius:8px;padding:12px;text-align:center}
+  .result-stats .it .v{font-family:'Outfit',sans-serif;font-size:22px;color:var(--gold);font-weight:900;text-shadow:0 0 8px var(--gold)}
+  .result-stats .it .l{font-size:11px;color:#9cd8ff;margin-top:3px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bgFx"></div>
+  <div id="world"></div>
+
+  <!-- 수문 오브젝트 (방어 대상) -->
+  <div id="gate">
+    <div class="gate-label">⚔ 성 수문 ⚔</div>
+    <div class="gate-hp-mini"><div class="gate-hp-mini-fill" id="gateHpMiniFill" style="width:100%"></div></div>
+    <div class="barrier"></div>
+    <img class="gate-img" src="AS_Assets/gate/castle_gate_object.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" style="position:absolute;inset:0;display:block">
+    <svg class="gate-svg" style="display:none" viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="stoneGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#5a6e8a"/>
+          <stop offset="1" stop-color="#2e3c55"/>
+        </linearGradient>
+        <linearGradient id="metalGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#8a9ab0"/>
+          <stop offset="1" stop-color="#3a4760"/>
+        </linearGradient>
+        <radialGradient id="runeGlow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#00e5ff" stop-opacity="0.9"/>
+          <stop offset="1" stop-color="#00e5ff" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <!-- 돌 기단 -->
+      <rect class="stone" x="10" y="150" width="340" height="50" fill="url(#stoneGrad)" stroke="#1a2335" stroke-width="2" rx="3"/>
+      <!-- 좌측 기둥 -->
+      <rect class="stone" x="20" y="30" width="55" height="170" fill="url(#stoneGrad)" stroke="#1a2335" stroke-width="2" rx="2"/>
+      <!-- 우측 기둥 -->
+      <rect class="stone" x="285" y="30" width="55" height="170" fill="url(#stoneGrad)" stroke="#1a2335" stroke-width="2" rx="2"/>
+      <!-- 아치 상단 -->
+      <path class="stone" d="M10,60 Q10,10 75,10 L285,10 Q350,10 350,60 L340,80 Q290,30 180,30 Q70,30 20,80 Z"
+            fill="url(#stoneGrad)" stroke="#1a2335" stroke-width="2"/>
+      <!-- 돌 블록 라인 (장식) -->
+      <g stroke="#1a2335" stroke-width="1.2" opacity="0.55" fill="none">
+        <line x1="20" y1="75" x2="75" y2="75"/>
+        <line x1="20" y1="115" x2="75" y2="115"/>
+        <line x1="20" y1="155" x2="75" y2="155"/>
+        <line x1="47.5" y1="30" x2="47.5" y2="200"/>
+        <line x1="285" y1="75" x2="340" y2="75"/>
+        <line x1="285" y1="115" x2="340" y2="115"/>
+        <line x1="285" y1="155" x2="340" y2="155"/>
+        <line x1="312.5" y1="30" x2="312.5" y2="200"/>
+      </g>
+      <!-- 철창 (수문) -->
+      <rect x="75" y="50" width="210" height="130" fill="#0a0f18" stroke="#1a2335" stroke-width="2"/>
+      <g stroke="url(#metalGrad)" stroke-width="5" stroke-linecap="round">
+        <line x1="95" y1="50" x2="95" y2="180"/>
+        <line x1="125" y1="50" x2="125" y2="180"/>
+        <line x1="155" y1="50" x2="155" y2="180"/>
+        <line x1="180" y1="50" x2="180" y2="180"/>
+        <line x1="205" y1="50" x2="205" y2="180"/>
+        <line x1="235" y1="50" x2="235" y2="180"/>
+        <line x1="265" y1="50" x2="265" y2="180"/>
+      </g>
+      <g stroke="url(#metalGrad)" stroke-width="4" stroke-linecap="round">
+        <line x1="80" y1="85" x2="280" y2="85"/>
+        <line x1="80" y1="120" x2="280" y2="120"/>
+        <line x1="80" y1="155" x2="280" y2="155"/>
+      </g>
+      <!-- 마법 룬 글로우 (중앙) -->
+      <circle cx="180" cy="40" r="22" fill="url(#runeGlow)"/>
+      <path d="M180,28 L186,40 L180,52 L174,40 Z" fill="#00e5ff" opacity="0.9"/>
+      <path d="M168,40 L180,34 L192,40 L180,46 Z" fill="#7af5ff" opacity="0.8"/>
+      <!-- 아치 키스톤 -->
+      <path d="M170,30 L190,30 L195,15 L165,15 Z" fill="#6a7e9a" stroke="#1a2335" stroke-width="1.5"/>
+      <!-- 크랙 (위험할 때 표시) -->
+      <g class="crack" opacity="0" stroke="#ff4d6d" stroke-width="2.5" fill="none" stroke-linecap="round">
+        <path d="M40,50 L50,80 L45,110 L58,150"/>
+        <path d="M310,55 L305,90 L320,120 L310,155"/>
+        <path d="M100,100 L130,130 L120,170"/>
+      </g>
+    </svg>
+  </div>
+  <canvas id="fx" width="1280" height="720"></canvas>
+
+  <div id="hud">
+    <!-- 좌상: 수문 HP -->
+    <div class="panel" id="hudGate">
+      <div class="label-row">
+        <div class="p-label">🏰 수문 HP</div>
+        <div class="hp-num"><span id="gateHpText">1000</span><span class="total">/1000</span></div>
+      </div>
+      <div class="hpbar-outer">
+        <div class="hpbar-fill" id="gateHpFill" style="width:100%"></div>
+      </div>
+    </div>
+
+    <!-- 중앙 상: Wave (컴팩트) -->
+    <div class="panel" id="hudWave">
+      <span class="wv-tag">WAVE</span>
+      <span class="wv-num"><span id="waveNum">1</span><span class="slash">/</span><span id="waveMax">2</span></span>
+      <span class="wv-sep"></span>
+      <span class="wv-rem"><span class="n" id="remainCount">0</span>적</span>
+    </div>
+
+    <!-- 우상: 가호 게이지 -->
+    <div class="panel" id="hudGauge">
+      <div class="label-row">
+        <div class="p-label">✨ 가호 게이지</div>
+        <div class="g-num"><span id="gaugeText">100</span>%</div>
+      </div>
+      <div class="gbar-outer">
+        <div class="gbar-fill" id="gaugeFill" style="width:100%"></div>
+      </div>
+      <div class="status" id="gaugeStatus">● 안정</div>
+    </div>
+
+    <!-- 좌: 스탯 -->
+    <div class="panel" id="hudStats">
+      <div class="p-label">⚔️ 전투 기록</div>
+      <div class="stat-row"><span class="lbl">처치</span><span class="val" id="statKill">0</span></div>
+      <div class="stat-row combo" id="comboRow"><span class="lbl">콤보</span><span class="val" id="statCombo">0</span></div>
+      <div class="stat-row"><span class="lbl">획득</span><span class="val" id="statOrb">0</span></div>
+      <div class="stat-row"><span class="lbl">크리티컬</span><span class="val" id="statCrit">0</span></div>
+    </div>
+
+    <!-- 우: 현재 Wave 구성 -->
+    <div class="panel" id="hudWaveInfo">
+      <div class="p-label">🎯 Wave 구성</div>
+      <div class="enemy-list" id="waveEnemyList"></div>
+    </div>
+
+    <!-- 좌하: 컨트롤 -->
+    <div class="panel" id="hudControls">
+      <div class="p-label">🎮 조작</div>
+      <div><span class="k">W</span><span class="k">A</span><span class="k">S</span><span class="k">D</span> 이동</div>
+      <div>자동 공격 — 가장 가까운 적</div>
+      <div><span class="k">Q</span> 바람 질주 (3s) · <span class="k">E</span> 충격파 (18s)</div>
+      <div>💎 보주 접근 시 자동 수집</div>
+    </div>
+
+    <!-- 우하: 발키리 정보 -->
+    <div class="panel" id="hudPlayer">
+      <div class="p-label">👑 발키리 스탯</div>
+      <div class="prow"><span>공격력</span><span class="v">22</span></div>
+      <div class="prow"><span>공격속도</span><span class="v">1.8/s</span></div>
+      <div class="prow"><span>사거리</span><span class="v">320</span></div>
+      <div class="prow"><span>이동속도</span><span class="v">220</span></div>
+    </div>
+
+    <!-- 하단: 스킬 -->
+    <div id="skillHud">
+      <div class="skill-slot">
+        <div class="skill-btn" id="skillQ">
+          <span class="key">Q</span>
+          <img class="skill-img" src="AS_Assets/skills/wind_dash.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+          <span class="skill-emoji" style="display:none">💨</span>
+          <div class="cd-ring"><svg viewBox="0 0 58 58"><circle class="cd-track" cx="29" cy="29" r="26"/><circle class="cd-fill" id="cdRingQ" cx="29" cy="29" r="26"/></svg></div>
+          <div class="cd hidden" id="cdQ">3</div>
+          <div class="skill-ready-badge hidden" id="rdyQ">READY</div>
+        </div>
+        <div class="skill-info">
+          <div class="name">바람 질주</div>
+          <div class="status ready" id="statQ">● 준비</div>
+        </div>
+      </div>
+      <div class="skill-slot">
+        <div class="skill-btn" id="skillE">
+          <span class="key">E</span>
+          <img class="skill-img" src="AS_Assets/skills/holy_shock.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+          <span class="skill-emoji" style="display:none">⚡</span>
+          <div class="cd-ring"><svg viewBox="0 0 58 58"><circle class="cd-track" cx="29" cy="29" r="26"/><circle class="cd-fill" id="cdRingE" cx="29" cy="29" r="26"/></svg></div>
+          <div class="cd hidden" id="cdE">18</div>
+          <div class="skill-ready-badge hidden" id="rdyE">READY</div>
+        </div>
+        <div class="skill-info">
+          <div class="name">충격파</div>
+          <div class="status ready" id="statE">● 준비</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 배너 -->
+    <div id="waveBanner"></div>
+
+    <!-- 브레이크 바 -->
+    <div id="breakBar">
+      <div class="bb-title">⏱ 브레이크 타임</div>
+      <div class="bb-msg" id="bbMsg">잠시 후 다음 Wave가 시작됩니다</div>
+      <div class="bb-out"><div class="bb-fill" id="bbFill" style="width:100%"></div></div>
+      <div class="bb-time" id="bbTime">8.0s</div>
+    </div>
+
+    <!-- 골드 HUD -->
+    <div class="panel" id="hudGold">
+      <span class="gold-ico">💰</span>
+      <span class="gold-label">GOLD</span>
+      <span class="gold-value" id="goldValue">0</span>
+    </div>
+
+    <!-- 시설 슬롯 (fslotsContainer에 동적 배치) -->
+    <div id="fslotsContainer"></div>
+
+    <!-- 획득 카드 목록 HUD -->
+    <div class="panel" id="hudCards">
+      <div class="p-label">🎴 획득 카드</div>
+      <div class="cards-list" id="cardsList"></div>
+    </div>
+
+    <!-- 로그라이크 카드 선택 화면 -->
+    <div id="cardDraft">
+      <div class="draft-title">
+        <div class="dt-sub">WAVE <span id="dtWaveNum">1</span> CLEAR</div>
+        <div class="dt-main">⚔ 카드를 선택하라 ⚔</div>
+        <div class="dt-desc">세 장의 카드 중 하나를 선택하면 다음 Wave로 진행합니다.<br>1 / 2 / 3 키 또는 클릭으로 선택</div>
+      </div>
+      <div class="card-row" id="cardRow"></div>
+    </div>
+  </div>
+
+  <!-- 시작 화면 -->
+  <div class="screen" id="titleScreen">
+    <div style="font-family:'Outfit',sans-serif;font-size:16px;color:#ffd86b;letter-spacing:.45em;margin-bottom:-6px;text-shadow:0 0 12px rgba(255,216,107,.7);font-weight:900">ABYSSAL SIEGE</div>
+    <h1>심해 습격</h1>
+    <h2>발키리, 성 수문을 사수하라</h2>
+    <div class="sub">
+      왕국의 <strong>성 수문</strong>이 심해 생물의 습격을 받고 있다.<br>
+      <strong>발키리</strong>가 되어 수문 앞을 지켜내라.
+    </div>
+    <div class="ctrl-card">
+      <div class="it"><div class="k">W A S D</div><div class="n">이동</div><div class="d">발키리 상하좌우</div></div>
+      <div class="it"><div class="k">AUTO</div><div class="n">자동 공격</div><div class="d">가까운 적 검 투척</div></div>
+      <div class="it"><div class="k">Q</div><div class="n">바람 질주</div><div class="d">순간이동 · 3s</div></div>
+      <div class="it"><div class="k">E</div><div class="n">성스러운 충격파</div><div class="d">광역 120 · 18s</div></div>
+    </div>
+    <div class="sub" style="font-size:13px;color:#ffd86b">Phase 2 프로토타입 — Wave 1~5 · 로그라이크 카드</div>
+    <button class="btn" id="btnStart">▶ 전투 개시</button>
+  </div>
+
+  <!-- 결과 화면 -->
+  <div class="screen hidden" id="resultScreen">
+    <h1 id="resultTitle">VICTORY</h1>
+    <div class="sub" id="resultSub"></div>
+    <div class="result-stats">
+      <div class="it"><div class="v" id="rsKill">0</div><div class="l">처치</div></div>
+      <div class="it"><div class="v" id="rsOrb">0</div><div class="l">보주 수집</div></div>
+      <div class="it"><div class="v" id="rsHp">0%</div><div class="l">수문 잔존</div></div>
+    </div>
+    <button class="btn gold" id="btnRetry">⟳ 다시 도전</button>
+  </div>
+
+  <div id="ver">Abyssal Siege · v0.8 · Phase 2 · 2026-04-15</div>
+</div>
+
+<script>
+const W=1280, H=720;
+const stage=document.getElementById('stage');
+const world=document.getElementById('world');
+const fx=document.getElementById('fx');
+const ctx=fx.getContext('2d');
+
+const ASSET='AS_Assets/';
+const GC_VALKYRIE='AS_Assets/characters/valkyrie.png';
+
+const state={
+  running:false, phase:'title',
+  wave:1, waveMax:5,
+  cards:[],              // 획득한 카드 스택 [{id,stack}]
+  gold:0,
+  facilitySlots:[],      // 맵에 배치된 시설 슬롯
+  gateHp:1000, gateHpMax:1000,
+  gauge:100, gaugeMax:100,
+  gaugeDrainRate:4,
+  gaugeEmptyDamage:2,
+  waveBreakTime:0, waveBreakTotal:8,
+  enemiesToSpawn:[], currentWaveTotal:0,
+  lastTs:0,
+  stats:{kill:0, orb:0, crit:0, combo:0, maxCombo:0, comboTimer:0},
+  waveEnemyCounts:{},   // 현재 웨이브의 적 타입별 남은/전체
+};
+
+const enemies=[];
+const projectiles=[];
+const items=[];
+const particles=[];
+
+const player={
+  x:W/2, y:H-180, r:35,
+  speed:220,
+  attackRange:320,
+  attackCD:0, attackInterval:0.55,
+  swordDmg:22,
+  invul:0, facing:1,
+  critChance:0.15,
+  projectileCount:1,      // 이중 투척 카드용
+  orbMultiplier:1,        // 보주 회복량 배수
+  shockwaveRadius:220,    // E 스킬 반경
+  shockwaveDmg:120,
+};
+
+const skills={
+  Q:{cd:0, max:3, key:'Q', name:'바람 질주'},
+  E:{cd:0, max:18, key:'E', name:'성스러운 충격파'},
+};
+
+const keys={};
+const mouse={x:W/2, y:H/2};
+document.addEventListener('keydown',e=>{
+  keys[e.key.toLowerCase()]=true;
+  if(e.key==='q'||e.key==='Q') useSkill('Q');
+  if(e.key==='e'||e.key==='E') useSkill('E');
+  // 카드 선택 1/2/3 키
+  if(state.phase==='carddraft' && (e.key==='1'||e.key==='2'||e.key==='3')){
+    const idx=parseInt(e.key)-1;
+    const cards=document.querySelectorAll('#cardRow .draft-card');
+    if(cards[idx] && state.draftPicks && state.draftPicks[idx]){
+      selectCard(state.draftPicks[idx], cards[idx]);
+    }
+  }
+  if(state.phase==='facilitydraft' && (e.key==='1'||e.key==='2'||e.key==='3')){
+    const idx=parseInt(e.key)-1;
+    const cards=document.querySelectorAll('#cardRow .draft-card');
+    if(cards[idx] && state.facilityDraftPicks && state.facilityDraftPicks[idx]){
+      selectFacility(state.facilityDraftPicks[idx], cards[idx]);
+    }
+  }
+});
+document.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
+stage.addEventListener('mousemove',e=>{
+  const r=stage.getBoundingClientRect();
+  mouse.x=(e.clientX-r.left)*(W/r.width);
+  mouse.y=(e.clientY-r.top)*(H/r.height);
+});
+document.getElementById('skillQ').addEventListener('click',()=>useSkill('Q'));
+document.getElementById('skillE').addEventListener('click',()=>useSkill('E'));
+
+const playerEl=document.createElement('div');
+playerEl.id='player';
+playerEl.className='obj';
+playerEl.innerHTML=`<img src="${GC_VALKYRIE}" alt="">`;
+world.appendChild(playerEl);
+
+const ENEMY_DEFS={
+  sogari:{name:'피라냐 고블린', hp:35, speed:160, r:28, img:'enemies/sogari.png', ai:'rush', touchDmg:40, dropRate:0.35, size:68, gold:4},
+  bangeo:{name:'어인 기사',     hp:80, speed:90,  r:34, img:'enemies/bangeo.png', ai:'straight', touchDmg:70, dropRate:0.25, size:80, gold:10},
+  gaori: {name:'그림자 가오리', hp:60, speed:110, r:30, img:'enemies/gaori.png',  ai:'zigzag', touchDmg:55, dropRate:0.40, size:76, gold:7},
+};
+
+// ═══════════════════ 방어 시설 (Phase 2-B) ═══════════════════
+const FACILITY_POOL=[
+  {id:'crossbow', name:'석궁 포탑',    rarity:'일반', icon:'🏹',
+    desc:'가까운 적 단일 공격 · 빠른 연사',
+    detail:'사거리 <b>280</b> · 쿨 <b>0.6s</b> · 피해 <b>30</b>',
+    range:280, cooldown:0.6, dmg:30, type:'single', projSpeed:900, projColor:'#ffd86b'},
+  {id:'ballista', name:'마법 발리스타', rarity:'희귀', icon:'⚔️',
+    desc:'일직선 관통 탄환 · 강한 피해',
+    detail:'사거리 <b>420</b> · 쿨 <b>2.0s</b> · 피해 <b>110</b> (관통)',
+    range:420, cooldown:2.0, dmg:110, type:'pierce', projSpeed:780, projColor:'#9d7bff'},
+  {id:'rune',     name:'번개 마법진',  rarity:'희귀', icon:'⚡',
+    desc:'주변 적 전체에 주기적 번개',
+    detail:'반경 <b>180</b> · 쿨 <b>2.5s</b> · 피해 <b>65</b> (광역)',
+    range:180, cooldown:2.5, dmg:65, type:'aoe', projSpeed:0, projColor:'#00e5ff'},
+];
+const FACILITY_SLOT_DEFS=[
+  {id:'slot_lf', x:W/2-300, y:H-170, cost:60, label:'좌익 전방'},
+  {id:'slot_rf', x:W/2+300, y:H-170, cost:60, label:'우익 전방'},
+  {id:'slot_lb', x:W/2-200, y:H-330, cost:120, label:'좌익 후방'},
+  {id:'slot_rb', x:W/2+200, y:H-330, cost:120, label:'우익 후방'},
+];
+
+// ═══════════════════ 로그라이크 카드 시스템 ═══════════════════
+const CARD_POOL=[
+  // ── 일반 (teal)
+  {id:'sword_mastery',  name:'검의 숙련',      rarity:'일반', icon:'⚔️', desc:'공격력 +15%',                    maxStack:5, apply:()=>{ player.swordDmg*=1.15 }},
+  {id:'swift_throw',    name:'신속한 투척',    rarity:'일반', icon:'💨', desc:'공격 속도 +20%',                  maxStack:5, apply:()=>{ player.attackInterval*=0.833 }},
+  {id:'long_shot',      name:'장거리 사격',    rarity:'일반', icon:'🏹', desc:'사거리 +25%',                     maxStack:3, apply:()=>{ player.attackRange*=1.25 }},
+  {id:'light_armor',    name:'경량화 갑주',    rarity:'일반', icon:'👢', desc:'이동 속도 +15%',                  maxStack:4, apply:()=>{ player.speed*=1.15 }},
+  {id:'valkyrie_heart', name:'발큐리 심장',    rarity:'일반', icon:'💖', desc:'최대 가호 +20, 현재 가호 회복',   maxStack:3, apply:()=>{ state.gaugeMax+=20; state.gauge=Math.min(state.gaugeMax,state.gauge+20) }},
+  {id:'wind_blessing',  name:'바람의 가호',    rarity:'일반', icon:'🌪️', desc:'바람 질주 쿨타임 -1초 (최소 1s)', maxStack:2, apply:()=>{ skills.Q.max=Math.max(1,skills.Q.max-1) }},
+  // ── 희귀 (amber)
+  {id:'wide_blast',     name:'광역 확장',      rarity:'희귀', icon:'💥', desc:'충격파 반경 +30%, 피해 +20%',     maxStack:3, apply:()=>{ player.shockwaveRadius*=1.30; player.shockwaveDmg*=1.20 }},
+  {id:'crit_instinct',  name:'치명 직감',      rarity:'희귀', icon:'🎯', desc:'크리티컬 확률 +15%',              maxStack:4, apply:()=>{ player.critChance=Math.min(0.95,player.critChance+0.15) }},
+  {id:'orb_resonance',  name:'보주 공명',      rarity:'희귀', icon:'💎', desc:'보주 회복량 +50%',                maxStack:3, apply:()=>{ player.orbMultiplier*=1.5 }},
+  // ── 영웅 (violet)
+  {id:'double_throw',   name:'이중 투척',      rarity:'영웅', icon:'⚡', desc:'검을 동시에 2개 투척',            maxStack:1, apply:()=>{ player.projectileCount=2 }},
+];
+const RARITY_WEIGHTS={ '일반':70, '희귀':25, '영웅':5 };
+const RARITY_COLORS={ '일반':'teal', '희귀':'amber', '영웅':'violet' };
+
+const WAVE_DEFS=[
+  [{type:'sogari',count:5,delay:0.8},{type:'bangeo',count:2,delay:1.4}],
+  [{type:'sogari',count:6,delay:0.6},{type:'bangeo',count:3,delay:1.2},{type:'gaori',count:2,delay:1.8}],
+  [{type:'sogari',count:8,delay:0.5},{type:'gaori',count:4,delay:1.0},{type:'bangeo',count:4,delay:1.2}],
+  [{type:'bangeo',count:6,delay:0.9},{type:'gaori',count:6,delay:0.8},{type:'sogari',count:10,delay:0.4}],
+  [{type:'sogari',count:12,delay:0.3},{type:'gaori',count:8,delay:0.6},{type:'bangeo',count:8,delay:0.8}],
+];
+
+function startGame(){
+  state.running=true; state.phase='playing';
+  state.wave=1;
+  state.gateHp=state.gateHpMax;
+  state.gaugeMax=100; state.gauge=state.gaugeMax;
+  state.stats={kill:0, orb:0, crit:0, combo:0, maxCombo:0, comboTimer:0};
+  state.cards=[];
+  state.gold=0;
+  state.facilitySlots=FACILITY_SLOT_DEFS.map(d=>({...d, unlocked:false, facility:null, attackCD:0, el:null}));
+  renderFacilitySlots();
+  updateGoldHud();
+  enemies.length=0; projectiles.length=0; items.length=0; particles.length=0;
+  // 플레이어 스탯 리셋
+  player.x=W/2; player.y=H-180;
+  player.speed=220; player.attackRange=320; player.attackInterval=0.55;
+  player.swordDmg=22; player.critChance=0.15; player.projectileCount=1;
+  player.orbMultiplier=1; player.shockwaveRadius=220; player.shockwaveDmg=120;
+  skills.Q.cd=0; skills.Q.max=3; skills.E.cd=0; skills.E.max=18;
+  document.getElementById('titleScreen').classList.add('hidden');
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('breakBar').classList.remove('show');
+  document.getElementById('cardDraft').classList.remove('show');
+  document.getElementById('hudCards').classList.remove('show');
+  document.getElementById('cardsList').innerHTML='';
+  document.getElementById('waveMax').textContent=state.waveMax;
+  beginWave(1);
+  state.lastTs=performance.now();
+  requestAnimationFrame(loop);
+}
+function beginWave(n){
+  state.wave=n; state.phase='playing';
+  document.getElementById('breakBar').classList.remove('show');
+  const waveData=WAVE_DEFS[n-1];
+  state.enemiesToSpawn=[];
+  state.waveEnemyCounts={};
+  let total=0;
+  let timeAcc=0.5;
+  for(const group of waveData){
+    state.waveEnemyCounts[group.type]={total:group.count, killed:0};
+    for(let i=0;i<group.count;i++){
+      state.enemiesToSpawn.push({type:group.type,at:timeAcc});
+      timeAcc+=group.delay;
+    }
+    total+=group.count;
+  }
+  state.currentWaveTotal=total;
+  renderWaveEnemyList();
+  showBanner(`WAVE ${n}`, '시작');
+  updateHud();
+}
+function endWave(){
+  if(state.wave>=state.waveMax){ victory(); return; }
+  state.phase='carddraft';
+  showBanner(`WAVE ${state.wave} 클리어!`, '');
+  setTimeout(()=>openCardDraft(), 900);
+}
+
+// ═══ 로그라이크 카드 함수 ═══
+function weightedPickRarity(){
+  const total=Object.values(RARITY_WEIGHTS).reduce((a,b)=>a+b,0);
+  let r=Math.random()*total;
+  for(const k of Object.keys(RARITY_WEIGHTS)){
+    r-=RARITY_WEIGHTS[k];
+    if(r<=0) return k;
+  }
+  return '일반';
+}
+function cardStackOf(id){ const c=state.cards.find(c=>c.id===id); return c?c.stack:0; }
+function isCardMaxed(card){ return cardStackOf(card.id) >= card.maxStack; }
+function drawThreeCards(){
+  // 만렙 카드는 제외
+  const avail=CARD_POOL.filter(c=>!isCardMaxed(c));
+  if(avail.length===0) return [];
+  const picks=[];
+  const pool=[...avail];
+  for(let i=0;i<3 && pool.length>0;i++){
+    // 가중치 기반 rarity 선택 → 해당 rarity 풀에서 무작위
+    let rarity=weightedPickRarity();
+    let candidates=pool.filter(c=>c.rarity===rarity);
+    if(candidates.length===0){
+      // 해당 rarity 없으면 전체에서 뽑기
+      candidates=pool;
+    }
+    const pick=candidates[Math.floor(Math.random()*candidates.length)];
+    picks.push(pick);
+    const idx=pool.indexOf(pick);
+    if(idx>=0) pool.splice(idx,1);
+  }
+  return picks;
+}
+function openCardDraft(){
+  const picks=drawThreeCards();
+  if(picks.length===0){
+    // 모든 카드 만렙 — 그냥 브레이크 스킵
+    beginWave(state.wave+1);
+    return;
+  }
+  document.getElementById('dtWaveNum').textContent=state.wave;
+  const row=document.getElementById('cardRow');
+  row.innerHTML='';
+  picks.forEach((c,i)=>{
+    const stack=cardStackOf(c.id);
+    const maxStack=c.maxStack;
+    const el=document.createElement('div');
+    el.className='draft-card r-'+RARITY_COLORS[c.rarity];
+    el.innerHTML=`
+      <div class="rarity-tag">${c.rarity}</div>
+      <div class="card-icon">${c.icon}</div>
+      <div class="card-name">${c.name}</div>
+      <div class="card-desc">${c.desc}</div>
+      <div class="card-stack">${stack>0?`보유 ${stack}/${maxStack}`:`신규 · 최대 ${maxStack}스택`}</div>
+      <div class="card-key">${i+1}</div>
+    `;
+    el.addEventListener('click',()=>selectCard(c,el));
+    row.appendChild(el);
+  });
+  state.draftPicks=picks;
+  document.getElementById('cardDraft').classList.add('show');
+}
+function selectCard(card,el){
+  if(state.phase!=='carddraft') return;
+  state.phase='carddraft_animating';
+  // 효과 적용
+  card.apply();
+  const existing=state.cards.find(c=>c.id===card.id);
+  if(existing){ existing.stack++; }
+  else{ state.cards.push({id:card.id,stack:1,meta:card}); }
+  if(el) el.classList.add('selected');
+  renderHudCards();
+  setTimeout(()=>{
+    document.getElementById('cardDraft').classList.remove('show');
+    beginWave(state.wave+1);
+  }, 550);
+}
+// ═══ 방어 시설 (Phase 2-B) ═══
+function updateGoldHud(){ document.getElementById('goldValue').textContent=state.gold; refreshSlotUI(); }
+function addGold(amount, x, y){
+  state.gold+=amount;
+  updateGoldHud();
+  if(x!=null && y!=null){
+    const el=document.createElement('div');
+    el.className='dmg';
+    el.style.left=x+'px'; el.style.top=y+'px';
+    el.style.color='#ffd86b'; el.style.textShadow='0 0 8px var(--gold),0 2px 2px #000';
+    el.textContent='+'+amount+'G';
+    stage.appendChild(el);
+    setTimeout(()=>{if(el.parentNode)el.parentNode.removeChild(el)},800);
+  }
+}
+function renderFacilitySlots(){
+  const host=document.getElementById('fslotsContainer');
+  host.innerHTML='';
+  state.facilitySlots.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='fslot';
+    el.style.left=s.x+'px'; el.style.top=s.y+'px';
+    el.innerHTML=`
+      <div class="slot-label">${s.label}</div>
+      <div class="slot-ring">
+        <span class="slot-icon">🏗️</span>
+      </div>
+      <div class="slot-cost">💰 ${s.cost}G</div>
+    `;
+    el.addEventListener('click',()=>onSlotClick(i));
+    host.appendChild(el);
+    s.el=el;
+  });
+}
+function refreshSlotUI(){
+  for(const s of state.facilitySlots){
+    if(!s.el) continue;
+    if(s.unlocked && s.facility){
+      s.el.classList.add('built'); s.el.classList.remove('ready');
+      continue;
+    }
+    if(state.gold>=s.cost) s.el.classList.add('ready');
+    else s.el.classList.remove('ready');
+  }
+}
+function onSlotClick(idx){
+  const s=state.facilitySlots[idx];
+  if(!s || s.unlocked) return;
+  if(state.gold<s.cost) return;
+  if(state.phase!=='playing') return;
+  // 골드 차감 + 시설 드래프트 오픈
+  state.gold-=s.cost;
+  updateGoldHud();
+  openFacilityDraft(idx);
+}
+function openFacilityDraft(slotIdx){
+  const picks=[...FACILITY_POOL].sort(()=>Math.random()-0.5).slice(0,3);
+  state.pendingSlotIdx=slotIdx;
+  state.facilityDraftPicks=picks;
+  state.phase='facilitydraft';
+  document.getElementById('dtWaveNum').textContent='SLOT '+(slotIdx+1);
+  const draft=document.getElementById('cardDraft');
+  const title=draft.querySelector('.dt-sub');
+  const main=draft.querySelector('.dt-main');
+  const desc=draft.querySelector('.dt-desc');
+  title.textContent=state.facilitySlots[slotIdx].label+' 건설';
+  main.textContent='🏛 방어 시설을 선택하라 🏛';
+  desc.innerHTML='세 종류의 방어 시설 중 하나를 선택해 슬롯에 건설합니다.<br>1 / 2 / 3 키 또는 클릭으로 선택';
+  const row=document.getElementById('cardRow');
+  row.innerHTML='';
+  picks.forEach((f,i)=>{
+    const el=document.createElement('div');
+    el.className='draft-card r-'+RARITY_COLORS[f.rarity];
+    el.innerHTML=`
+      <div class="rarity-tag">${f.rarity}</div>
+      <div class="card-icon">${f.icon}</div>
+      <div class="card-name">${f.name}</div>
+      <div class="card-desc">${f.desc}<br><span style="font-size:10px;color:#9cd8ff">${f.detail}</span></div>
+      <div class="card-stack">시설 · 1회 건설</div>
+      <div class="card-key">${i+1}</div>
+    `;
+    el.addEventListener('click',()=>selectFacility(f,el));
+    row.appendChild(el);
+  });
+  draft.classList.add('show');
+}
+function selectFacility(f, el){
+  if(state.phase!=='facilitydraft') return;
+  state.phase='facilitydraft_animating';
+  const idx=state.pendingSlotIdx;
+  const s=state.facilitySlots[idx];
+  s.unlocked=true;
+  s.facility={...f, attackCD:0};
+  // 슬롯 DOM 업데이트
+  s.el.innerHTML=`
+    <div class="slot-label">${f.name}</div>
+    <div class="slot-ring"><span class="facility-icon">${f.icon}</span></div>
+  `;
+  s.el.classList.add('built'); s.el.classList.remove('ready');
+  if(el) el.classList.add('selected');
+  setTimeout(()=>{
+    document.getElementById('cardDraft').classList.remove('show');
+    // 드래프트 타이틀 원복 (발키리 카드용)
+    document.getElementById('cardDraft').querySelector('.dt-main').textContent='⚔ 카드를 선택하라 ⚔';
+    document.getElementById('cardDraft').querySelector('.dt-desc').innerHTML='세 장의 카드 중 하나를 선택하면 다음 Wave로 진행합니다.<br>1 / 2 / 3 키 또는 클릭으로 선택';
+    state.phase='playing';
+  }, 550);
+}
+function facilityAttack(dt){
+  for(const s of state.facilitySlots){
+    if(!s.unlocked || !s.facility) continue;
+    const f=s.facility;
+    f.attackCD-=dt;
+    if(f.attackCD>0) continue;
+    if(f.type==='aoe'){
+      let hit=false;
+      for(const e of enemies){
+        const d=Math.hypot(e.x-s.x,e.y-s.y);
+        if(d<f.range){
+          dealDamage(e,f.dmg,false);
+          hit=true;
+        }
+      }
+      if(hit){
+        runeStrike(s.x,s.y,f.range);
+        s.el.classList.remove('firing'); void s.el.offsetWidth; s.el.classList.add('firing');
+        f.attackCD=f.cooldown;
+      }
+    }else{
+      const tgt=nearestEnemy(s.x,s.y,f.range);
+      if(tgt){
+        const dx=tgt.x-s.x, dy=tgt.y-s.y, d=Math.hypot(dx,dy)||1;
+        projectiles.push({
+          x:s.x, y:s.y, vx:dx/d*f.projSpeed, vy:dy/d*f.projSpeed, life:1.2,
+          dmg:f.dmg, crit:false, angle:Math.atan2(dy,dx),
+          color:f.projColor, pierce:f.type==='pierce',
+          hitSet:f.type==='pierce'?new Set():null,
+        });
+        s.el.classList.remove('firing'); void s.el.offsetWidth; s.el.classList.add('firing');
+        f.attackCD=f.cooldown;
+      }
+    }
+  }
+}
+function runeStrike(x,y,R){
+  const start=performance.now();
+  (function ring(){
+    const t=(performance.now()-start)/500;
+    if(t>1) return;
+    const r=R*t;
+    ctx.save();
+    ctx.globalAlpha=1-t;
+    ctx.strokeStyle='#00e5ff'; ctx.lineWidth=4;
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle='rgba(180,230,255,.6)'; ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(x,y,r*0.7,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+    requestAnimationFrame(ring);
+  })();
+  // 번개 파티클
+  for(let i=0;i<20;i++) particles.push({x:x+(Math.random()-.5)*R*1.5, y:y+(Math.random()-.5)*R*0.6, vx:(Math.random()-.5)*80, vy:-50-Math.random()*120, life:.6, size:3+Math.random()*3, color:'rgba(0,229,255,'});
+}
+
+function renderHudCards(){
+  const hud=document.getElementById('hudCards');
+  const list=document.getElementById('cardsList');
+  if(state.cards.length===0){ hud.classList.remove('show'); return; }
+  hud.classList.add('show');
+  list.innerHTML=state.cards.map(c=>{
+    const m=c.meta;
+    return `<div class="c-row r-${RARITY_COLORS[m.rarity]}"><span class="c-ico">${m.icon}</span><span class="c-nm">${m.name}</span><span class="c-stk">×${c.stack}</span></div>`;
+  }).join('');
+}
+function victory(){ state.running=false; state.phase='result'; showResult(true); }
+function gameOver(){ state.running=false; state.phase='result'; showResult(false); }
+function showResult(win){
+  const scr=document.getElementById('resultScreen');
+  document.getElementById('resultTitle').textContent=win?'VICTORY':'DEFEAT';
+  document.getElementById('resultTitle').style.color=win?'var(--gold)':'var(--red)';
+  document.getElementById('resultSub').innerHTML=win
+    ? `<strong>성 수문이 무사히 지켜졌다.</strong>`
+    : `<strong>성 수문이 무너졌다.</strong><br>다시 도전하여 왕국을 구하라.`;
+  document.getElementById('rsKill').textContent=state.stats.kill;
+  document.getElementById('rsOrb').textContent=state.stats.orb;
+  document.getElementById('rsHp').textContent=Math.round(state.gateHp/state.gateHpMax*100)+'%';
+  scr.classList.remove('hidden');
+}
+
+function spawnEnemy(type){
+  const def=ENEMY_DEFS[type];
+  const side=Math.floor(Math.random()*3);
+  let x,y;
+  if(side===0){x=60+Math.random()*200; y=-40}
+  else if(side===1){x=W/2+(Math.random()-.5)*300; y=-40}
+  else {x=W-60-Math.random()*200; y=-40}
+  const e={ type, ...def, x,y, hpMax:def.hp, hp:def.hp, el:null, _zigT:Math.random()*6.28, _alive:true };
+  const el=document.createElement('div');
+  el.className='obj enemy';
+  el.style.width=def.size+'px'; el.style.height=def.size+'px';
+  el.innerHTML=`<img src="${ASSET+def.img}" alt=""><div class="hpbar"><div class="fill" style="width:100%"></div></div>`;
+  world.appendChild(el);
+  e.el=el;
+  e._hpFill=el.querySelector('.fill');
+  enemies.push(e);
+}
+
+function useSkill(key){
+  if(state.phase!=='playing') return;
+  const s=skills[key];
+  if(s.cd>0) return;
+  if(key==='Q'){
+    const dx=mouse.x-player.x, dy=mouse.y-player.y;
+    const d=Math.hypot(dx,dy)||1;
+    const tx=player.x+dx/d*180, ty=player.y+dy/d*180;
+    for(let i=0;i<18;i++){
+      const t=i/18;
+      particles.push({x:player.x+(tx-player.x)*t,y:player.y+(ty-player.y)*t,vx:(Math.random()-.5)*40,vy:(Math.random()-.5)*40,life:.6,size:8,color:'rgba(122,245,255,'});
+    }
+    player.x=Math.max(40,Math.min(W-40,tx));
+    player.y=Math.max(40,Math.min(H-120,ty));
+    // 수문 충돌
+    if(player.y+player.r > H-127 && Math.abs(player.x-W/2) < 88+player.r){
+      player.y = H-127-player.r;
+    }
+    player.invul=0.3;
+    playerEl.classList.add('dashing');
+    setTimeout(()=>playerEl.classList.remove('dashing'),300);
+    s.cd=s.max;
+  }
+  if(key==='E'){
+    const R=player.shockwaveRadius, DMG=player.shockwaveDmg;
+    shockwave(player.x,player.y,R);
+    for(const e of enemies){
+      const d=Math.hypot(e.x-player.x,e.y-player.y);
+      if(d<R){
+        dealDamage(e,DMG,true);
+        const dx=(e.x-player.x)/Math.max(1,d), dy=(e.y-player.y)/Math.max(1,d);
+        e.x+=dx*40; e.y+=dy*40;
+      }
+    }
+    s.cd=s.max;
+  }
+}
+
+function shockwave(x,y,R){
+  const start=performance.now();
+  (function drawRing(){
+    const t=(performance.now()-start)/600;
+    if(t>1) return;
+    const r=R*t;
+    ctx.save();
+    ctx.globalAlpha=1-t;
+    ctx.strokeStyle='#ffd86b'; ctx.lineWidth=6;
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,0.7)'; ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(x,y,r*0.85,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+    requestAnimationFrame(drawRing);
+  })();
+}
+
+function dealDamage(e,dmg,crit=false){
+  e.hp-=dmg;
+  if(e._hpFill) e._hpFill.style.width=Math.max(0,(e.hp/e.hpMax)*100)+'%';
+  spawnDmgNum(e.x,e.y-e.r,Math.round(dmg),crit?'crit':'');
+  if(crit) state.stats.crit++;
+  if(e.hp<=0 && e._alive){
+    e._alive=false;
+    killEnemy(e);
+  }
+}
+function killEnemy(e){
+  for(let i=0;i<14;i++){
+    particles.push({x:e.x,y:e.y,vx:(Math.random()-.5)*260,vy:(Math.random()-.5)*260,life:.5,size:4+Math.random()*4,color:'rgba(255,200,120,'});
+  }
+  if(Math.random()<e.dropRate){
+    const orb={type:'oxygen',x:e.x,y:e.y,r:22,life:10,el:null};
+    const el=document.createElement('div');
+    el.className='obj item';
+    el.innerHTML=`<img src="${ASSET}items/oxygen.png" alt="">`;
+    world.appendChild(el);
+    orb.el=el;
+    items.push(orb);
+  }
+  state.stats.kill++;
+  state.stats.combo++;
+  // 골드 획득
+  const def=ENEMY_DEFS[e.type];
+  if(def && def.gold){ addGold(def.gold, e.x, e.y-30); }
+  state.stats.comboTimer=2.5;
+  if(state.stats.combo>state.stats.maxCombo) state.stats.maxCombo=state.stats.combo;
+  if(state.stats.combo>=5){
+    const cr=document.getElementById('comboRow');
+    cr.classList.remove('hot'); void cr.offsetWidth; cr.classList.add('hot');
+  }
+  // 적 카운트 갱신
+  if(state.waveEnemyCounts[e.type]){
+    state.waveEnemyCounts[e.type].killed++;
+    renderWaveEnemyList();
+  }
+  if(e.el && e.el.parentNode) e.el.parentNode.removeChild(e.el);
+  const idx=enemies.indexOf(e); if(idx>=0) enemies.splice(idx,1);
+}
+function spawnDmgNum(x,y,v,cls){
+  const el=document.createElement('div');
+  el.className='dmg '+cls;
+  el.style.left=x+'px'; el.style.top=y+'px';
+  el.textContent=v;
+  stage.appendChild(el);
+  setTimeout(()=>{if(el.parentNode)el.parentNode.removeChild(el)},800);
+}
+
+function loop(ts){
+  if(!state.running) return;
+  const dt=Math.min(0.05,(ts-state.lastTs)/1000);
+  state.lastTs=ts;
+  // 카드/시설 선택 중에는 시간 정지
+  const paused=(state.phase==='carddraft' || state.phase==='carddraft_animating'
+              || state.phase==='facilitydraft' || state.phase==='facilitydraft_animating');
+  if(!paused) update(dt);
+  render();
+  renderFx(paused?0:dt);
+  requestAnimationFrame(loop);
+}
+
+function update(dt){
+  let dx=0, dy=0;
+  if(keys['w']||keys['arrowup']) dy-=1;
+  if(keys['s']||keys['arrowdown']) dy+=1;
+  if(keys['a']||keys['arrowleft']){dx-=1; player.facing=-1}
+  if(keys['d']||keys['arrowright']){dx+=1; player.facing=1}
+  if(dx||dy){
+    const l=Math.hypot(dx,dy);
+    player.x+=dx/l*player.speed*dt;
+    player.y+=dy/l*player.speed*dt;
+  }
+  player.x=Math.max(40,Math.min(W-40,player.x));
+  player.y=Math.max(40,Math.min(H-80,player.y));
+  // 수문 충돌 — 발키리가 수문 오브젝트 안으로 들어가지 못하도록
+  // 실제 이미지의 시각 폭은 컨테이너(252) 대비 약 70% → 반폭 ~88px
+  const _gateHalfW=88, _gateTop=H-127;
+  if(player.y+player.r > _gateTop && Math.abs(player.x-W/2) < _gateHalfW+player.r){
+    player.y=_gateTop-player.r;
+  }
+  if(player.invul>0) player.invul-=dt;
+
+  for(const k of ['Q','E']){
+    if(skills[k].cd>0) skills[k].cd=Math.max(0,skills[k].cd-dt);
+  }
+
+  player.attackCD-=dt;
+  if(player.attackCD<=0){
+    const tgt=nearestEnemy(player.x,player.y,player.attackRange);
+    if(tgt){
+      fireSword(player.x,player.y-20,tgt);
+      player.attackCD=player.attackInterval;
+    }
+  }
+
+  if(state.phase==='playing' && state.enemiesToSpawn.length){
+    state.enemiesToSpawn.forEach(s=>s.at-=dt);
+    while(state.enemiesToSpawn.length && state.enemiesToSpawn[0].at<=0){
+      const s=state.enemiesToSpawn.shift();
+      spawnEnemy(s.type);
+    }
+  }
+
+  for(const e of enemies){
+    const tgtX=W/2, tgtY=H-70;
+    if(e.ai==='rush'){
+      const near=Math.hypot(player.x-e.x,player.y-e.y)<280 ? {x:player.x,y:player.y}:{x:tgtX,y:tgtY};
+      moveTowards(e,near.x,near.y,dt);
+    } else if(e.ai==='straight'){
+      moveTowards(e,tgtX,tgtY,dt);
+    } else if(e.ai==='zigzag'){
+      e._zigT+=dt*3;
+      const offX=Math.sin(e._zigT)*70;
+      moveTowards(e,tgtX+offX,tgtY,dt);
+    }
+    const pd=Math.hypot(e.x-player.x,e.y-player.y);
+    if(pd < e.r+player.r-8 && player.invul<=0){
+      state.gauge=Math.max(0,state.gauge-12);
+      player.invul=0.5;
+      const nx=(player.x-e.x)/Math.max(1,pd), ny=(player.y-e.y)/Math.max(1,pd);
+      player.x+=nx*30; player.y+=ny*30;
+      spawnDmgNum(player.x,player.y-40,'-12%','heal');
+      playerEl.classList.add('hit');
+      setTimeout(()=>playerEl.classList.remove('hit'),180);
+    }
+    if(e.y>H-95 && Math.abs(e.x-W/2)<100){
+      state.gateHp=Math.max(0,state.gateHp-e.touchDmg);
+      spawnDmgNum(tgtX,H-130,'-'+e.touchDmg,'gate');
+      // 수문 피격 연출
+      const g=document.getElementById('gate');
+      g.classList.remove('hit'); void g.offsetWidth; g.classList.add('hit');
+      e._alive=false;
+      if(state.waveEnemyCounts[e.type]){
+        state.waveEnemyCounts[e.type].killed++;
+        renderWaveEnemyList();
+      }
+      if(e.el && e.el.parentNode) e.el.parentNode.removeChild(e.el);
+      for(let i=0;i<10;i++) particles.push({x:e.x,y:e.y,vx:(Math.random()-.5)*200,vy:-Math.random()*200,life:.6,size:5,color:'rgba(255,80,80,'});
+    }
+  }
+  for(let i=enemies.length-1;i>=0;i--) if(!enemies[i]._alive) enemies.splice(i,1);
+
+  for(let i=projectiles.length-1;i>=0;i--){
+    const p=projectiles[i];
+    p.x+=p.vx*dt; p.y+=p.vy*dt;
+    p.life-=dt;
+    let consumed=false;
+    for(const e of enemies){
+      if(Math.hypot(e.x-p.x,e.y-p.y)<e.r+8){
+        if(p.pierce){
+          if(p.hitSet && !p.hitSet.has(e)){
+            p.hitSet.add(e);
+            dealDamage(e,p.dmg,p.crit);
+          }
+        }else{
+          dealDamage(e,p.dmg,p.crit);
+          consumed=true; break;
+        }
+      }
+    }
+    if(consumed || p.life<=0 || p.x<-30||p.x>W+30||p.y<-30||p.y>H+30){
+      projectiles.splice(i,1);
+    }
+  }
+
+  // 시설 공격
+  facilityAttack(dt);
+
+  for(let i=items.length-1;i>=0;i--){
+    const it=items[i];
+    it.life-=dt;
+    const d=Math.hypot(it.x-player.x,it.y-player.y);
+    if(d<120){
+      const sp=420;
+      const nx=(player.x-it.x)/Math.max(1,d), ny=(player.y-it.y)/Math.max(1,d);
+      it.x+=nx*sp*dt; it.y+=ny*sp*dt;
+    }
+    if(d<player.r+it.r || it.life<=0){
+      if(d<player.r+it.r){
+        const gain=Math.round(30*player.orbMultiplier);
+        state.gauge=Math.min(state.gaugeMax,state.gauge+gain);
+        spawnDmgNum(player.x,player.y-40,'+'+gain+'%','heal');
+        state.stats.orb++;
+        for(let k=0;k<10;k++) particles.push({x:it.x,y:it.y,vx:(Math.random()-.5)*200,vy:(Math.random()-.5)*200,life:.5,size:5,color:'rgba(0,229,255,'});
+      }
+      if(it.el && it.el.parentNode) it.el.parentNode.removeChild(it.el);
+      items.splice(i,1);
+    }
+  }
+
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.x+=p.vx*dt; p.y+=p.vy*dt;
+    p.vy+=200*dt;
+    p.life-=dt;
+    if(p.life<=0) particles.splice(i,1);
+  }
+
+  state.gauge=Math.max(0,state.gauge-state.gaugeDrainRate*dt);
+  if(state.gauge<=0){
+    state.gateHp=Math.max(0,state.gateHp-state.gaugeEmptyDamage*state.gateHpMax/100*dt);
+  }
+
+  // 콤보 타이머
+  if(state.stats.comboTimer>0){
+    state.stats.comboTimer-=dt;
+    if(state.stats.comboTimer<=0) state.stats.combo=0;
+  }
+
+  if(state.phase==='playing' && state.enemiesToSpawn.length===0 && enemies.length===0){
+    endWave();
+  }
+  if(state.phase==='wavebreak'){
+    state.waveBreakTime-=dt;
+    const bbF=document.getElementById('bbFill');
+    const bbT=document.getElementById('bbTime');
+    if(bbF) bbF.style.width=(Math.max(0,state.waveBreakTime)/state.waveBreakTotal*100)+'%';
+    if(bbT) bbT.textContent=Math.max(0,state.waveBreakTime).toFixed(1)+'s';
+    if(state.waveBreakTime<=0){
+      beginWave(state.wave+1);
+    }
+  }
+
+  if(state.gateHp<=0){ gameOver(); return; }
+
+  updateHud();
+}
+
+function moveTowards(e,tx,ty,dt){
+  const dx=tx-e.x, dy=ty-e.y, d=Math.hypot(dx,dy)||1;
+  e.x+=dx/d*e.speed*dt;
+  e.y+=dy/d*e.speed*dt;
+}
+function nearestEnemy(x,y,range){
+  let best=null,bd=range*range;
+  for(const e of enemies){
+    const dd=(e.x-x)*(e.x-x)+(e.y-y)*(e.y-y);
+    if(dd<bd){bd=dd;best=e}
+  }
+  return best;
+}
+function fireSword(x,y,tgt){
+  const dx=tgt.x-x, dy=tgt.y-y, d=Math.hypot(dx,dy)||1;
+  const sp=780;
+  const baseAngle=Math.atan2(dy,dx);
+  const count=player.projectileCount||1;
+  const spread=count>1?0.18:0;
+  for(let i=0;i<count;i++){
+    const offset=count>1?(i-(count-1)/2)*spread:0;
+    const a=baseAngle+offset;
+    const crit=Math.random()<player.critChance;
+    projectiles.push({ x,y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, life:1.0,
+      dmg:player.swordDmg*(crit?2:1), crit, angle:a });
+  }
+}
+
+function render(){
+  playerEl.style.left=player.x+'px';
+  playerEl.style.top=(player.y-20)+'px';
+  playerEl.style.transform=`translate(-50%,-50%) scaleX(${player.facing})`;
+  for(const e of enemies){
+    e.el.style.left=e.x+'px';
+    e.el.style.top=e.y+'px';
+    const dirX=(W/2-e.x);
+    e.el.style.transform=`translate(-50%,-50%) scaleX(${dirX<0?-1:1})`;
+  }
+  for(const it of items){
+    it.el.style.left=it.x+'px';
+    it.el.style.top=it.y+'px';
+  }
+}
+
+function renderFx(dt){
+  ctx.clearRect(0,0,W,H);
+  for(const p of projectiles){
+    ctx.save();
+    ctx.translate(p.x,p.y); ctx.rotate(p.angle);
+    const isFac=!!p.color;
+    const col=p.color||(p.crit?'#ffd86b':'#c6ecff');
+    const len=p.pierce?32:(isFac?24:20);
+    const grad=ctx.createLinearGradient(-len,0,len,0);
+    grad.addColorStop(0,'rgba(255,255,255,0.05)');
+    grad.addColorStop(0.5,col);
+    grad.addColorStop(1,'#ffffff');
+    ctx.strokeStyle=grad; ctx.lineWidth=p.pierce?7:(p.crit?6:4); ctx.lineCap='round';
+    ctx.shadowColor=col; ctx.shadowBlur=p.pierce?22:18;
+    ctx.beginPath();ctx.moveTo(-len-4,0);ctx.lineTo(len-2,0);ctx.stroke();
+    ctx.fillStyle=col;
+    ctx.beginPath();ctx.arc(len-2,0,p.pierce?6:(p.crit?5:3),0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+  for(const p of particles){
+    const a=Math.max(0,p.life);
+    ctx.fillStyle=p.color+a+')';
+    ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
+  }
+  // 공격 범위 표시 (펄스)
+  const pulse=0.25+0.12*Math.sin(performance.now()/400);
+  ctx.save();
+  ctx.strokeStyle=`rgba(0,229,255,${pulse})`; ctx.lineWidth=2;
+  ctx.setLineDash([8,6]);
+  ctx.beginPath();ctx.arc(player.x,player.y,player.attackRange,0,Math.PI*2);ctx.stroke();
+  ctx.setLineDash([]);
+  // 내부 미묘한 채움
+  const rg=ctx.createRadialGradient(player.x,player.y,player.attackRange*0.85,player.x,player.y,player.attackRange);
+  rg.addColorStop(0,'rgba(0,229,255,0)');
+  rg.addColorStop(1,'rgba(0,229,255,0.12)');
+  ctx.fillStyle=rg;
+  ctx.beginPath();ctx.arc(player.x,player.y,player.attackRange,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+  // 수문 방어선 (수문 상단 라인)
+  const glow=0.08+0.05*Math.sin(performance.now()/500);
+  ctx.fillStyle=`rgba(0,229,255,${glow+0.08})`;
+  ctx.fillRect(W/2-100,H-95,200,3);
+  ctx.fillStyle=`rgba(255,216,107,${glow})`;
+  ctx.fillRect(W/2-100,H-95,200,2);
+}
+
+function renderWaveEnemyList(){
+  const host=document.getElementById('waveEnemyList');
+  host.innerHTML='';
+  for(const t in state.waveEnemyCounts){
+    const def=ENEMY_DEFS[t];
+    const c=state.waveEnemyCounts[t];
+    const remain=c.total-c.killed;
+    const row=document.createElement('div');
+    row.className='e-row'+(remain<=0?' done':'');
+    row.innerHTML=`<img src="${ASSET+def.img}" alt=""><span class="name">${def.name}</span><span class="cnt">${remain}/${c.total}</span>`;
+    host.appendChild(row);
+  }
+}
+
+function updateHud(){
+  // 수문
+  const hpPct=state.gateHp/state.gateHpMax*100;
+  document.getElementById('gateHpFill').style.width=hpPct+'%';
+  document.getElementById('gateHpText').textContent=Math.round(state.gateHp);
+  document.getElementById('gateHpMiniFill').style.width=hpPct+'%';
+  const gate=document.getElementById('hudGate');
+  const gateObj=document.getElementById('gate');
+  if(hpPct<30){ gate.classList.add('danger'); gateObj.classList.add('danger'); }
+  else { gate.classList.remove('danger'); gateObj.classList.remove('danger'); }
+
+  // Wave
+  document.getElementById('waveNum').textContent=state.wave;
+  const remainEnemies=enemies.length+state.enemiesToSpawn.length;
+  document.getElementById('remainCount').textContent=remainEnemies;
+
+  // 가호
+  const gp=state.gauge/state.gaugeMax*100;
+  document.getElementById('gaugeFill').style.width=gp+'%';
+  document.getElementById('gaugeText').textContent=Math.round(state.gauge);
+  const gh=document.getElementById('hudGauge');
+  const gs=document.getElementById('gaugeStatus');
+  gh.classList.remove('warn','critical');
+  if(state.gauge<=0){ gh.classList.add('critical'); gs.textContent='● 수문 붕괴 중'; }
+  else if(state.gauge<25){ gh.classList.add('critical'); gs.textContent='● 위험'; }
+  else if(state.gauge<50){ gh.classList.add('warn'); gs.textContent='● 주의'; }
+  else gs.textContent='● 안정';
+
+  // 스탯
+  document.getElementById('statKill').textContent=state.stats.kill;
+  document.getElementById('statCombo').textContent=state.stats.combo;
+  document.getElementById('statOrb').textContent=state.stats.orb;
+  document.getElementById('statCrit').textContent=state.stats.crit;
+
+  // 스킬
+  ['Q','E'].forEach(k=>{
+    const cdEl=document.getElementById('cd'+k);
+    const btn=document.getElementById('skill'+k);
+    const ring=document.getElementById('cdRing'+k);
+    const rdy=document.getElementById('rdy'+k);
+    const stat=document.getElementById('stat'+k);
+    const s=skills[k];
+    if(s.cd>0){
+      cdEl.classList.remove('hidden');
+      cdEl.textContent=s.cd.toFixed(s.cd<1?1:0);
+      btn.classList.remove('ready');
+      btn.classList.add('cooling');
+      if(ring){ const r=s.cd/s.max; ring.style.strokeDashoffset=(163*r).toFixed(1); }
+      if(rdy) rdy.classList.add('hidden');
+      if(stat){
+        stat.textContent='⏳ '+s.cd.toFixed(s.cd<1?1:0)+'s';
+        stat.classList.remove('ready'); stat.classList.add('cooling');
+      }
+    }else{
+      cdEl.classList.add('hidden');
+      btn.classList.add('ready');
+      btn.classList.remove('cooling');
+      if(ring) ring.style.strokeDashoffset=0;
+      if(rdy) rdy.classList.remove('hidden');
+      if(stat){
+        stat.textContent='● 준비';
+        stat.classList.add('ready'); stat.classList.remove('cooling');
+      }
+    }
+  });
+}
+
+function showBanner(main, sub){
+  const b=document.getElementById('waveBanner');
+  b.innerHTML=main+(sub?`<span class="sub">${sub}</span>`:'');
+  b.classList.add('show');
+  setTimeout(()=>b.classList.remove('show'),1600);
+}
+
+document.getElementById('btnStart').addEventListener('click',startGame);
+document.getElementById('btnRetry').addEventListener('click',startGame);
+if(location.hash==='#auto'){ setTimeout(startGame,300); }
+</script>
+</body>
+</html>
