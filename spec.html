@@ -724,10 +724,10 @@ footer{
   .tbl td{padding:8px 10px;font-size:12px;}
 
   /* 보스 섹션 */
-  .boss-hero{padding:24px 16px;}
+  .boss-hero{padding:24px 16px;overflow:visible;}
   .boss-icon{position:relative;right:auto;top:auto;transform:none;
-    display:block;text-align:center;margin-bottom:16px;}
-  .boss-icon img{width:72px!important;height:72px!important;}
+    display:block;text-align:center;margin-bottom:16px;animation:none!important;}
+  .boss-icon img{width:88px!important;height:88px!important;}
   .boss-title{font-size:28px;}
   .boss-sub{max-width:100%;font-size:13px;}
   .boss-hero::before{width:160px;height:160px;right:-30px;top:-30px;}
@@ -1368,50 +1368,33 @@ footer{
   <h2 class="sec-title">핵심 시스템</h2>
   <p class="sec-desc">발키리의 생명줄 <strong>가호 게이지</strong>, 전장을 누비며 줍는 <strong>드랍 수집</strong>, <strong>방어 시설 건설</strong>, 그리고 매판 달라지는 <strong>로그라이트 카드 선택</strong>.</p>
 
-  <!-- 밸런스 스펙 -->
+  <!-- 밸런스 디자인 -->
   <div class="glass accent-top accent-teal" style="padding:28px;margin-bottom:12px;">
-    <div class="card-label mb4" style="color:var(--teal)">BALANCE SPEC — v2.0 현재 구현 수치</div>
-    <div class="card-title mb4">핵심 수치 기준표</div>
-    <div class="card-sub mb16">수문 MAX HP = <strong>1,500</strong>. 모든 피해 · 회복 수치는 이 기준.</div>
+    <div class="card-label mb4" style="color:var(--teal)">BALANCE DESIGN — 수치 설계 의도</div>
+    <div class="card-title mb4">밸런스 설계 철학</div>
+    <div class="card-sub mb16">"<strong>조작은 단순하지만, 위치 선택이 승패를 가른다</strong>"를 핵심으로 설계했습니다.</div>
 
     <div class="g12r mb12">
       <div class="gs4 glass" style="padding:18px;">
         <div class="card-label mb10" style="color:var(--amber);font-size:10px;">⚔️ 발키리 전투</div>
-        <table class="tbl">
-          <tbody>
-            <tr><td><strong>검 투척 기본 피해</strong></td><td>22 / 발</td></tr>
-            <tr><td><strong>발사 주기</strong></td><td>0.65초 (~1.54회/초)</td></tr>
-            <tr><td><strong>기본 DPS</strong></td><td>~34 HP / 초</td></tr>
-            <tr><td><strong>공격 사거리</strong></td><td>중거리 (화면의 약 1/6)</td></tr>
-            <tr><td><strong>이동 속도</strong></td><td>220 px/s</td></tr>
-            <tr><td><strong>충격파 피해</strong></td><td>90 (반경 220px)</td></tr>
-            <tr><td><strong>충격파 쿨</strong></td><td>18초</td></tr>
-            <tr><td><strong>바람 질주 쿨</strong></td><td>3초</td></tr>
-          </tbody>
-        </table>
+        <div class="card-body">
+          <strong>자동 공격</strong> — 검 투척은 자동이므로 플레이어는 <em>어디에 서느냐</em>만 결정합니다. "조작 스킬"이 아닌 "전략적 위치 선정"이 핵심.<br><br>
+          <strong>두 가지 긴급 스킬</strong> — 바람 질주(짧은 쿨, 회피용)와 충격파(긴 쿨, 위기 탈출용)로 긴장감 있는 리듬을 만듭니다. 두 스킬의 쿨타임이 독립이라 연속 사용 콤보가 가능합니다.
+        </div>
       </div>
       <div class="gs4 glass" style="padding:18px;">
-        <div class="card-label mb10" style="color:var(--cyan);font-size:10px;">🏰 수문 수치</div>
-        <table class="tbl">
-          <tbody>
-            <tr><td><strong>MAX HP</strong></td><td>1,500</td></tr>
-            <tr><td><strong>가호 고갈 피해</strong></td><td style="color:var(--coral);">-2%/초 (수문 최대 HP 기준)</td></tr>
-            <tr><td><strong>미응전 패널티</strong></td><td style="color:var(--coral);">-10%</td></tr>
-          </tbody>
-        </table>
+        <div class="card-label mb10" style="color:var(--cyan);font-size:10px;">🏰 수문 방어</div>
+        <div class="card-body">
+          <strong>수문은 넉넉하지만 방치하면 급격히 무너집니다.</strong> 가호 게이지가 0%가 되면 수문 HP가 빠르게 줄어 위기감을 조성합니다.<br><br>
+          <strong>보주 수집이 핵심 루프</strong> — 적을 처치하고 보주를 주워 가호를 유지하는 것이 게임의 기본 흐름입니다. 보주를 놓치면 수문이 위험해지는 긴장 구조.
+        </div>
       </div>
       <div class="gs4 glass" style="padding:18px;">
-        <div class="card-label mb10" style="color:var(--violet);font-size:10px;">🏹 방어 시설 (현재 Lv.1)</div>
-        <table class="tbl">
-          <tbody>
-            <tr><td><strong>석궁 포탑</strong></td><td>빠른 연사로 가까운 적을 빠르게 처리</td></tr>
-            <tr><td><strong>마법 발리스타</strong></td><td>느리지만 강력한 한 방, 관통 효과</td></tr>
-            <tr><td><strong>번개 마법진</strong></td><td>범위 전기 공격, 다수의 적 동시 타격</td></tr>
-            <tr><td><strong>성수 제단</strong></td><td>가호 +8 / 3.0s</td></tr>
-            <tr><td><strong>수호 결계</strong></td><td>수문 +15 / 4.0s</td></tr>
-            <tr><td><strong>서리 정령</strong></td><td>감속 -25% / 5.0s / 300 range</td></tr>
-          </tbody>
-        </table>
+        <div class="card-label mb10" style="color:var(--violet);font-size:10px;">🏹 방어 시설</div>
+        <div class="card-body">
+          <strong>공격형 3종</strong> — 석궁(연사), 발리스타(고위력 관통), 번개(범위)로 역할이 구분됩니다. 배치 조합에 따라 전략이 달라집니다.<br><br>
+          <strong>보조형 3종</strong> — 성수 제단(가호 회복), 수호 결계(수문 회복), 서리 정령(적 감속)으로 방어 라인을 구축합니다. 공격형과 보조형을 섞는 것이 핵심.
+        </div>
       </div>
     </div>
   </div>
@@ -1660,19 +1643,19 @@ footer{
         <table class="tbl">
           <tbody>
             <tr><td><strong>HP</strong></td><td>1,200</td></tr>
-            <tr><td><strong>히트박스</strong></td><td>70px (원형)</td></tr>
-            <tr><td><strong>수문 접촉 피해</strong></td><td style="color:var(--coral);">200</td></tr>
-            <tr><td><strong>이동 방식</strong></td><td>웨이포인트 + 이징 보간</td></tr>
-            <tr><td><strong>Phase 1</strong></td><td>HP 100~60% — 8자 순회</td></tr>
-            <tr><td><strong>Phase 2</strong></td><td>HP 60~30% — 플레이어 추적 40%</td></tr>
-            <tr><td><strong>Phase 3</strong></td><td>HP 30% 이하 — 위협 다이브 + 오버헤드</td></tr>
+            <tr><td><strong>크기</strong></td><td>대형 (일반 적의 약 2배)</td></tr>
+            <tr><td><strong>수문 접촉 피해</strong></td><td style="color:var(--coral);">매우 높음</td></tr>
+            <tr><td><strong>이동 방식</strong></td><td>정해진 경로를 따라 부드럽게 이동</td></tr>
+            <tr><td><strong>1단계</strong></td><td>HP 100~60% — 8자 패턴으로 순회</td></tr>
+            <tr><td><strong>2단계</strong></td><td>HP 60~30% — 가끔 플레이어를 추적</td></tr>
+            <tr><td><strong>3단계</strong></td><td>HP 30% 이하 — 수문 근처로 돌진</td></tr>
             <tr><td><strong>궁극기</strong></td><td>HP 25% 이하 1회 — 전방위 공격</td></tr>
           </tbody>
         </table>
       </div>
       <div class="callout danger">
         <div class="callout-l">3페이즈 경고</div>
-        <div class="callout-b">HP 30% 이하에서 보스가 <strong>위협 다이브</strong>(y=320)로 수문에 가까이 접근. 투사체 수 증가, 잉크 2개 동시 설치. 방어 시설 없이는 생존 어려움.</div>
+        <div class="callout-b">HP 30% 이하에서 보스가 <strong>위협 다이브</strong>로 수문 가까이 접근. 투사체 수 증가, 잉크 2개 동시 설치. 방어 시설 없이는 생존 어려움.</div>
       </div>
     </div>
   </div>
