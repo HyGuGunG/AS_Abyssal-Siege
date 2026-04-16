@@ -128,7 +128,7 @@
     box-shadow:0 0 10px rgba(255,77,109,.8),0 0 20px rgba(180,0,60,.4)}
   @keyframes bpGlow{0%{opacity:.8;transform:translate(-50%,-50%) scale(.9)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}}
   /* 보스 HUD HP 바 */
-  #bossHpBar{position:absolute;top:8px;right:14px;width:240px;z-index:10;text-align:center;
+  #bossHpBar{position:absolute;top:var(--crop-top,10px);right:14px;width:240px;z-index:10;text-align:center;
     background:rgba(5,18,34,.88);border:1px solid rgba(157,123,255,.5);border-radius:8px;padding:5px 10px;
     box-shadow:0 3px 14px rgba(157,123,255,.3);backdrop-filter:blur(4px)}
   #bossHpBar.hidden{display:none}
@@ -706,7 +706,7 @@
   #hudControls{opacity:1;transition:opacity .3s cubic-bezier(.2,.8,.2,1)}
   #hudControls.auto-dim{opacity:0;pointer-events:none}
   /* v1.0.2: 전투 기록 좌측 중단 고정 (right 제거, position 명시) */
-  #hudBattle{position:absolute;top:10px;left:14px;right:auto;min-width:200px;max-width:260px;padding:6px 10px;font-size:11px;pointer-events:none;z-index:5;
+  #hudBattle{position:absolute;top:var(--crop-top,10px);left:14px;right:auto;min-width:200px;max-width:260px;padding:6px 10px;font-size:11px;pointer-events:none;z-index:5;
     background:rgba(5,18,34,.5);border:1px solid rgba(0,229,255,.1);border-radius:8px;backdrop-filter:blur(4px)}
   #hudBattle .bt-label{font-size:9px;color:var(--cyan);letter-spacing:.18em;font-weight:900;text-shadow:0 0 5px var(--cyan);margin-bottom:3px}
   #hudBattle .bt-line{color:#d4e8ff;font-weight:600;padding:2px 0;font-size:10px;opacity:1;transition:opacity .5s cubic-bezier(.2,.8,.2,1);line-height:1.4}
@@ -1568,21 +1568,26 @@ function screenFade(cb,dur=400){
   }, dur);
 }
 
-// 뷰포트 피트 — 모바일 가로 시 화면 가로 채우기 (하단 고정, 상단 잘림)
+// 뷰포트 피트 — 항상 가로 폭 기준 스케일링 (좌우 검은 영역 제거)
 function fitStage(){
   const vw=window.innerWidth, vh=window.innerHeight;
   const sW=vw/1280, sH=vh/720;
-  const isWide=(vw>vh)&&(vw/vh>1.82); // 16:9(1.78)보다 넓은 화면
+  const isLandscape=(vw>vh);
   const isMobilePortrait=(vw<vh)&&(vw<=768); // 모바일 세로 모드
   let s, cropTop=0;
-  if(isWide){
-    // 가로 채우기, 최대 상단 100px 게임좌표 잘림 허용
-    const sMax=vh/(720-100);
-    s=Math.min(sW, sMax);
+  if(isLandscape){
+    // 가로 모드: 항상 화면 가로 폭 꽉 채우기 (좌우 검은 영역 제거)
+    // 넘치는 높이는 상단에서 잘림 (하단 수문/스킬바 항상 보임)
+    s=sW;
     const renderedH=720*s;
     const overflowPx=Math.max(0, renderedH-vh);
     cropTop=Math.ceil(overflowPx/s);
-    document.body.classList.add('wide-mode');
+    // 모바일 사이즈(화면 높이 600px 미만)에서 overflow 시 wide-mode UI 적용
+    if(overflowPx>0 && vh<600){
+      document.body.classList.add('wide-mode');
+    } else {
+      document.body.classList.remove('wide-mode');
+    }
     document.body.classList.remove('portrait-mode');
   } else if(isMobilePortrait){
     // 모바일 세로: 가로 폭에 맞추고 하단에 표시 (상단은 잘림)
@@ -1981,7 +1986,7 @@ function updateBossProjectiles(dt){
     if(bp.el){bp.el.style.left=bp.x+'px';bp.el.style.top=bp.y+'px';}
     // 발키리 충돌
     if(Math.hypot(bp.x-player.x,bp.y-player.y)<bp.r+player.r-4 && player.invul<=0){
-      state.gauge=Math.max(0,state.gauge-bp.dmg);
+      damagePlayer(bp.dmg);
       player.invul=0.4;
       spawnPlayerDamageNumber(player.x,player.y-40,bp.dmg);
       playerEl.classList.add('hit');
@@ -2892,7 +2897,7 @@ function killEnemy(e){
       playSound('explode');
       // 발키리 피해 (원형 판정)
       if(Math.hypot(player.x-bx,player.y-by)<R && player.invul<=0){
-        state.gauge=Math.max(0,state.gauge-18);
+        damagePlayer(18);
         player.invul=0.5;
         spawnPlayerDamageNumber(player.x,player.y-40,18);
       }
@@ -3213,6 +3218,17 @@ function renderGateCracks(){
         life:.7, size:1.5+Math.random()*2, color:'rgba(255,200,50,'
       });
     }
+  }
+}
+
+// 발키리 피격 공통 처리 — 가호 0 시 수문 HP 직접 감소
+function damagePlayer(dmg){
+  if(state.gauge>0){
+    state.gauge=Math.max(0,state.gauge-dmg);
+  } else {
+    // 가호가 없으면 수문에 직접 피해
+    state.gateHp=Math.max(0,state.gateHp-dmg);
+    spawnDmgNum(W/2,H-130,'-'+dmg,'gate');
   }
 }
 
@@ -3701,7 +3717,7 @@ function update(dt){
         setTimeout(()=>{
           if(warn.parentNode) warn.parentNode.removeChild(warn);
           if(Math.hypot(player.x-tx,player.y-ty)<slamR && player.invul<=0){
-            state.gauge=Math.max(0,state.gauge-18);
+            damagePlayer(18);
             player.invul=0.6;
             spawnPlayerDamageNumber(player.x,player.y-40,18);
           }
@@ -3856,7 +3872,7 @@ function update(dt){
     }
     const pd=Math.hypot(e.x-player.x,e.y-player.y);
     if(pd < e.r+player.r-8 && player.invul<=0){
-      state.gauge=Math.max(0,state.gauge-12);
+      damagePlayer(12);
       player.invul=0.5;
       const nx=(player.x-e.x)/Math.max(1,pd), ny=(player.y-e.y)/Math.max(1,pd);
       player.x+=nx*30; player.y+=ny*30;
