@@ -1656,7 +1656,7 @@ const CARD_POOL=[
     stats:[{icon:'\uD83D\uDCD0',label:'사거리',val:'+25%'}],                     maxStack:3, apply:()=>{ player.attackRange*=1.25 }},
   {id:'light_armor',    name:'경량 갑주',      rarity:'일반', kind:'hero', icon:'👢', desc:'이동속도 증가',
     stats:[{icon:'\uD83C\uDFC3',label:'이동속도',val:'+15%'}],                  maxStack:4, apply:()=>{ player.speed*=1.15 }},
-  {id:'valkyrie_heart', name:'발키리의 심장',   rarity:'일반', kind:'hero', icon:'💖', desc:'가호 게이지 최대치 증가',
+  {id:'valkyrie_heart', name:'발키리의 심장',   rarity:'일반', kind:'hero', icon:'✨', desc:'가호 게이지 최대치 증가',
     stats:[{icon:'\uD83D\uDC96',label:'가호',val:'+20'},{icon:'\u2764',label:'즉시 회복',val:'+20'}],   maxStack:3, apply:()=>{ state.gaugeMax+=20; state.gauge=Math.min(state.gaugeMax,state.gauge+20) }},
   {id:'wind_blessing',  name:'바람의 가호',    rarity:'일반', kind:'hero', icon:'🌪️', desc:'질주 쿨타임 감소',
     stats:[{icon:'\uD83C\uDF2A',label:'쿨타임',val:'-1s'}], maxStack:2, apply:()=>{ skills.Q.max=Math.max(1,skills.Q.max-1) }},
