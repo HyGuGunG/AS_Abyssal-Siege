@@ -343,9 +343,9 @@ body{
 /* ═══════════════════════════════════════
    WAVE CARDS
 ═══════════════════════════════════════ */
-.wave-row{display:flex;gap:10px;margin-top:4px;}
+.wave-row{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;}
 .wc{
-  flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  flex:1;min-width:120px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
   border-radius:14px;padding:16px 14px;text-align:center;
   transition:border-color .2s,transform .2s;position:relative;overflow:hidden;
 }
@@ -405,40 +405,6 @@ body{
   transition:border-color .2s,transform .2s;
 }
 .sv:hover{transform:translateY(-3px);}
-.sv::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:14px 14px 0 0;}
-.sv-melee::before{background:var(--coral);}
-.sv-ranged::before{background:var(--cyan);}
-.sv-medic::before{background:var(--teal);}
-.sv-scout::before{background:var(--amber);}
-.sv-melee:hover{border-color:rgba(255,94,91,.3);}
-.sv-ranged:hover{border-color:rgba(0,229,255,.3);}
-.sv-medic:hover{border-color:rgba(0,201,167,.3);}
-.sv-scout:hover{border-color:rgba(255,184,48,.3);}
-.sv-icon{font-size:28px;margin-bottom:10px;}
-.sv-name{font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;margin-bottom:3px;}
-.sv-rarity{font-family:'Noto Sans KR',sans-serif;font-size:11.5px;font-weight:700;
-  letter-spacing:.02em;margin-bottom:10px;}
-.sv-desc{font-size:12px;color:var(--muted);line-height:1.6;}
-.sv-badge{
-  display:inline-block;margin-top:10px;padding:5px 12px;border-radius:6px;
-  font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;
-}
-
-/* ═══════════════════════════════════════
-   BUFF SYSTEM
-═══════════════════════════════════════ */
-.buff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-.bf{
-  background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);
-  border-radius:14px;padding:16px;
-  transition:border-color .2s,transform .2s;
-}
-.bf:hover{border-color:rgba(123,111,240,.3);transform:translateY(-3px);
-  background:rgba(123,111,240,.04);}
-.bf-icon{font-size:22px;margin-bottom:8px;}
-.bf-name{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;}
-.bf-desc{font-size:12px;color:var(--muted);line-height:1.55;}
-.bf-type{font-family:'Noto Sans KR',sans-serif;font-size:11.5px;font-weight:700;color:#b0a8ff;margin-top:8px;}
 
 /* ═══════════════════════════════════════
    BOSS SECTION
@@ -525,8 +491,6 @@ body{
 .r-title{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;
   color:var(--teal);margin-bottom:12px;letter-spacing:-.02em;}
 .result.fail .r-title{color:var(--coral);}
-.r-score{font-family:'Outfit',sans-serif;font-size:28px;font-weight:900;
-  color:var(--cyan);margin:10px 0;letter-spacing:-.03em;}
 .r-sep{border:none;border-top:1px solid rgba(255,255,255,.06);margin:10px 0;}
 
 /* ═══════════════════════════════════════
@@ -545,7 +509,7 @@ body{
 .trig:not(:last-child){border-right:none;}
 .trig:hover{background:rgba(0,229,255,.04);border-color:rgba(0,229,255,.2);}
 .trig::after{
-  content:'›';position:absolute;right:-14px;top:50%;transform:translateY(-50%);
+  content:'>';position:absolute;right:-14px;top:50%;transform:translateY(-50%);
   z-index:2;font-size:16px;color:var(--cyan);opacity:.4;
   background:rgba(4,8,15,.8);padding:4px 2px;border-radius:50%;
 }
@@ -580,6 +544,25 @@ body{
 .b-coral{background:rgba(255,94,91,.14);border:1px solid rgba(255,94,91,.4);color:#ff8a87;}
 
 /* ═══════════════════════════════════════
+   UPCOMING FEATURE BADGE
+═══════════════════════════════════════ */
+.badge-upcoming{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:8px;
+  font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:800;
+  letter-spacing:.04em;line-height:1;
+  background:linear-gradient(135deg,rgba(255,184,48,.2),rgba(255,94,91,.15));
+  border:2px solid rgba(255,184,48,.5);
+  color:#ffd86b;
+  box-shadow:0 0 16px rgba(255,184,48,.2);
+  animation:upcomingPulse 2s ease-in-out infinite;
+}
+@keyframes upcomingPulse{
+  0%,100%{box-shadow:0 0 16px rgba(255,184,48,.2)}
+  50%{box-shadow:0 0 24px rgba(255,184,48,.35)}
+}
+
+/* ═══════════════════════════════════════
    MISC UTILITY
 ═══════════════════════════════════════ */
 .mt8{margin-top:8px;} .mt12{margin-top:12px;} .mt16{margin-top:16px;} .mt24{margin-top:24px;}
@@ -590,23 +573,6 @@ body{
 .gs3{grid-column:span 3;} .gs4{grid-column:span 4;} .gs5{grid-column:span 5;} .gs6{grid-column:span 6;}
 .gs7{grid-column:span 7;} .gs8{grid-column:span 8;} .gs12{grid-column:span 12;}
 
-.two-col-score{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-
-footer{
-  position:relative;z-index:1;
-  border-top:1px solid rgba(255,255,255,.05);
-  padding:28px;text-align:center;
-  font-family:'JetBrains Mono',monospace;font-size:9.5px;
-  color:var(--muted);letter-spacing:.06em;
-}
-@keyframes itemPulse{
-  0%,100%{transform:scale(1);opacity:.9;}
-  50%{transform:scale(1.18);opacity:1;}
-}
-
-/* ═══════════════════════════════════════
-   DEFENSE STRUCTURE CARDS
-═══════════════════════════════════════ */
 .ds-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
 .ds{
   background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);
@@ -620,7 +586,6 @@ footer{
 .ds-desc{font-size:12px;color:var(--muted);line-height:1.55;}
 .ds-type{font-family:'Noto Sans KR',sans-serif;font-size:11.5px;font-weight:700;color:var(--amber);margin-top:8px;}
 
-/* OXYGEN SYSTEM */
 .oxy-bar{
   display:flex;align-items:center;gap:10px;
   background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.12);
@@ -635,14 +600,51 @@ footer{
   background:linear-gradient(90deg,#00c9a7,#00e5ff);
   box-shadow:0 0 10px rgba(0,229,255,.6);
 }
+
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid rgba(255,255,255,.05);
+  padding:28px;text-align:center;
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  color:var(--muted);letter-spacing:.06em;
+}
+
+/* ═══════════════════════════════════════
+   SCREENSHOT CAROUSEL
+═══════════════════════════════════════ */
+.carousel-wrap{position:relative;width:100%;overflow:hidden;border-radius:12px;border:1px solid rgba(0,229,255,.25);background:#000;}
+.carousel-track{display:flex;transition:transform .4s cubic-bezier(.25,.8,.25,1);will-change:transform;}
+.carousel-track img{width:100%;height:auto;flex-shrink:0;display:block;object-fit:contain;cursor:grab;}
+.carousel-track img:active{cursor:grabbing;}
+.carousel-btn{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:5;
+  width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(0,0,0,.55);color:#fff;font-size:20px;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(6px);transition:background .15s;
+}
+.carousel-btn:hover{background:rgba(0,229,255,.35);}
+.carousel-btn.prev{left:10px;}
+.carousel-btn.next{right:10px;}
+.carousel-dots{display:flex;justify-content:center;gap:8px;margin-top:10px;}
+.carousel-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.15);
+  cursor:pointer;transition:background .2s,border-color .2s;
+}
+.carousel-dot.active{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 8px rgba(0,229,255,.5);}
+.carousel-label{
+  text-align:center;margin-top:6px;
+  font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--muted);font-weight:500;
+}
 </style>
 </head>
 <body>
 <div class="float-cta">
-  <a href="abyssal-siege.zip" download class="dl-btn">
+  <a href="abyssal-siege.zip" class="dl-btn" download>
     <span class="dl-icon">📦</span>
-    <span>게임 다운로드</span>
-    <span class="dl-size">3.4MB</span>
+    <span>ZIP 다운로드</span>
+    <span class="dl-size">오프라인 플레이</span>
   </a>
   <a href="index.html" class="dl-btn play">
     <span class="dl-icon">🎮</span>
@@ -667,23 +669,23 @@ footer{
   <div class="nav-logo">
     <div class="nav-logo-icon">⚔️</div>
     <div>
-      <div class="nav-logo-name">Aqua Survival</div>
+      <div class="nav-logo-name">Abyssal Siege</div>
       <div class="nav-logo-sub">MINIGAME DESIGN DOC</div>
     </div>
   </div>
   <div class="nav-links">
     <a class="nav-link" href="#sec-concept">개요</a>
     <a class="nav-link" href="#sec-trigger">진입방식</a>
+    <a class="nav-link" href="#sec-difficulty">난이도</a>
     <a class="nav-link" href="#sec-gameplay">게임플레이</a>
     <a class="nav-link" href="#sec-enemies">적 구성</a>
     <a class="nav-link" href="#sec-systems">시스템</a>
     <a class="nav-link" href="#sec-boss">보스전</a>
     <a class="nav-link" href="#sec-reward">보상 & 연동</a>
-
   </div>
   <div class="nav-end">
-    <span class="nav-ver">v0.8</span>
-    <div class="nav-status"><div class="nav-dot"></div>2026-04-15</div>
+    <span class="nav-ver">v2.0</span>
+    <div class="nav-status"><div class="nav-dot"></div>2026-04-16</div>
   </div>
 </nav>
 
@@ -704,19 +706,19 @@ footer{
   </p>
   <div class="hero-pills">
     <div class="pill"><div class="pill-dot" style="background:var(--cyan)"></div>방어형 Wave 미니게임</div>
-    <div class="pill"><div class="pill-dot" style="background:var(--violet)"></div>로그라이트 시설 건설</div>
+    <div class="pill"><div class="pill-dot" style="background:var(--violet)"></div>로그라이트 카드 강화</div>
     <div class="pill"><div class="pill-dot" style="background:var(--teal)"></div>가호 게이지 생존 시스템</div>
     <div class="pill"><div class="pill-dot" style="background:var(--coral)"></div>킹샷 반군 시스템 차용</div>
     <div class="pill"><div class="pill-dot" style="background:var(--amber)"></div>본 게임 보상 연동</div>
   </div>
   <div class="hero-kpi">
     <div class="kpi">
-      <div class="kpi-val c-cyan">2~3<span style="font-size:18px;">분</span></div>
+      <div class="kpi-val c-cyan">3~5<span style="font-size:18px;">분</span></div>
       <div class="kpi-label">한 판 완결 세션</div>
     </div>
     <div class="kpi">
-      <div class="kpi-val c-teal" style="font-size:28px;">5<span style="font-size:16px;">Wave</span></div>
-      <div class="kpi-label">4 Wave + 보스 Wave</div>
+      <div class="kpi-val c-teal" style="font-size:28px;">7<span style="font-size:16px;">Wave</span></div>
+      <div class="kpi-label">6 Wave + 보스 Wave</div>
     </div>
     <div class="kpi">
       <div class="kpi-val c-amber">4<span style="font-size:18px;">H</span></div>
@@ -756,35 +758,15 @@ footer{
   <div class="g12r mb24">
     <div class="gs8 glass accent-top accent-cyan" style="padding:28px;">
       <div class="card-label" style="color:var(--cyan)">CONCEPT COMPARISON</div>
-      <div class="card-title mb12">킹샷 vs Aqua Survival</div>
+      <div class="card-title mb12">킹샷 vs Abyssal Siege</div>
       <table class="tbl">
         <thead><tr><th>항목</th><th>킹샷 반군</th><th>우리 심해 습격</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>트리거</strong></td>
-            <td>일정 시간마다 반군이 쳐들어옴</td>
-            <td><strong>심해 생물이 성을 습격</strong></td>
-          </tr>
-          <tr>
-            <td><strong>방어 목표</strong></td>
-            <td>마을 (왕궁) 수호</td>
-            <td><strong>수문</strong> — 왕국의 심장 수호</td>
-          </tr>
-          <tr>
-            <td><strong>플레이 방식</strong></td>
-            <td>병사 배치 (간접 조작)</td>
-            <td><strong>발키리 직접 조작</strong> + 방어 시설 자동 방어</td>
-          </tr>
-          <tr>
-            <td><strong>광고 소재</strong></td>
-            <td>반군이 몰려오는 방어전 장면</td>
-            <td><strong>해양 크라켄이 왕국 수문으로 돌진</strong>하는 장면</td>
-          </tr>
-          <tr>
-            <td><strong>세계관 연결</strong></td>
-            <td>판타지 반란군 (장르 클리셰)</td>
-            <td><strong>홍수 세계 심해 괴수</strong> — 기획서 설정과 직결</td>
-          </tr>
+          <tr><td><strong>트리거</strong></td><td>일정 시간마다 반군이 쳐들어옴</td><td><strong>심해 생물이 성을 습격</strong></td></tr>
+          <tr><td><strong>방어 목표</strong></td><td>마을 (왕궁) 수호</td><td><strong>수문</strong> — 왕국의 심장 수호</td></tr>
+          <tr><td><strong>플레이 방식</strong></td><td>병사 배치 (간접 조작)</td><td><strong>발키리 직접 조작</strong> + 방어 시설 자동 방어</td></tr>
+          <tr><td><strong>광고 소재</strong></td><td>반군이 몰려오는 방어전 장면</td><td><strong>해양 크라켄이 왕국 수문으로 돌진</strong>하는 장면</td></tr>
+          <tr><td><strong>세계관 연결</strong></td><td>판타지 반란군 (장르 클리셰)</td><td><strong>홍수 세계 심해 괴수</strong> — 기획서 설정과 직결</td></tr>
         </tbody>
       </table>
     </div>
@@ -794,34 +776,22 @@ footer{
       <div class="flow">
         <div class="flow-item">
           <div class="flow-node fn-c">1</div>
-          <div class="flow-text">
-            <div class="t">세계관 직결</div>
-            <div class="d">기획서에 이미 존재하는 "심해 괴수 성 출몰" 설정 활용</div>
-          </div>
+          <div class="flow-text"><div class="t">세계관 직결</div><div class="d">기획서에 이미 존재하는 "심해 괴수 성 출몰" 설정 활용</div></div>
         </div>
         <div class="flow-connector"></div>
         <div class="flow-item">
           <div class="flow-node fn-t">2</div>
-          <div class="flow-text">
-            <div class="t">직접 조작의 타격감</div>
-            <div class="d">내가 직접 뛰어다니며 막는 능동적 방어전</div>
-          </div>
+          <div class="flow-text"><div class="t">직접 조작의 타격감</div><div class="d">내가 직접 뛰어다니며 막는 능동적 방어전</div></div>
         </div>
         <div class="flow-connector"></div>
         <div class="flow-item">
           <div class="flow-node fn-v">3</div>
-          <div class="flow-text">
-            <div class="t">매판 다른 경험</div>
-            <div class="d">방어 시설 조합이 달라 재도전 동기 생성</div>
-          </div>
+          <div class="flow-text"><div class="t">매판 다른 경험</div><div class="d">로그라이트 카드 선택으로 매판 다른 빌드</div></div>
         </div>
         <div class="flow-connector"></div>
         <div class="flow-item">
           <div class="flow-node fn-a">4</div>
-          <div class="flow-text">
-            <div class="t">본 게임과 연결</div>
-            <div class="d">수문 레벨 연동·보상 연결로 플레이 가치 부여</div>
-          </div>
+          <div class="flow-text"><div class="t">본 게임과 연결</div><div class="d">수문 레벨 연동 · 보상 연결로 플레이 가치 부여</div></div>
         </div>
       </div>
     </div>
@@ -847,24 +817,19 @@ footer{
         <div class="trig-desc">수문 방어전<br>시작</div>
       </div>
       <div class="trig">
-        <span class="trig-icon" style="display:inline-block;">
-          <svg viewBox="0 0 56 32" style="width:40px;height:24px;filter:drop-shadow(0 0 6px rgba(0,229,255,.7));vertical-align:middle;">
-            <path d="M4,16 Q14,5 34,9 L50,3 L46,16 L50,29 L34,23 Q14,27 4,16 Z" fill="rgba(0,229,255,.25)" stroke="#00e5ff" stroke-width="1.5" stroke-linejoin="round"/>
-            <circle cx="38" cy="14" r="1.6" fill="#00e5ff"/>
-          </svg>
-        </span>
-        <div class="trig-name">Wave 1~4 요격</div>
+        <span class="trig-icon">🌊</span>
+        <div class="trig-name">Wave 1~6 요격</div>
         <div class="trig-desc">아이템 수집<br>방어 시설 건설</div>
       </div>
       <div class="trig">
         <span class="trig-icon">🐙</span>
         <div class="trig-name">보스 Wave</div>
-        <div class="trig-desc">해양 크라켄<br>3패턴 + 2페이즈</div>
+        <div class="trig-desc">해양 크라켄<br>5패턴 + 3페이즈</div>
       </div>
       <div class="trig">
         <span class="trig-icon">🏆</span>
         <div class="trig-name">보상 획득</div>
-        <div class="trig-desc">식량·수리 재료<br>본 게임 자원 연동</div>
+        <div class="trig-desc">식량 · 수리 재료<br>본 게임 자원 연동</div>
       </div>
     </div>
   </div>
@@ -937,20 +902,70 @@ footer{
           </tbody>
         </table>
       </div>
-      <div class="glass accent-top accent-violet" style="padding:22px;">
-        <div class="card-label mb10" style="color:var(--violet)">DIFFICULTY SCALE</div>
+    </div>
+  </div>
+</div>
+
+<div class="sec-sep"></div>
+
+<!-- ═══════════════════════════════
+  02-B DIFFICULTY
+═══════════════════════════════ -->
+<div class="section" id="sec-difficulty">
+  <div class="sec-label">
+    <span class="sec-num">02-B — DIFFICULTY</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="sec-title">난이도 시스템</h2>
+  <p class="sec-desc">본 게임(Grand Cross) 내 <strong>성 레벨</strong>에 따라 심해 습격의 난이도가 동적으로 조정됩니다.<br>높은 성 레벨일수록 더 강한 적이 등장하지만, 보상도 비례해서 증가합니다.</p>
+
+  <div class="g12r mb16" style="margin-top:20px;">
+    <div class="gs6">
+      <div class="glass accent-top accent-cyan" style="padding:24px;">
+        <div class="card-label mb8" style="color:var(--cyan);font-size:10px;">성 레벨 → 난이도 매핑</div>
         <table class="tbl">
-          <thead><tr><th>수문 레벨</th><th>Wave당 적 수</th><th>보스 HP</th><th>최대 슬롯</th></tr></thead>
+          <thead><tr><th>성 레벨</th><th>난이도</th><th>적 HP 배율</th><th>적 피해 배율</th></tr></thead>
           <tbody>
-            <tr><td><strong>Lv. 1~5</strong></td><td>약 8마리</td><td>500 (100%)</td><td style="color:var(--amber);">3슬롯</td></tr>
-            <tr><td><strong>Lv. 6~10</strong></td><td>약 10마리 (+20%)</td><td>650 (130%)</td><td style="color:var(--amber);">4슬롯</td></tr>
-            <tr><td><strong>Lv. 11~15</strong></td><td>약 11마리 (+40%)</td><td>850 (170%)</td><td style="color:var(--teal);">5슬롯 (Max)</td></tr>
-            <tr><td><strong>Lv. 16+</strong></td><td>약 13마리 (+60%)</td><td>1,100 (220%)</td><td style="color:var(--teal);">5슬롯 (Max)</td></tr>
+            <tr><td>1 ~ 5</td><td><span class="badge b-teal">쉬움</span></td><td>×1.0</td><td>×1.0</td></tr>
+            <tr><td>6 ~ 10</td><td><span class="badge b-cyan">보통</span></td><td>×1.3</td><td>×1.15</td></tr>
+            <tr><td>11 ~ 15</td><td><span class="badge b-amber">어려움</span></td><td>×1.6</td><td>×1.3</td></tr>
+            <tr><td>16 ~ 20</td><td><span class="badge b-coral">매우 어려움</span></td><td>×2.0</td><td>×1.5</td></tr>
+            <tr><td>21+</td><td><span class="badge b-violet">지옥</span></td><td>×2.5</td><td>×1.8</td></tr>
           </tbody>
         </table>
-        <div style="font-size:11px;color:var(--coral);margin-top:8px;">※ 해당 밸런스는 임시입니다.</div>
       </div>
     </div>
+    <div class="gs6">
+      <div class="glass accent-top accent-amber" style="padding:24px;">
+        <div class="card-label mb8" style="color:var(--amber);font-size:10px;">Wave별 추가 스케일링</div>
+        <table class="tbl">
+          <thead><tr><th>항목</th><th>Wave당 증가율</th><th>적용 대상</th></tr></thead>
+          <tbody>
+            <tr><td><strong>적 HP</strong></td><td>+12% / Wave</td><td>일반 몬스터</td></tr>
+            <tr><td><strong>적 피해</strong></td><td>+8% / Wave</td><td>일반 몬스터</td></tr>
+            <tr><td><strong>보스</strong></td><td>스케일링 없음</td><td>고정 스탯 (HP 1200)</td></tr>
+          </tbody>
+        </table>
+        <div class="callout mt12">
+          <div class="callout-l">난이도 공식</div>
+          <div class="callout-b">최종 스탯 = <strong>기본값 × 성 레벨 배율 × (1 + Wave 스케일링)</strong><br>보스는 성 레벨 배율만 적용, Wave 스케일링 미적용.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass" style="padding:20px;">
+    <div class="card-label mb8" style="color:var(--muted);font-size:10px;">난이도별 보상 배율</div>
+    <table class="tbl">
+      <thead><tr><th>난이도</th><th>자원 드랍량</th><th>완료 보상</th><th>랭크 점수 배율</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge b-teal">쉬움</span></td><td>×1.0</td><td>기본</td><td>×1.0</td></tr>
+        <tr><td><span class="badge b-cyan">보통</span></td><td>×1.2</td><td>기본 + 추가 자원</td><td>×1.3</td></tr>
+        <tr><td><span class="badge b-amber">어려움</span></td><td>×1.5</td><td>기본 + 희귀 자원</td><td>×1.6</td></tr>
+        <tr><td><span class="badge b-coral">매우 어려움</span></td><td>×1.8</td><td>기본 + 에픽 자원</td><td>×2.0</td></tr>
+        <tr><td><span class="badge b-violet">지옥</span></td><td>×2.2</td><td>기본 + 에픽 자원 + 특수 보상</td><td>×2.5</td></tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -965,425 +980,139 @@ footer{
     <div class="sec-line"></div>
   </div>
   <h2 class="sec-title">게임플레이</h2>
-  <p class="sec-desc"><strong>수문이 화면 하단 중앙에 고정</strong>, 위·옆 사방에서 물고기가 수문을 향해 쏟아진다.<br>
+  <p class="sec-desc"><strong>수문이 화면 하단 중앙에 고정</strong>, 위 · 옆 사방에서 물고기가 수문을 향해 쏟아진다.<br>
   플레이어는 그 사이를 뛰어다니며 막는다.</p>
 
   <div class="g12r mb12">
+    <!-- 게임 스크린샷 캐러셀 -->
     <div class="gs6 glass accent-top accent-cyan" style="padding:28px;">
-      <div class="card-label mb12" style="color:var(--cyan)">SCREEN LAYOUT</div>
-      <!-- ══ 게임 화면 목업 ══ -->
-      <div style="position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;
-        border:1px solid rgba(0,229,255,.25);
-        background:radial-gradient(ellipse at 50% 40%,#042038 0%,#010c18 55%,#000a14 100%);
-        box-shadow:0 0 40px rgba(0,229,255,.07),inset 0 0 80px rgba(0,20,50,.9);">
-
-        <!-- 수중 환경 레이어 -->
-        <div style="position:absolute;inset:0;pointer-events:none;
-          background:radial-gradient(ellipse at 50% 50%,rgba(0,100,160,.18) 0%,transparent 65%),
-                      radial-gradient(ellipse at 85% 85%,rgba(0,40,100,.15) 0%,transparent 50%);"></div>
-        <!-- 스캔라인 -->
-        <div style="position:absolute;inset:0;pointer-events:none;z-index:30;
-          background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.05) 3px,rgba(0,0,0,.05) 4px);"></div>
-
-        <!-- ── 상단 HUD ── -->
-        <div style="position:absolute;top:0;left:0;right:0;height:38px;z-index:20;
-          background:rgba(0,4,12,.75);border-bottom:1px solid rgba(0,229,255,.12);
-          backdrop-filter:blur(10px);display:flex;align-items:center;padding:0 14px;gap:14px;">
-          <!-- 수문 HP -->
-          <div style="display:flex;align-items:center;gap:7px;flex:1;">
-            <span style="font-family:'Noto Sans KR',sans-serif;font-size:10px;font-weight:700;color:var(--cyan);white-space:nowrap;">수문 HP</span>
-            <div style="flex:1;max-width:140px;height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;border:1px solid rgba(0,229,255,.15);">
-              <div style="width:72%;height:100%;background:linear-gradient(90deg,#00c9a7,#00e5ff);border-radius:4px;box-shadow:0 0 8px rgba(0,229,255,.6);"></div>
-            </div>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--cyan);">72%</span>
-          </div>
-          <!-- Wave -->
-          <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;letter-spacing:-.02em;">
-            <span style="color:rgba(255,255,255,.35);font-size:9px;font-weight:500;">WAVE</span>
-            <span style="color:#fff;margin-left:3px;">3</span><span style="color:rgba(255,255,255,.3);">/5</span>
-          </div>
-          <!-- 타이머 -->
-          <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--amber);font-weight:700;">⏱ 01:42</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);">KILL 17</div>
+      <div class="card-label mb12" style="color:var(--cyan)">SCREEN LAYOUT — 실제 게임 화면</div>
+      <div class="carousel-wrap" id="gameCarousel">
+        <div class="carousel-track" id="carouselTrack">
+          <img src="AS_Assets/screenshots/ss_title.png" alt="타이틀 화면" draggable="false">
+          <img src="AS_Assets/screenshots/ss_gameplay.png" alt="게임플레이" draggable="false">
+          <img src="AS_Assets/screenshots/ss_carddraft.png" alt="카드 드래프트" draggable="false">
+          <img src="AS_Assets/screenshots/ss_boss.png" alt="보스전" draggable="false">
+          <img src="AS_Assets/screenshots/ss_result.png" alt="결과 화면" draggable="false">
         </div>
-
-        <!-- ── 게임 필드 ── -->
-        <div style="position:absolute;top:38px;left:0;right:0;bottom:42px;">
-
-          <!-- ── 수문 (하단 바닥 고정 — HUD 바로 위) ── -->
-          <div style="position:absolute;bottom:2px;left:50%;transform:translateX(-50%);text-align:center;z-index:8;">
-            <!-- 보호 구역 (반투명 반원 — 위쪽만 펼쳐짐) -->
-            <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-              width:110px;height:55px;border-radius:55px 55px 0 0;
-              border:1px dashed rgba(0,229,255,.18);border-bottom:none;
-              box-shadow:0 0 30px rgba(0,229,255,.07),inset 0 0 20px rgba(0,229,255,.04);
-              pointer-events:none;"></div>
-            <div style="position:relative;width:64px;height:64px;margin:0 auto;">
-              <!-- 기본 테두리 -->
-              <div style="position:absolute;inset:0;border-radius:50%;
-                border:2px solid rgba(0,229,255,.3);
-                box-shadow:0 0 24px rgba(0,229,255,.25),inset 0 0 16px rgba(0,229,255,.1);"></div>
-              <!-- 수문 아이콘 -->
-              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-                font-size:26px;filter:drop-shadow(0 0 10px rgba(0,229,255,.7));">🌀</div>
-            </div>
-            <div style="margin-top:3px;font-family:'Noto Sans KR',sans-serif;font-size:9.5px;font-weight:700;
-              color:var(--cyan);letter-spacing:.06em;text-shadow:0 0 8px rgba(0,229,255,.9);">수문</div>
-          </div>
-
-          <!-- ── 수문 좌우 방어 시설 슬롯 (필드 내 시각화) ── -->
-          <!-- 빈 슬롯 (건설 가능 — 수문 왼쪽) -->
-          <div style="position:absolute;bottom:4px;left:26%;text-align:center;z-index:7;">
-            <div style="width:30px;height:30px;border-radius:7px;
-              background:rgba(0,229,255,.04);
-              border:1.5px dashed rgba(0,229,255,.4);
-              display:flex;align-items:center;justify-content:center;
-              box-shadow:0 0 8px rgba(0,229,255,.12);">
-              <span style="font-size:14px;color:rgba(0,229,255,.55);line-height:1;">+</span>
-            </div>
-            <div style="margin-top:2px;font-family:'Noto Sans KR',sans-serif;font-size:6px;
-              color:rgba(0,229,255,.45);letter-spacing:.02em;">건설 가능</div>
-          </div>
-          <!-- 잠긴 슬롯 (자원 25개 필요 — 수문 오른쪽) -->
-          <div style="position:absolute;bottom:4px;right:25%;text-align:center;z-index:7;">
-            <div style="width:30px;height:30px;border-radius:7px;
-              background:rgba(0,0,0,.45);
-              border:1.5px dashed rgba(255,255,255,.18);
-              display:flex;align-items:center;justify-content:center;">
-              <span style="font-size:11px;color:rgba(255,255,255,.2);">🔒</span>
-            </div>
-            <!-- 킹샷 스타일 필요 비용 표시 -->
-            <div style="margin-top:2px;font-family:'JetBrains Mono',monospace;font-size:6.5px;
-              color:rgba(255,184,48,.6);letter-spacing:.02em;">🪵×25</div>
-          </div>
-
-          <!-- ── 방어 시설 (수문 양옆 — 건설된 상태) ── -->
-          <!-- 시설 1 — 석궁 포탑 (수문 왼쪽) -->
-          <div style="position:absolute;bottom:18%;left:30%;text-align:center;z-index:7;">
-            <div style="font-size:16px;filter:drop-shadow(0 0 8px rgba(255,184,48,.8));">🏹</div>
-            <div style="width:26px;height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin:2px auto 0;overflow:hidden;">
-              <div style="width:100%;height:100%;background:linear-gradient(90deg,var(--amber),#ffdd70);border-radius:2px;box-shadow:0 0 4px rgba(255,184,48,.7);"></div>
-            </div>
-            <div style="font-family:'Noto Sans KR',sans-serif;font-size:7px;color:rgba(255,184,48,.8);margin-top:1px;letter-spacing:.02em;">석궁 포탑</div>
-          </div>
-          <!-- 시설 2 — 마법 발리스타 (수문 오른쪽) -->
-          <div style="position:absolute;bottom:18%;right:29%;text-align:center;z-index:7;">
-            <div style="font-size:16px;filter:drop-shadow(0 0 8px rgba(123,111,240,.8));">🚀</div>
-            <div style="width:26px;height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin:2px auto 0;overflow:hidden;">
-              <div style="width:100%;height:100%;background:linear-gradient(90deg,var(--violet),#b0a8ff);border-radius:2px;box-shadow:0 0 4px rgba(123,111,240,.7);"></div>
-            </div>
-            <div style="font-family:'Noto Sans KR',sans-serif;font-size:7px;color:rgba(123,111,240,.9);margin-top:1px;letter-spacing:.02em;">마법 발리스타</div>
-          </div>
-
-          <!-- ── 적 — 모두 수문(하단) 방향으로 이동 ── -->
-          <!-- 적 - 상단 좌 (쏘가리 + 방어) -->
-          <div style="position:absolute;top:8%;left:8%;display:flex;gap:4px;filter:drop-shadow(0 0 6px rgba(255,80,80,.6));">
-            <svg viewBox="0 0 20 12" width="20" height="12"><path d="M1,6 Q5,1 13,3 L19,0 L17,6 L19,12 L13,9 Q5,11 1,6 Z" fill="rgba(0,229,255,.3)" stroke="#00e5ff" stroke-width=".8"/></svg>
-            <svg viewBox="0 0 22 13" width="22" height="13"><path d="M1,7 Q6,1 13,3 Q17,1 20,0 L18,7 L20,13 Q17,12 13,10 Q6,13 1,7 Z" fill="rgba(220,240,255,.3)" stroke="rgba(220,240,255,.9)" stroke-width=".8"/></svg>
-          </div>
-          <div style="position:absolute;top:20%;left:15%;font-size:15px;color:rgba(255,120,80,.9);font-weight:900;">↙</div>
-          <!-- 적 - 상단 중앙 (방어 + 쏘가리 + 방어) -->
-          <div style="position:absolute;top:6%;left:40%;display:flex;gap:5px;filter:drop-shadow(0 0 6px rgba(255,80,80,.6));">
-            <svg viewBox="0 0 22 13" width="22" height="13"><path d="M1,7 Q6,1 13,3 Q17,1 20,0 L18,7 L20,13 Q17,12 13,10 Q6,13 1,7 Z" fill="rgba(220,240,255,.3)" stroke="rgba(220,240,255,.9)" stroke-width=".8"/></svg>
-            <svg viewBox="0 0 20 12" width="20" height="12"><path d="M1,6 Q5,1 13,3 L19,0 L17,6 L19,12 L13,9 Q5,11 1,6 Z" fill="rgba(0,229,255,.3)" stroke="#00e5ff" stroke-width=".8"/></svg>
-            <svg viewBox="0 0 22 13" width="22" height="13"><path d="M1,7 Q6,1 13,3 Q17,1 20,0 L18,7 L20,13 Q17,12 13,10 Q6,13 1,7 Z" fill="rgba(220,240,255,.3)" stroke="rgba(220,240,255,.9)" stroke-width=".8"/></svg>
-          </div>
-          <div style="position:absolute;top:20%;left:47%;font-size:15px;color:rgba(255,120,80,.9);font-weight:900;">↓</div>
-          <!-- 적 - 상단 우 (복어 + 쏘가리) -->
-          <div style="position:absolute;top:7%;right:8%;display:flex;gap:4px;align-items:center;filter:drop-shadow(0 0 6px rgba(255,80,80,.6));">
-            <svg viewBox="0 0 18 18" width="16" height="16"><g stroke="#ff5e5b" stroke-width=".8" fill="none"><path d="M9,1 L9,3"/><path d="M14,4 L12,6"/><path d="M17,9 L15,9"/><path d="M14,14 L12,12"/><path d="M9,17 L9,15"/><path d="M4,14 L6,12"/><path d="M1,9 L3,9"/><path d="M4,4 L6,6"/></g><circle cx="9" cy="9" r="5" fill="rgba(255,184,48,.5)" stroke="#ffb830" stroke-width=".8"/><circle cx="7" cy="8" r=".7" fill="#fff"/><circle cx="11" cy="8" r=".7" fill="#fff"/></svg>
-            <svg viewBox="0 0 20 12" width="20" height="12"><path d="M1,6 Q5,1 13,3 L19,0 L17,6 L19,12 L13,9 Q5,11 1,6 Z" fill="rgba(0,229,255,.3)" stroke="#00e5ff" stroke-width=".8"/></svg>
-          </div>
-          <div style="position:absolute;top:20%;right:16%;font-size:15px;color:rgba(255,120,80,.9);font-weight:900;">↘</div>
-          <!-- 적 - 좌측 중간 (방어) -->
-          <div style="position:absolute;top:45%;left:5%;filter:drop-shadow(0 0 6px rgba(255,80,80,.6));">
-            <svg viewBox="0 0 22 13" width="22" height="13"><path d="M1,7 Q6,1 13,3 Q17,1 20,0 L18,7 L20,13 Q17,12 13,10 Q6,13 1,7 Z" fill="rgba(220,240,255,.3)" stroke="rgba(220,240,255,.9)" stroke-width=".8"/></svg>
-          </div>
-          <div style="position:absolute;top:46%;left:14%;font-size:14px;color:rgba(255,120,80,.9);font-weight:900;">↘</div>
-          <!-- 적 - 우측 (보스급) -->
-          <div style="position:absolute;top:42%;right:6%;font-size:25px;filter:drop-shadow(0 0 14px rgba(255,60,60,.9));">🐙</div>
-          <div style="position:absolute;top:47%;right:19%;font-size:14px;color:rgba(255,80,60,1);font-weight:900;">↙</div>
-          <!-- 상어 HP 바 -->
-          <div style="position:absolute;top:56%;right:5%;width:38px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;">
-            <div style="width:55%;height:100%;background:linear-gradient(90deg,#ff5e5b,#ff8a87);box-shadow:0 0 5px rgba(255,94,91,.6);"></div>
-          </div>
-
-          <!-- ── 드랍 아이템 ── -->
-          <!-- 가호의 보주 -->
-          <div style="position:absolute;top:32%;left:20%;z-index:9;">
-            <div style="width:12px;height:12px;border-radius:50%;
-              background:radial-gradient(circle at 35% 35%,rgba(0,229,255,.9),rgba(0,150,200,.6));
-              border:1px solid rgba(0,229,255,.7);
-              box-shadow:0 0 8px rgba(0,229,255,.8),inset 0 0 4px rgba(255,255,255,.3);
-              animation:itemPulse 1.2s ease-in-out infinite;"></div>
-            <div style="font-family:'Noto Sans KR',sans-serif;font-size:6.5px;color:rgba(0,229,255,.9);text-align:center;margin-top:2px;letter-spacing:.02em;">O₂</div>
-          </div>
-          <!-- 골드·마나석 -->
-          <div style="position:absolute;top:38%;right:24%;z-index:9;">
-            <div style="width:10px;height:10px;border-radius:3px;
-              background:linear-gradient(135deg,rgba(255,184,48,.9),rgba(200,140,30,.7));
-              border:1px solid rgba(255,184,48,.6);
-              box-shadow:0 0 6px rgba(255,184,48,.7);"></div>
-            <div style="font-family:'Noto Sans KR',sans-serif;font-size:6.5px;color:rgba(255,184,48,.9);text-align:center;margin-top:2px;">자원</div>
-          </div>
-          <!-- 가호의 보주 2 -->
-          <div style="position:absolute;top:55%;left:36%;z-index:9;">
-            <div style="width:10px;height:10px;border-radius:50%;
-              background:radial-gradient(circle at 35% 35%,rgba(0,229,255,.7),rgba(0,150,200,.4));
-              border:1px solid rgba(0,229,255,.5);
-              box-shadow:0 0 6px rgba(0,229,255,.6);
-              animation:itemPulse 1.5s ease-in-out infinite .3s;"></div>
-          </div>
-
-          <!-- ── 발키리 (수문와 적 사이 중간 지점) ── -->
-          <div style="position:absolute;top:48%;left:38%;z-index:10;">
-
-            <!-- 자동 공격 범위 링 -->
-            <div style="position:absolute;top:-28px;left:-28px;width:92px;height:92px;border-radius:50%;
-              border:1px dashed rgba(0,229,255,.22);pointer-events:none;
-              box-shadow:0 0 12px rgba(0,229,255,.05);"></div>
-            <!-- 검 투척 이펙트 (우측 적 방향) -->
-            <svg style="position:absolute;top:-10px;left:-2px;width:110px;height:40px;pointer-events:none;" viewBox="0 0 110 40">
-              <!-- 검 투척 줄 -->
-              <line x1="18" y1="20" x2="102" y2="8"
-                stroke="rgba(0,229,255,.65)" stroke-width="1.5" stroke-dasharray="4 2" stroke-linecap="round"/>
-              <!-- 검 투척 끝 촉 -->
-              <polygon points="105,7 95,3 96,11" fill="rgba(0,229,255,.9)" opacity=".85"/>
-              <!-- 발사 플레어 -->
-              <circle cx="18" cy="20" r="3" fill="rgba(0,229,255,.4)"/>
-            </svg>
-
-            <!-- 플레이어 강조 링 -->
-            <div style="position:absolute;top:-6px;left:-6px;width:48px;height:48px;border-radius:50%;
-              border:1.5px solid rgba(255,220,80,.35);
-              box-shadow:0 0 14px rgba(255,184,48,.25),inset 0 0 10px rgba(255,184,48,.08);">
-            </div>
-            <!-- 발키리 아이콘 -->
-            <img src="file:///C:/Users/wonil.cho.SUPERCAT/icecat/grandcross-client/Assets/01.BaseDownloadAsset/ResourceBundle/UI/Texture/Heroillust/HeroValkyrie.png"
-              style="width:36px;height:36px;object-fit:cover;object-position:top;border-radius:50%;
-              border:1.5px solid rgba(255,220,80,.7);
-              filter:drop-shadow(0 0 10px rgba(255,220,80,.9)) drop-shadow(0 0 4px rgba(255,184,48,.8));
-              position:relative;z-index:2;display:block;" alt="발키리"/>
-
-            <!-- 플레이어 이름 태그 -->
-            <div style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);
-              white-space:nowrap;font-family:'Noto Sans KR',sans-serif;font-size:9px;font-weight:700;
-              color:rgba(255,220,80,.9);text-shadow:0 0 6px rgba(255,184,48,.8);letter-spacing:.04em;">
-              발키리
-            </div>
-          </div>
-
-          <!-- 데미지 넘버 -->
-          <div style="position:absolute;bottom:36%;left:52%;font-family:'Outfit',sans-serif;font-size:16px;
-            font-weight:900;color:#ffb830;text-shadow:0 0 10px rgba(255,184,48,.9);letter-spacing:-.02em;">-24</div>
-          <div style="position:absolute;bottom:42%;left:22%;font-family:'Outfit',sans-serif;font-size:13px;
-            font-weight:700;color:rgba(255,100,80,.8);text-shadow:0 0 8px rgba(255,80,80,.6);">-12</div>
-
-          <!-- 버블 파티클 -->
-          <div style="position:absolute;top:28%;left:44%;font-size:6px;color:rgba(0,229,255,.4);letter-spacing:4px;">○ ○ ○</div>
-          <div style="position:absolute;top:65%;right:35%;font-size:5px;color:rgba(0,229,255,.3);letter-spacing:3px;">○ ○</div>
-
-          <!-- ── 모바일 컨트롤 오버레이 ── -->
-          <!-- WASD 키 (PC) -->
-          <div style="position:absolute;bottom:8%;left:5%;z-index:15;">
-            <!-- 외부 링 -->
-            <div style="width:52px;height:52px;border-radius:50%;
-              background:rgba(255,255,255,.04);
-              border:1.5px solid rgba(255,255,255,.18);
-              display:flex;align-items:center;justify-content:center;
-              box-shadow:0 0 14px rgba(0,0,0,.4);">
-              <!-- 내부 스틱 (살짝 이동된 상태) -->
-              <div style="width:22px;height:22px;border-radius:50%;
-                background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.5),rgba(255,255,255,.18));
-                border:1px solid rgba(255,255,255,.4);
-                box-shadow:0 2px 6px rgba(0,0,0,.4);
-                transform:translate(5px,-4px);"></div>
-            </div>
-          </div>
-
-          <!-- 오른쪽 스킬 버튼 2개 -->
-          <div style="position:absolute;bottom:7%;right:4%;z-index:15;display:flex;gap:8px;align-items:flex-end;">
-            <!-- 💨 바람 질주 (쿨타임 없음 — 사용 가능) -->
-            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-              <div style="width:38px;height:38px;border-radius:50%;
-                background:radial-gradient(circle at 40% 35%,rgba(0,180,255,.35),rgba(0,80,160,.25));
-                border:1.5px solid rgba(0,229,255,.6);
-                display:flex;align-items:center;justify-content:center;
-                box-shadow:0 0 12px rgba(0,229,255,.35);">
-                <span style="font-size:14px;filter:drop-shadow(0 0 4px rgba(0,229,255,.9));">💨</span>
-              </div>
-              <span style="font-family:'JetBrains Mono',monospace;font-size:5.5px;color:rgba(0,229,255,.7);">DASH</span>
-            </div>
-            <!-- 💥 성스러운 충격파 (쿨다운 중) -->
-            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-              <div style="position:relative;width:44px;height:44px;border-radius:50%;
-                background:radial-gradient(circle at 40% 35%,rgba(255,100,80,.2),rgba(100,30,20,.25));
-                border:1.5px solid rgba(255,94,91,.35);
-                display:flex;align-items:center;justify-content:center;
-                box-shadow:0 0 10px rgba(255,94,91,.15);">
-                <!-- 쿨다운 오버레이 -->
-                <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 44 44">
-                  <circle cx="22" cy="22" r="20" fill="rgba(0,0,0,.45)" stroke="none"
-                    stroke-dasharray="0 126" stroke-dashoffset="0"/>
-                  <path d="M22 2 A20 20 0 0 1 22 42 A20 20 0 0 1 22 2" fill="rgba(0,0,0,.45)"/>
-                  <path d="M22 2 A20 20 0 0 1 42 22" fill="none" stroke="rgba(255,94,91,.5)" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <span style="font-size:16px;opacity:.5;filter:grayscale(1);">💥</span>
-                <!-- 쿨타임 숫자 -->
-                <span style="position:absolute;font-family:'JetBrains Mono',monospace;font-size:9px;
-                  font-weight:700;color:rgba(255,255,255,.85);text-shadow:0 0 4px rgba(0,0,0,.8);">14s</span>
-              </div>
-              <span style="font-family:'JetBrains Mono',monospace;font-size:5.5px;color:rgba(255,94,91,.5);">BLAST</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── 하단 HUD ── -->
-        <div style="position:absolute;bottom:0;left:0;right:0;height:46px;z-index:20;
-          background:rgba(0,4,12,.75);border-top:1px solid rgba(255,255,255,.07);
-          backdrop-filter:blur(10px);display:flex;align-items:center;padding:0 14px;gap:16px;">
-          <!-- 가호 게이지 (메인 생존 자원 — 강조) -->
-          <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:14px;filter:drop-shadow(0 0 6px rgba(0,229,255,.9));">🫧</span>
-            <div style="display:flex;flex-direction:column;gap:2px;">
-              <div style="display:flex;align-items:center;gap:5px;">
-                <div style="width:90px;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;border:1px solid rgba(0,229,255,.25);">
-                  <div style="width:72%;height:100%;background:linear-gradient(90deg,#00c9a7,#00e5ff);border-radius:4px;box-shadow:0 0 8px rgba(0,229,255,.6);"></div>
-                </div>
-                <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--cyan);font-weight:700;">72%</span>
-              </div>
-              <span style="font-family:'Noto Sans KR',sans-serif;font-size:8px;font-weight:700;color:rgba(0,229,255,.65);letter-spacing:.03em;">가호 게이지</span>
-            </div>
-          </div>
-          <!-- 방어 시설 슬롯 -->
-          <div style="display:flex;align-items:center;gap:7px;margin-left:auto;">
-            <span style="font-family:'Noto Sans KR',sans-serif;font-size:9px;color:rgba(255,255,255,.45);">시설</span>
-            <div style="display:flex;gap:4px;align-items:center;">
-              <!-- 건설됨 Lv.2 -->
-              <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-                <div style="width:22px;height:22px;border-radius:6px;background:rgba(255,184,48,.15);border:1px solid rgba(255,184,48,.5);display:flex;align-items:center;justify-content:center;font-size:10px;box-shadow:0 0 6px rgba(255,184,48,.3);">🏹</div>
-                <span style="font-family:'JetBrains Mono',monospace;font-size:5px;color:rgba(255,184,48,.6);">Lv.2</span>
-              </div>
-              <!-- 건설됨 Lv.1 -->
-              <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-                <div style="width:22px;height:22px;border-radius:6px;background:rgba(123,111,240,.15);border:1px solid rgba(123,111,240,.5);display:flex;align-items:center;justify-content:center;font-size:10px;box-shadow:0 0 6px rgba(123,111,240,.3);">🚀</div>
-                <span style="font-family:'JetBrains Mono',monospace;font-size:5px;color:rgba(123,111,240,.6);">Lv.1</span>
-              </div>
-              <!-- 빈 슬롯 (오픈됨 — 건설 가능) -->
-              <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-                <div style="width:22px;height:22px;border-radius:6px;background:rgba(0,229,255,.05);border:1px dashed rgba(0,229,255,.4);display:flex;align-items:center;justify-content:center;box-shadow:0 0 5px rgba(0,229,255,.1);">
-                  <span style="font-size:11px;color:rgba(0,229,255,.55);">+</span>
-                </div>
-                <span style="font-family:'JetBrains Mono',monospace;font-size:5px;color:rgba(0,229,255,.4);">빈 슬롯</span>
-              </div>
-              <!-- 잠긴 슬롯 1 — ×35 -->
-              <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-                <div style="width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,.4);border:1px dashed rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;">
-                  <span style="font-size:10px;color:rgba(255,255,255,.2);">🔒</span>
-                </div>
-                <span style="font-family:'JetBrains Mono',monospace;font-size:5.5px;color:rgba(255,184,48,.55);">×35</span>
-              </div>
-              <!-- 잠긴 슬롯 2 — ×55 -->
-              <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-                <div style="width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,.35);border:1px dashed rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;">
-                  <span style="font-size:10px;color:rgba(255,255,255,.12);">🔒</span>
-                </div>
-                <span style="font-family:'JetBrains Mono',monospace;font-size:5.5px;color:rgba(255,184,48,.35);">×55</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- end game-mock -->
+        <button class="carousel-btn prev" onclick="moveCarousel(-1)">&#8249;</button>
+        <button class="carousel-btn next" onclick="moveCarousel(1)">&#8250;</button>
+      </div>
+      <div class="carousel-dots" id="carouselDots"></div>
+      <div class="carousel-label" id="carouselLabel">타이틀 화면</div>
     </div>
+
     <div class="gs6 glass accent-top accent-amber" style="padding:28px;">
-      <div class="card-label mb12" style="color:var(--amber)">CONTROLS — 모바일</div>
+      <div class="card-label mb12" style="color:var(--amber)">CONTROLS</div>
       <table class="tbl mb12">
         <thead><tr><th style="width:36%">조작</th><th>설명</th></tr></thead>
         <tbody>
-          <tr><td><strong>WASD 키 (PC)</strong></td><td>발키리 상하좌우 이동<br><span style="font-size:12px;opacity:.6">아이템 근접 시 자동 수집</span></td></tr>
-          <tr><td><strong>자동 검 투척</strong></td><td>범위 내 최근접 적 자동 조준·발사·회수<br><span style="font-size:12px;opacity:.6">유저 입력 불필요 — 포지셔닝이 전략</span></td></tr>
-          <tr><td><strong>💥 성스러운 충격파</strong></td><td>360° 충격파 — 주변 적 전체 밀어냄<br><span style="font-size:12px;opacity:.6">GCD: 사용 시 대시도 동일 쿨타임 적용</span></td></tr>
-          <tr><td><strong>💨 바람 질주</strong></td><td>방향 대시 + 0.2초 무적<br><span style="font-size:12px;opacity:.6">GCD: 사용 시 성스러운 충격파도 동일 쿨타임 적용</span></td></tr>
+          <tr><td><strong>WASD 키</strong></td><td>발키리 상하좌우 이동<br><span style="font-size:12px;opacity:.6">아이템 근접 시 자동 수집</span></td></tr>
+          <tr><td><strong>자동 검 투척</strong></td><td>사거리 200px 내 최근접 적 자동 조준 · 발사<br><span style="font-size:12px;opacity:.6">유저 입력 불필요 — 포지셔닝이 전략</span></td></tr>
+          <tr><td><strong>Shift — 바람 질주</strong></td><td>방향 대시 + 0.2초 무적<br><span style="font-size:12px;opacity:.6">쿨타임 3초 (독립 쿨다운)</span></td></tr>
+          <tr><td><strong>E — 성스러운 충격파</strong></td><td>360° 충격파 — 주변 적 전체 밀어냄 + 90 피해<br><span style="font-size:12px;opacity:.6">쿨타임 18초 (독립 쿨다운)</span></td></tr>
         </tbody>
       </table>
       <div class="callout">
         <div class="callout-l">검 투척 메커닉</div>
-        <div class="callout-b">검은 공격 범위 내 최근접 적에게 <strong>자동 발사·꽂힘·자동 회수</strong>. 회수 경로 적에게 추가 데미지. 유저는 <strong>포지셔닝</strong>으로 검 투척 효율을 결정한다.</div>
+        <div class="callout-b">검은 공격 범위 내 최근접 적에게 <strong>자동 발사</strong>. 유저는 <strong>포지셔닝</strong>으로 검 투척 효율을 결정한다. 기본 DPS = 22 × 1.54/초 = <strong>~34 HP/초</strong>.</div>
       </div>
       <div class="callout warn mt8">
-        <div class="callout-l">GCD (글로벌 쿨다운)</div>
-        <div class="callout-b">성스러운 충격파·바람 질주는 <strong>사용한 스킬의 쿨타임을 공유</strong>. 성스러운 충격파 사용 시 대시도 동일 쿨타임 적용 — 큰 스킬일수록 더 긴 판단 공백. 스킬 순서가 전략이 된다.</div>
+        <div class="callout-l">독립 쿨타임</div>
+        <div class="callout-b">바람 질주와 성스러운 충격파는 <strong>각자 독립된 쿨타임</strong>을 가진다. 두 스킬을 연속 사용하여 콤보 플레이가 가능.</div>
       </div>
     </div>
   </div>
 
   <!-- Wave Structure -->
   <div class="glass accent-top accent-teal" style="padding:28px;">
-    <div class="card-label mb16" style="color:var(--teal)">WAVE STRUCTURE — 4 Wave + 보스 Wave = 총 5 Wave</div>
+    <div class="card-label mb16" style="color:var(--teal)">WAVE STRUCTURE — 6 Wave + 보스 Wave = 총 7 Wave</div>
     <div class="wave-row">
       <div class="wc">
         <div class="wc-num" style="color:var(--cyan)">WAVE 1</div>
-        <span class="wc-icon" style="display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;max-width:100%;">
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/sogari.png" style="width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(0,229,255,.6));" alt="쏘가리"/>
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/sogari.png" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(0,229,255,.8));" alt="쏘가리"/>
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/sogari.png" style="width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 0 5px rgba(0,229,255,.5));opacity:.85;" alt="쏘가리"/>
+        <span class="wc-icon" style="display:flex;align-items:center;justify-content:center;gap:4px;">
+          <img src="AS_Assets/enemies/sogari.png" style="width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(0,229,255,.6));" alt="쏘가리"/>
         </span>
-        <div class="wc-name">쏘가리 떼</div>
-        <div class="wc-desc">빠르고 약한 기본 적.<br>3~5마리 동시 등장.</div>
+        <div class="wc-name">피라냐 고블린 6마리</div>
+        <div class="wc-desc">입문 — 기본 적만 등장</div>
         <div class="wc-tag">입문</div>
       </div>
       <div class="wc">
         <div class="wc-num" style="color:var(--teal)">WAVE 2</div>
         <span class="wc-icon" style="display:flex;align-items:center;justify-content:center;gap:6px;">
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/bangeo.png" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(200,230,250,.55));" alt="방어"/>
-          <span style="font-size:14px;color:rgba(255,255,255,.4);font-weight:300;">+</span>
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/gaori.png" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,143,200,.55));" alt="가오리"/>
+          <img src="AS_Assets/enemies/sogari.png" style="width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(0,229,255,.6));" alt="쏘가리"/>
+          <img src="AS_Assets/enemies/bangeo.png" style="width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(200,230,250,.55));" alt="방어"/>
+          <img src="AS_Assets/enemies/gaori.png" style="width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(255,143,200,.55));" alt="가오리"/>
         </span>
-        <div class="wc-name">방어 + 가오리</div>
-        <div class="wc-desc">표준형 + 지그재그 혼합. 방향 예측 필요.</div>
+        <div class="wc-name">어인 기사 첫 등장</div>
+        <div class="wc-desc">3종 혼합. 방향 예측 필요.</div>
         <div class="wc-tag" style="background:rgba(255,184,48,.12);border-color:rgba(255,184,48,.4);color:var(--amber);">시설 건설</div>
       </div>
       <div class="wc">
         <div class="wc-num" style="color:var(--amber)">WAVE 3</div>
         <span class="wc-icon" style="display:flex;align-items:center;justify-content:center;gap:6px;">
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/agwi.png" style="width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(123,111,240,.6));" alt="아귀"/>
-          <span style="font-size:14px;color:rgba(255,255,255,.4);font-weight:300;">+</span>
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/bokeo.png" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,184,48,.55));" alt="복어"/>
+          <img src="AS_Assets/enemies/sogari.png" style="width:28px;height:28px;object-fit:contain;" alt="쏘가리"/>
+          <img src="AS_Assets/enemies/gaori.png" style="width:32px;height:32px;object-fit:contain;" alt="가오리"/>
+          <img src="AS_Assets/enemies/bokeo.png" style="width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,184,48,.55));" alt="복어"/>
         </span>
-        <div class="wc-name">아귀 + 복어</div>
-        <div class="wc-desc">탱커 + 폭발형 혼합. 거리 조절이 핵심.</div>
-        <div class="wc-tag" style="background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.4);color:var(--cyan);">아이템 드랍 ↑</div>
+        <div class="wc-name">폭발 슬라임 등장</div>
+        <div class="wc-desc">복어 폭발 주의. 원거리 처치 필수.</div>
+        <div class="wc-tag" style="background:rgba(255,94,91,.12);border-color:rgba(255,94,91,.4);color:var(--coral);">위험 ↑</div>
       </div>
       <div class="wc">
         <div class="wc-num" style="color:var(--coral)">WAVE 4</div>
-        <span class="wc-icon" style="display:grid;grid-template-columns:repeat(3,auto);gap:4px 6px;justify-content:center;align-items:center;">
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/sogari.png" style="width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(0,229,255,.6));" alt="쏘가리"/>
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/bangeo.png" style="width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(200,230,250,.5));" alt="방어"/>
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/agwi.png" style="width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(123,111,240,.55));" alt="아귀"/>
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/gaori.png" style="width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(255,143,200,.55));" alt="가오리"/>
-          <img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/bokeo.png" style="width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(255,184,48,.55));" alt="복어"/>
-          <span></span>
+        <span class="wc-icon" style="display:flex;align-items:center;justify-content:center;gap:4px;">
+          <img src="AS_Assets/enemies/bangeo.png" style="width:28px;height:28px;object-fit:contain;" alt="방어"/>
+          <img src="AS_Assets/enemies/sogari.png" style="width:24px;height:24px;object-fit:contain;" alt="쏘가리"/>
+          <img src="AS_Assets/enemies/agwi.png" style="width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(123,111,240,.6));" alt="아귀"/>
         </span>
-        <div class="wc-name">전 종류 혼합</div>
-        <div class="wc-desc">5종 전부 등장. 최대 수량. 방어 시설이 핵심.</div>
+        <div class="wc-name">심해 오우거 첫 등장</div>
+        <div class="wc-desc">탱커 + 대규모 혼합. 시설 핵심.</div>
         <div class="wc-tag" style="background:rgba(255,184,48,.12);border-color:rgba(255,184,48,.4);color:var(--amber);">시설 건설</div>
       </div>
+    </div>
+    <div class="wave-row mt8">
+      <div class="wc">
+        <div class="wc-num" style="color:var(--coral)">WAVE 5</div>
+        <span class="wc-icon" style="display:flex;align-items:center;justify-content:center;gap:3px;flex-wrap:wrap;">
+          <img src="AS_Assets/enemies/sogari.png" style="width:22px;height:22px;object-fit:contain;" alt="쏘가리"/>
+          <img src="AS_Assets/enemies/bokeo.png" style="width:22px;height:22px;object-fit:contain;" alt="복어"/>
+          <img src="AS_Assets/enemies/gaori.png" style="width:22px;height:22px;object-fit:contain;" alt="가오리"/>
+          <img src="AS_Assets/enemies/agwi.png" style="width:26px;height:26px;object-fit:contain;" alt="아귀"/>
+          <img src="AS_Assets/enemies/bangeo.png" style="width:22px;height:22px;object-fit:contain;" alt="방어"/>
+        </span>
+        <div class="wc-name">대규모 공세</div>
+        <div class="wc-desc">5종 전부 + 오우거 2마리</div>
+        <div class="wc-tag" style="background:rgba(255,94,91,.12);border-color:rgba(255,94,91,.4);color:var(--coral);">최대 물량</div>
+      </div>
+      <div class="wc">
+        <div class="wc-num" style="color:var(--coral)">WAVE 6</div>
+        <span class="wc-icon" style="display:flex;align-items:center;justify-content:center;gap:3px;flex-wrap:wrap;">
+          <img src="AS_Assets/enemies/sogari.png" style="width:20px;height:20px;object-fit:contain;" alt=""/>
+          <img src="AS_Assets/enemies/bangeo.png" style="width:20px;height:20px;object-fit:contain;" alt=""/>
+          <img src="AS_Assets/enemies/gaori.png" style="width:20px;height:20px;object-fit:contain;" alt=""/>
+          <img src="AS_Assets/enemies/bokeo.png" style="width:20px;height:20px;object-fit:contain;" alt=""/>
+          <img src="AS_Assets/enemies/agwi.png" style="width:24px;height:24px;object-fit:contain;" alt=""/>
+        </span>
+        <div class="wc-name">최후의 저항</div>
+        <div class="wc-desc">전 종류 대량. 오우거 3마리.</div>
+        <div class="wc-tag" style="background:rgba(255,94,91,.12);border-color:rgba(255,94,91,.4);color:var(--coral);">생존전</div>
+      </div>
       <div class="wc boss">
-        <div class="wc-num" style="color:var(--coral)">BOSS WAVE</div>
-        <span class="wc-icon">🐙</span>
-        <div class="wc-name">최종 보스</div>
-        <div class="wc-desc">해양 크라켄. 3패턴 + HP 50% 이하 2페이즈.</div>
+        <div class="wc-num" style="color:var(--coral)">WAVE 7 — BOSS</div>
+        <span class="wc-icon"><img src="AS_Assets/enemies/kraken.png" style="width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(157,123,255,.8));" alt="크라켄"/></span>
+        <div class="wc-name">해양 크라켄</div>
+        <div class="wc-desc">호위병 전멸 후 등장.<br>5패턴 + 궁극기. 3페이즈.</div>
         <div class="wc-tag">BOSS ★</div>
       </div>
     </div>
     <div class="callout mt16">
-      <div class="callout-l">Wave 브레이크 (최대 15초)</div>
-      <div class="callout-b">각 Wave 클리어 후 <strong>최대 15초 휴식</strong>. 이 시간에 <strong>방어 시설 업그레이드</strong> 가능 (원하는 시설 터치 → 정보 확인 → 확정, 이동 불필요). <strong>즉시 진행</strong> 버튼을 누르면 기다리지 않고 바로 다음 Wave 시작.</div>
+      <div class="callout-l">Wave 클리어 보상 — 카드 드래프트</div>
+      <div class="callout-b">각 Wave 클리어 시 <strong>영웅 카드 3장 중 1택</strong>으로 발키리를 강화한다. 자원이 충분하면 <strong>방어 시설 카드 3장 중 1택</strong>도 추가 등장.</div>
     </div>
     <div class="callout mt8">
       <div class="callout-l">실시간 슬롯 오픈</div>
-      <div class="callout-b">골드·마나석 충분 시 <strong>Wave 진행 중 언제든</strong> 잠긴 슬롯 근처 이동 → 자원 자동 투입 → 슬롯 해제. 해제 순간 <strong>1/10 슬로우모션</strong> + 시설 카드 3장 중 1택 후 즉시 건설.</div>
+      <div class="callout-b">자원 충분 시 <strong>Wave 진행 중 언제든</strong> 잠긴 슬롯 근처 이동 → 자원 자동 투입 → 슬롯 해제. 해제 순간 <strong>슬로우모션</strong> + 시설 카드 3장 중 1택 후 즉시 건설.</div>
     </div>
   </div>
 </div>
@@ -1404,122 +1133,77 @@ footer{
   <div class="enemy-grid mb16">
     <div class="ec">
       <div class="ec-glow"></div>
-      <span class="ec-icon" style="display:inline-block;"><img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/sogari.png" alt="쏘가리" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(0,229,255,.7));"></span><div class="ec-name">쏘가리</div>
+      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/sogari.png" alt="피라냐 고블린" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(0,229,255,.7));"></span>
+      <div class="ec-name">피라냐 고블린</div>
       <div class="ec-trait">빠름 · 약함 · 직선 돌진<br>여러 마리 동시 접근</div>
       <div class="ec-warn">⚠ 방심하면 수문 먼저 도달</div>
     </div>
     <div class="ec">
       <div class="ec-glow"></div>
-      <span class="ec-icon" style="display:inline-block;"><img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/bangeo.png" alt="방어" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(180,220,240,.6));"></span><div class="ec-name">방어</div>
-      <div class="ec-trait">표준형 · 중간 속도<br>방어 시설 자동 공격으로 처리 가능</div>
+      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/bangeo.png" alt="어인 기사" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(180,220,240,.6));"></span>
+      <div class="ec-name">어인 기사</div>
+      <div class="ec-trait">표준형 · 중간 속도<br>높은 HP, 떼로 위협적</div>
       <div class="ec-warn">떼로 오면 부담</div>
     </div>
     <div class="ec">
       <div class="ec-glow"></div>
-      <span class="ec-icon" style="display:inline-block;"><img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/agwi.png" alt="아귀" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,184,48,.5));"></span><div class="ec-name">아귀</div>
-      <div class="ec-trait">느림 · HP 두꺼운 탱커 · 발광<br>검 투척 집중 + 성스러운 충격파 활용 필수</div>
+      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/agwi.png" alt="심해 오우거" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,184,48,.5));"></span>
+      <div class="ec-name">심해 오우거</div>
+      <div class="ec-trait">느림 · HP 180 탱커<br>수문 피해 120 — 반드시 저지</div>
       <div class="ec-warn">⚠ 놔두면 수문 대피해</div>
     </div>
     <div class="ec">
       <div class="ec-glow"></div>
-      <span class="ec-icon" style="display:inline-block;"><img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/gaori.png" alt="가오리" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,143,200,.55));"></span><div class="ec-name">가오리</div>
+      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/gaori.png" alt="그림자 가오리" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,143,200,.55));"></span>
+      <div class="ec-name">그림자 가오리</div>
       <div class="ec-trait">지그재그 이동 · 경로 예측 어려움<br>이동 경로 막고 검으로 요격</div>
       <div class="ec-warn">발키리 위치로 검 투척 각도 조절</div>
     </div>
     <div class="ec">
       <div class="ec-glow"></div>
-      <span class="ec-icon" style="display:inline-block;"><img src="file:///C:/Users/wonil.cho.SUPERCAT/Desktop/AS_Assets/enemies/bokeo.png" alt="복어" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,184,48,.55));"></span><div class="ec-name">복어</div>
-      <div class="ec-trait">폭발형 · 닿으면 광역 피해<br>원거리에서 먼저 처리</div>
+      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/bokeo.png" alt="폭발 슬라임" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,184,48,.55));"></span>
+      <div class="ec-name">폭발 슬라임</div>
+      <div class="ec-trait">폭발형 · 1초 경고 후 광역 폭발<br>폭발 반경 100px, 피해 60</div>
       <div class="ec-warn">⚠ 수문 근처 폭발 = 위험</div>
     </div>
   </div>
 
   <div style="display:grid;grid-template-columns:1.9fr 1fr;gap:12px;">
     <div class="glass accent-top accent-cyan" style="padding:24px;">
-      <div class="card-label mb12" style="color:var(--cyan)">ENEMY STATS — v0.1 밸런스 초안</div>
-      <div>
+      <div class="card-label mb12" style="color:var(--cyan)">ENEMY STATS — v2.0 현재 밸런스</div>
       <table class="tbl mb8">
-        <thead><tr><th>종류</th><th>HP</th><th>속도</th><th>피해량</th><th>처치 시간¹</th><th>특수 행동</th></tr></thead>
+        <thead><tr><th>종류</th><th>HP</th><th>속도</th><th>수문 피해</th><th>히트박스</th><th>특수 행동</th></tr></thead>
         <tbody>
-          <tr>
-            <td style="white-space:nowrap;"><strong>쏘가리</strong></td>
-            <td style="white-space:nowrap;">35</td>
-            <td style="white-space:nowrap;">빠름 160/s</td>
-            <td style="white-space:nowrap;color:var(--teal);">20 (2%)</td>
-            <td style="white-space:nowrap;">~1.7초</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <td style="white-space:nowrap;"><strong>방어</strong></td>
-            <td style="white-space:nowrap;">60</td>
-            <td style="white-space:nowrap;">보통 100/s</td>
-            <td style="white-space:nowrap;color:var(--amber);">30 (3%)</td>
-            <td style="white-space:nowrap;">~2.5초</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <td style="white-space:nowrap;"><strong>가오리</strong></td>
-            <td style="white-space:nowrap;">55</td>
-            <td style="white-space:nowrap;">빠름 140/s</td>
-            <td style="white-space:nowrap;color:var(--amber);">35 (3.5%)</td>
-            <td style="white-space:nowrap;">~3~5초</td>
-            <td>지그재그 이동 · 명중 어려움</td>
-          </tr>
-          <tr>
-            <td style="white-space:nowrap;"><strong>아귀</strong></td>
-            <td style="white-space:nowrap;">130</td>
-            <td style="white-space:nowrap;">느림 60/s</td>
-            <td style="white-space:nowrap;color:var(--coral);">65 (6.5%)</td>
-            <td style="white-space:nowrap;">~6초</td>
-            <td>발광 · 시야 방해 · 반드시 저지</td>
-          </tr>
-          <tr>
-            <td style="white-space:nowrap;"><strong>복어</strong></td>
-            <td style="white-space:nowrap;">50</td>
-            <td style="white-space:nowrap;">보통 90/s</td>
-            <td style="white-space:nowrap;color:var(--coral);">최대 95 (9.5%)<br><span style="font-size:11px;opacity:.6;">접촉25 + 폭발70</span></td>
-            <td style="white-space:nowrap;">~2.5초</td>
-            <td>사망 시 광역 폭발 · 원거리 처치</td>
-          </tr>
+          <tr><td><strong>피라냐 고블린</strong></td><td>35</td><td>빠름 160/s</td><td style="color:var(--teal);">40</td><td>34px</td><td>직선 돌진 (rush)</td></tr>
+          <tr><td><strong>어인 기사</strong></td><td>80</td><td>보통 90/s</td><td style="color:var(--amber);">70</td><td>40px</td><td>직선 이동 (straight)</td></tr>
+          <tr><td><strong>그림자 가오리</strong></td><td>60</td><td>빠름 110/s</td><td style="color:var(--amber);">55</td><td>38px</td><td>지그재그 이동 (zigzag)</td></tr>
+          <tr><td><strong>심해 오우거</strong></td><td>180</td><td>느림 55/s</td><td style="color:var(--coral);">120</td><td>48px</td><td>직선 이동 · 고HP 탱커</td></tr>
+          <tr><td><strong>폭발 슬라임</strong></td><td>45</td><td>보통 100/s</td><td style="color:var(--coral);">최대 95<br><span style="font-size:11px;opacity:.6;">접촉35 + 폭발60</span></td><td>32px</td><td>사망 시 1초 후 광역 폭발<br>반경 100px</td></tr>
         </tbody>
       </table>
-      </div>
-      <div style="font-size:10.5px;color:var(--muted);">¹ 발키리 검 투척 단독 기준. 방어 시설 추가 시 단축.</div>
-      <div style="font-size:11px;color:var(--coral);margin-top:6px;">※ 해당 밸런스는 임시입니다.</div>
+      <div style="font-size:10.5px;color:var(--muted);">* 히트박스 = 원형 판정 반경 (size/2). 모든 적은 원형 마스크로 표시됨.</div>
     </div>
     <div class="glass accent-top accent-coral" style="padding:24px;">
       <div class="card-label mb12" style="color:var(--coral)">PRIORITY GUIDE</div>
       <div class="flow">
         <div class="flow-item">
           <div class="flow-node fn-r">1</div>
-          <div class="flow-text">
-            <div class="t">복어 최우선 처치</div>
-            <div class="d">수문 근처 폭발 시 대형 피해. 원거리에서 먼저 처리.</div>
-          </div>
+          <div class="flow-text"><div class="t">복어 최우선 처치</div><div class="d">수문 근처 폭발 시 대형 피해. 원거리에서 먼저 처리.</div></div>
         </div>
         <div class="flow-connector"></div>
         <div class="flow-item">
           <div class="flow-node fn-a">2</div>
-          <div class="flow-text">
-            <div class="t">아귀 집중 공격</div>
-            <div class="d">HP가 두꺼워 처리 시간이 걸림. 방어 시설과 함께 집중 공략.</div>
-          </div>
+          <div class="flow-text"><div class="t">오우거 집중 공격</div><div class="d">HP 180, 수문 피해 120. 방어 시설과 함께 집중 공략.</div></div>
         </div>
         <div class="flow-connector"></div>
         <div class="flow-item">
           <div class="flow-node fn-t">3</div>
-          <div class="flow-text">
-            <div class="t">쏘가리 무리 정리</div>
-            <div class="d">빠르게 수문에 닿기 전에 처리. 성스러운 충격파로 무리를 한번에 밀어내기.</div>
-          </div>
+          <div class="flow-text"><div class="t">피라냐 무리 정리</div><div class="d">빠르게 수문에 닿기 전에 충격파로 밀어내기.</div></div>
         </div>
         <div class="flow-connector"></div>
         <div class="flow-item">
           <div class="flow-node fn-c">4</div>
-          <div class="flow-text">
-            <div class="t">방어 / 가오리</div>
-            <div class="d">방어 시설 자동 공격에 맡기고 고위협 처리에 집중.</div>
-          </div>
+          <div class="flow-text"><div class="t">어인 기사 / 가오리</div><div class="d">방어 시설 자동 공격에 맡기고 고위협 처리에 집중.</div></div>
         </div>
       </div>
     </div>
@@ -1537,106 +1221,76 @@ footer{
     <div class="sec-line"></div>
   </div>
   <h2 class="sec-title">핵심 시스템</h2>
-  <p class="sec-desc">발키리의 생명줄 <strong>가호 게이지</strong>, 전장을 누비며 줍는 <strong>드랍 수집</strong>, 그리고 매판 달라지는 <strong>방어 시설 조합</strong>.</p>
+  <p class="sec-desc">발키리의 생명줄 <strong>가호 게이지</strong>, 전장을 누비며 줍는 <strong>드랍 수집</strong>, <strong>방어 시설 건설</strong>, 그리고 매판 달라지는 <strong>로그라이트 카드 선택</strong>.</p>
 
-  <!-- ── BALANCE SPEC ── -->
+  <!-- 밸런스 스펙 -->
   <div class="glass accent-top accent-teal" style="padding:28px;margin-bottom:12px;">
-    <div class="card-label mb4" style="color:var(--teal)">BALANCE SPEC — v0.1 초안 (플레이테스트 필수)</div>
+    <div class="card-label mb4" style="color:var(--teal)">BALANCE SPEC — v2.0 현재 구현 수치</div>
     <div class="card-title mb4">핵심 수치 기준표</div>
-    <div class="card-sub mb16">수문 MAX HP = <strong>1,000</strong> (UI 표시는 % 변환). 모든 피해·회복 수치는 이 기준.</div>
+    <div class="card-sub mb16">수문 MAX HP = <strong>1,500</strong>. 모든 피해 · 회복 수치는 이 기준.</div>
 
     <div class="g12r mb12">
-      <!-- 발키리 공격력 -->
       <div class="gs4 glass" style="padding:18px;">
         <div class="card-label mb10" style="color:var(--amber);font-size:10px;">⚔️ 발키리 전투</div>
         <table class="tbl">
           <tbody>
-            <tr><td><strong>검 투척 기본 피해</strong></td><td>20 / 발</td></tr>
-            <tr><td><strong>발사 주기</strong></td><td>1.5회 / 초</td></tr>
-            <tr><td><strong>기본 DPS</strong></td><td>30 HP / 초</td></tr>
-            <tr><td><strong>회수 경로 피해</strong></td><td>10 / 적</td></tr>
-            <tr><td><strong>성스러운 충격파 피해</strong></td><td>40 (범위 내 전체)</td></tr>
-            <tr><td><strong>성스러운 충격파 쿨</strong></td><td>18초 (GCD 공유)</td></tr>
-            <tr><td><strong>바람 질주 쿨</strong></td><td>3초 (GCD 공유)</td></tr>
+            <tr><td><strong>검 투척 기본 피해</strong></td><td>22 / 발</td></tr>
+            <tr><td><strong>발사 주기</strong></td><td>0.65초 (~1.54회/초)</td></tr>
+            <tr><td><strong>기본 DPS</strong></td><td>~34 HP / 초</td></tr>
+            <tr><td><strong>공격 사거리</strong></td><td>200px (엣지 기반)</td></tr>
+            <tr><td><strong>이동 속도</strong></td><td>220 px/s</td></tr>
+            <tr><td><strong>충격파 피해</strong></td><td>90 (반경 220px)</td></tr>
+            <tr><td><strong>충격파 쿨</strong></td><td>18초</td></tr>
+            <tr><td><strong>바람 질주 쿨</strong></td><td>3초</td></tr>
           </tbody>
         </table>
       </div>
-      <!-- 수문 HP 연동 -->
       <div class="gs4 glass" style="padding:18px;">
-        <div class="card-label mb10" style="color:var(--cyan);font-size:10px;">🌀 수문 수치</div>
+        <div class="card-label mb10" style="color:var(--cyan);font-size:10px;">🏰 수문 수치</div>
         <table class="tbl">
           <tbody>
-            <tr><td><strong>MAX HP</strong></td><td>1,000 (= 100%)</td></tr>
-            <tr><td><strong>가호 고갈 피해</strong></td><td style="color:var(--coral);">-20 HP / 초 (-2%)</td></tr>
-            <tr><td><strong>미응전 패널티</strong></td><td style="color:var(--coral);">-100 HP (-10%)</td></tr>
-            <tr><td><strong>방어막 Lv.1 쉴드</strong></td><td>300 HP 흡수 (12초 재생)</td></tr>
-            <tr><td><strong>방어막 Lv.2 쉴드</strong></td><td>600 HP 흡수 (12초 재생)</td></tr>
-            <tr><td><strong>수리 정령 Lv.1</strong></td><td>+8 HP / 5초 (=0.8%)</td></tr>
-            <tr><td><strong>수리 정령 Lv.2</strong></td><td>+16 HP / 5초 (2기)</td></tr>
-            <tr><td><strong>수리 정령 Lv.3</strong></td><td>+24 HP / 5초 (3기)</td></tr>
+            <tr><td><strong>MAX HP</strong></td><td>1,500</td></tr>
+            <tr><td><strong>가호 고갈 피해</strong></td><td style="color:var(--coral);">-2%/초 (gateHpMax 기준)</td></tr>
+            <tr><td><strong>미응전 패널티</strong></td><td style="color:var(--coral);">-10%</td></tr>
           </tbody>
         </table>
-        <div style="font-size:11px;color:var(--coral);margin-top:6px;">※ 해당 밸런스는 임시입니다.</div>
       </div>
-      <!-- 시설 DPS -->
       <div class="gs4 glass" style="padding:18px;">
-        <div class="card-label mb10" style="color:var(--violet);font-size:10px;">🏹 방어 시설 DPS</div>
+        <div class="card-label mb10" style="color:var(--violet);font-size:10px;">🏹 방어 시설 (현재 Lv.1)</div>
         <table class="tbl">
           <tbody>
-            <tr><td><strong>석궁 포탑 Lv.1</strong></td><td>20 DPS</td></tr>
-            <tr><td><strong>석궁 포탑 Lv.2</strong></td><td>40 DPS</td></tr>
-            <tr><td><strong>석궁 포탑 Lv.3</strong></td><td>60 DPS</td></tr>
-            <tr><td><strong>마법 발리스타 Lv.1</strong></td><td>80 범위 / 5초 쿨</td></tr>
-            <tr><td><strong>마법 발리스타 Lv.2</strong></td><td>80 × 2발 / 5초 쿨</td></tr>
-            <tr><td><strong>전기 Lv.1</strong></td><td>감전 2초 + 슬로우 -30%</td></tr>
-            <tr><td><strong>전기 Lv.2</strong></td><td>체인 2마리</td></tr>
-            <tr><td><strong>성수 제단 Lv.1</strong></td><td>가호 감소 -0.3%/초</td></tr>
+            <tr><td><strong>석궁 포탑</strong></td><td>30 dmg / 0.6s / 280 range</td></tr>
+            <tr><td><strong>마법 발리스타</strong></td><td>110 dmg / 2.0s / 420 range</td></tr>
+            <tr><td><strong>번개 마법진</strong></td><td>72 dmg / 1.8s / 320 range</td></tr>
+            <tr><td><strong>성수 제단</strong></td><td>가호 +8 / 3.0s</td></tr>
+            <tr><td><strong>수호 결계</strong></td><td>수문 +15 / 4.0s</td></tr>
+            <tr><td><strong>서리 정령</strong></td><td>감속 -25% / 5.0s / 300 range</td></tr>
           </tbody>
         </table>
-        <div style="font-size:11px;color:var(--coral);margin-top:6px;">※ 해당 밸런스는 임시입니다.</div>
       </div>
     </div>
-
-    <!-- 시나리오 시뮬레이션 -->
-    <div class="card-label mb8" style="color:var(--muted);font-size:10px;">예상 HP 시나리오 — 숙련 플레이어 기준 (시설 단계적 건설 가정)</div>
-    <table class="tbl mb8">
-      <thead><tr><th>구간</th><th>주요 피해 요인</th><th>피해 HP</th><th>Wave 후 잔여</th></tr></thead>
-      <tbody>
-        <tr><td>Wave 1</td><td>쏘가리 1~2마리 슬립스루</td><td style="color:var(--coral);">-40</td><td style="color:var(--teal);">960 (96%)</td></tr>
-        <tr><td>Wave 2</td><td>방어·가오리 2마리 슬립스루</td><td style="color:var(--coral);">-65</td><td style="color:var(--teal);">895 (89.5%)</td></tr>
-        <tr><td>Wave 3</td><td>아귀 1 + 복어 폭발 1</td><td style="color:var(--coral);">-160</td><td style="color:var(--amber);">735 (73.5%)</td></tr>
-        <tr><td>Wave 4</td><td>혼합 3마리 (방어막 흡수 포함)</td><td style="color:var(--coral);">-80</td><td style="color:var(--amber);">655 (65.5%)</td></tr>
-        <tr><td>보스</td><td>돌진 1회 + 물대포</td><td style="color:var(--coral);">-130</td><td style="color:var(--teal);">525 (52.5%)</td></tr>
-        <tr><td colspan="2"><strong>수리 정령 회복 (Wave 3~5, 약 150초)</strong></td><td style="color:var(--teal);">+240</td><td style="color:var(--teal);font-weight:700;">765 (76.5%) ★</td></tr>
-      </tbody>
-    </table>
-    <div style="font-size:11px;color:var(--muted);">⚠ 초보 플레이어는 Wave 3~4에서 2× 피해 예상 → HP 200~400 잔여, 보스 전 함락 가능성 있음. 이 곡선이 "적당히 어려운" 목표 난이도.</div>
-    <div style="font-size:11px;color:var(--coral);margin-top:6px;">※ 해당 밸런스는 임시입니다.</div>
   </div>
 
-  <!-- 가호 게이지 시스템 -->
+  <!-- 가호 게이지 -->
   <div class="glass accent-top accent-cyan" style="padding:28px;margin-bottom:12px;">
-    <div class="card-label mb4" style="color:var(--cyan)">OXYGEN SYSTEM</div>
+    <div class="card-label mb4" style="color:var(--cyan)">GAUGE SYSTEM</div>
     <div class="card-title mb4">가호 게이지 — 발키리의 생명선</div>
-    <div class="card-sub mb16">가호가 0이 되면 발키리가 무력화 → <strong>수문이 무방비 상태</strong>가 되어 수문 HP 초당 자동 감소. 가호의 보주 수집 즉시 회복.</div>
+    <div class="card-sub mb16">가호가 0이 되면 발키리가 무력화 → <strong>수문이 무방비 상태</strong>가 되어 수문 HP 초당 자동 감소. 가호의 보주(orb) 수집으로 즉시 회복.</div>
 
     <div class="g12r mb16">
       <div class="gs6">
-        <div class="card-label mb10" style="color:var(--muted);font-size:10px;">OXYGEN GAUGE</div>
-        <!-- 가호 게이지 시각화 -->
+        <div class="card-label mb10" style="color:var(--muted);font-size:10px;">GAUGE VISUAL</div>
         <div class="oxy-bar">
-          <span style="font-size:18px;filter:drop-shadow(0 0 6px rgba(0,229,255,.8));">🫧</span>
-          <div class="oxy-bar-fill">
-            <div class="oxy-bar-inner" style="width:78%;"></div>
-          </div>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--cyan);font-weight:700;min-width:36px;text-align:right;">78%</span>
+          <span style="font-size:18px;">✨</span>
+          <div class="oxy-bar-fill"><div class="oxy-bar-inner" style="width:78%;"></div></div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--cyan);font-weight:700;">78%</span>
         </div>
         <div class="oxy-bar" style="background:rgba(255,184,48,.03);border-color:rgba(255,184,48,.12);">
-          <span style="font-size:18px;filter:drop-shadow(0 0 6px rgba(255,184,48,.7));">🫧</span>
+          <span style="font-size:18px;">✨</span>
           <div class="oxy-bar-fill" style="border-color:rgba(255,184,48,.15);">
             <div class="oxy-bar-inner" style="width:30%;background:linear-gradient(90deg,#c0392b,#ff5e5b);box-shadow:0 0 8px rgba(255,94,91,.6);"></div>
           </div>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--coral);font-weight:700;min-width:36px;text-align:right;">30%</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--coral);font-weight:700;">30%</span>
         </div>
         <div style="font-size:11.5px;color:var(--muted);line-height:1.7;margin-top:8px;">
           <span style="color:var(--teal);">●</span> 78% — 안전<br>
@@ -1645,13 +1299,14 @@ footer{
         </div>
       </div>
       <div class="gs6">
-        <div class="card-label mb10" style="color:var(--muted);font-size:10px;">OXYGEN SPEC</div>
+        <div class="card-label mb10" style="color:var(--muted);font-size:10px;">GAUGE SPEC</div>
         <table class="tbl">
           <tbody>
+            <tr><td><strong>기본 최대치</strong></td><td>100 (카드로 증가 가능)</td></tr>
             <tr><td><strong>기본 감소 속도</strong></td><td>-1.5% / 초 (게임 내내 지속)</td></tr>
-            <tr><td><strong>가호의 보주 회복</strong></td><td>소형 +20% / 대형 +45%</td></tr>
+            <tr><td><strong>가호의 보주 회복</strong></td><td>적 처치 시 28% 확률 드랍</td></tr>
             <tr><td><strong>경고 구간</strong></td><td>30% 이하 — HUD 빨간 펄스</td></tr>
-            <tr><td><strong>0% 도달 시</strong></td><td>수문 HP -2%/초 (캡슐 수집 시 즉시 중단)</td></tr>
+            <tr><td><strong>0% 도달 시</strong></td><td>수문 HP -2%/초 (보주 수집 시 즉시 중단)</td></tr>
           </tbody>
         </table>
         <div class="callout mt12">
@@ -1662,232 +1317,125 @@ footer{
     </div>
   </div>
 
-  <!-- 드랍 아이템 수집 -->
+  <!-- 드랍 아이템 -->
   <div class="glass accent-top accent-amber" style="padding:28px;margin-bottom:12px;">
     <div class="card-label mb4" style="color:var(--amber)">ITEM DROP SYSTEM</div>
     <div class="card-title mb4">드랍 수집 — 이동의 목적</div>
-    <div class="card-sub mb16">적 처치 시 아이템이 화면에 남는다. 발키리가 직접 이동해 밟으면 수집. 일정 시간 후 소멸.</div>
+    <div class="card-sub mb16">적 처치 시 아이템이 화면에 남는다. 발키리가 직접 이동해 밟으면 수집 (수집 반경 120px).</div>
 
-    <!-- 가호의 보주 2단계 -->
-    <div class="card-label mb8" style="color:var(--cyan);font-size:10px;">🫧 가호의 보주 — 2단계</div>
-    <div class="grid2 mb12">
-      <div class="glass" style="padding:16px;text-align:center;border-color:rgba(0,229,255,.2);">
-        <div style="font-size:24px;margin-bottom:6px;filter:drop-shadow(0 0 8px rgba(0,229,255,.7));">🫧</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;color:var(--cyan);">소형 캡슐</div>
-        <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">가호 게이지 <strong style="color:var(--cyan);">+20%</strong> 회복<br>드랍률 30% · 일반</div>
-        <div class="badge b-cyan mt8">Common</div>
-      </div>
-      <div class="glass" style="padding:16px;text-align:center;border-color:rgba(0,229,255,.35);">
-        <div style="font-size:26px;margin-bottom:6px;filter:drop-shadow(0 0 12px rgba(0,229,255,1));">🫧</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;color:var(--cyan);">대형 캡슐</div>
-        <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">가호 게이지 <strong style="color:var(--cyan);">+45%</strong> 회복<br>드랍률 10% · 희귀</div>
-        <div class="badge b-cyan mt8" style="border-color:rgba(0,229,255,.6);">Rare</div>
-      </div>
-    </div>
-    <!-- 골드·마나석 3단계 -->
-    <div class="card-label mb8" style="color:var(--amber);font-size:10px;">🔩 골드·마나석 — 3단계</div>
+    <div class="card-label mb8" style="color:var(--amber);font-size:10px;">건설 자원 — 3등급</div>
     <div class="g12r mb16">
-      <div class="gs4 glass" style="padding:16px;text-align:center;border-color:rgba(139,90,43,.35);">
-        <div style="font-size:22px;margin-bottom:6px;filter:drop-shadow(0 0 6px rgba(180,120,60,.7));">🪵</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(180,140,80,1);">나무</div>
-        <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">골드·마나석 <strong style="color:rgba(180,140,80,1);">+1</strong><br>드랍률 35%</div>
-        <div class="badge mt8" style="border-color:rgba(180,140,80,.4);color:rgba(180,140,80,.8);">Common</div>
+      <div class="gs4 glass" style="padding:16px;text-align:center;">
+        <img src="AS_Assets/items/resource_normal.png" style="width:48px;height:48px;object-fit:contain;margin-bottom:6px;filter:drop-shadow(0 0 6px rgba(180,120,60,.7));" alt="일반 자원"/>
+        <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(180,140,80,1);">일반 자원</div>
+        <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">건설 자원 <strong style="color:rgba(180,140,80,1);">+1~3</strong><br>드랍 확률 높음</div>
       </div>
-      <div class="gs4 glass" style="padding:16px;text-align:center;border-color:rgba(150,160,170,.3);">
-        <div style="font-size:22px;margin-bottom:6px;filter:drop-shadow(0 0 6px rgba(180,190,200,.6));">⚙️</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(180,200,220,1);">강철</div>
-        <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">골드·마나석 <strong style="color:rgba(180,200,220,1);">+3</strong><br>드랍률 15%</div>
-        <div class="badge mt8" style="border-color:rgba(180,200,220,.4);color:rgba(180,200,220,.8);">Uncommon</div>
+      <div class="gs4 glass" style="padding:16px;text-align:center;">
+        <img src="AS_Assets/items/resource_rare.png" style="width:48px;height:48px;object-fit:contain;margin-bottom:6px;filter:drop-shadow(0 0 6px rgba(180,190,200,.6));" alt="희귀 자원"/>
+        <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;color:rgba(180,200,220,1);">희귀 자원</div>
+        <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">건설 자원 <strong style="color:rgba(180,200,220,1);">+5~9</strong><br>중간 확률</div>
       </div>
-      <div class="gs4 glass" style="padding:16px;text-align:center;border-color:rgba(255,184,48,.35);">
-        <div style="font-size:22px;margin-bottom:6px;filter:drop-shadow(0 0 8px rgba(255,184,48,.8));">🔩</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;color:var(--amber);">합금</div>
-        <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">골드·마나석 <strong style="color:var(--amber);">+5</strong><br>드랍률 5% · 희귀</div>
-        <div class="badge b-amber mt8">Rare</div>
-      </div>
-    </div>
-    <div class="grid2">
-      <div class="callout">
-        <div class="callout-l">수집 방식</div>
-        <div class="callout-b">발키리가 아이템 근처로 이동하면 <strong>자동 흡수</strong>. 아이템은 <strong>8초 후 소멸</strong>.</div>
-      </div>
-      <div class="callout warn">
-        <div class="callout-l">수집 딜레마</div>
-        <div class="callout-b">아이템을 줍기 위해 이동하면 수문에서 멀어진다. <strong>"가호 먼저 vs 수문 지키기"</strong> — 판단이 핵심.</div>
+      <div class="gs4 glass" style="padding:16px;text-align:center;">
+        <img src="AS_Assets/items/resource_epic.png" style="width:48px;height:48px;object-fit:contain;margin-bottom:6px;filter:drop-shadow(0 0 8px rgba(255,184,48,.8));" alt="에픽 자원"/>
+        <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;color:var(--amber);">에픽 자원</div>
+        <div style="font-size:11.5px;color:var(--muted);line-height:1.6;">건설 자원 <strong style="color:var(--amber);">+15~22</strong><br>희귀 확률</div>
       </div>
     </div>
   </div>
 
-  <!-- 방어 시설 건설 시스템 -->
+  <!-- 방어 시설 -->
   <div class="glass accent-top accent-violet" style="padding:28px;">
-    <div class="card-label mb4" style="color:var(--violet)">DEFENSE STRUCTURE SYSTEM (ROGUELITE)</div>
-    <div class="card-title mb4">방어 시설 건설 & 업그레이드</div>
-    <div class="card-sub mb16">처음부터 <strong>모든 슬롯 잠김</strong>. 골드·마나석을 모아 실시간으로 슬롯을 오픈하고, Wave 브레이크에 시설을 업그레이드하라.</div>
+    <div class="card-label mb4" style="color:var(--violet)">DEFENSE STRUCTURE SYSTEM</div>
+    <div class="card-title mb4">방어 시설 건설</div>
+    <div class="card-sub mb16">처음부터 <strong>모든 슬롯 잠김</strong>. 건설 자원을 모아 실시간으로 슬롯을 오픈하고, 시설 카드 3장 중 1장을 선택하여 건설한다.</div>
 
-    <!-- 수문 레벨별 슬롯 수 -->
-    <div class="callout warn mb12">
-      <div class="callout-l">수문 레벨 → 최대 슬롯 수 연동</div>
-      <div class="callout-b" style="font-size:13px;line-height:2.1;">
-        <strong>Lv. 1~5</strong> — 최대 <strong style="color:var(--amber);">3슬롯</strong> &nbsp;|&nbsp;
-        <strong>Lv. 6~10</strong> — 최대 <strong style="color:var(--amber);">4슬롯</strong> &nbsp;|&nbsp;
-        <strong>Lv. 11+</strong> — 최대 <strong style="color:var(--teal);">5슬롯</strong> (Max)<br>
-        <span style="font-size:12px;color:var(--muted);">저레벨 구간은 시설 없이 조작 실력으로 버텨야 함. 레벨이 오를수록 빌드 전략이 핵심이 된다.</span>
-      </div>
-    </div>
-
-    <!-- 슬롯 오픈 구조 -->
+    <!-- 슬롯 오픈 비용 -->
     <div class="callout mb12">
-      <div class="callout-l">슬롯 오픈 비용 (누적 증가)</div>
+      <div class="callout-l">슬롯 오픈 비용 (현재 구현)</div>
       <div class="callout-b" style="font-size:13px;line-height:2.2;">
-        슬롯 1 오픈 <strong style="color:var(--amber);">×10</strong> →
-        슬롯 2 오픈 <strong style="color:var(--amber);">×20</strong> →
-        슬롯 3 오픈 <strong style="color:var(--amber);">×35</strong> →
-        슬롯 4 오픈 <strong style="color:var(--amber);">×55</strong> →
-        슬롯 5 오픈 <strong style="color:var(--amber);">×80</strong> (최대)<br>
-        <span style="font-size:12px;color:var(--muted);">Wave 중 잠긴 슬롯 근처 이동 → 자원 자동 투입 → 오픈 → <strong style="color:var(--white);">1/10 슬로우</strong> + 카드 3장 중 1택 → 즉시 건설</span>
+        슬롯 1 <strong style="color:var(--amber);">×25</strong> →
+        슬롯 2 <strong style="color:var(--amber);">×55</strong> →
+        슬롯 3 <strong style="color:var(--amber);">×100</strong> →
+        슬롯 4 <strong style="color:var(--amber);">×100</strong> →
+        슬롯 5 <strong style="color:var(--amber);">×200</strong> (최대)<br>
+        <span style="font-size:12px;color:var(--muted);">Wave 중 잠긴 슬롯 근처 이동 → 자원 자동 투입 → 오픈 → <strong style="color:var(--white);">슬로우모션</strong> + 시설 카드 3장 중 1택 → 즉시 건설</span>
       </div>
     </div>
 
-    <!-- 시설 카드 6종 + 업그레이드 테이블 -->
-    <div class="card-label mb12" style="color:var(--muted);font-size:10px;">시설 6종 · 업그레이드 현황 (Lv.1 → Lv.2 → Lv.3)</div>
+    <!-- 시설 6종 -->
+    <div class="card-label mb12" style="color:var(--muted);font-size:10px;">시설 6종 (현재 구현)</div>
     <table class="tbl mb16">
-      <thead><tr><th>시설</th><th>Lv.1</th><th>Lv.2</th><th>Lv.3 ★</th><th>타입</th></tr></thead>
+      <thead><tr><th>시설</th><th>등급</th><th>효과</th><th>공격력/효과</th><th>공속/주기</th><th>사거리</th><th>타입</th></tr></thead>
       <tbody>
-        <tr>
-          <td><strong>🏹 석궁 포탑</strong></td>
-          <td>단발 직선 사격</td>
-          <td>2연발 (전방 분산)</td>
-          <td>3연발 부채꼴 — 넓은 커버</td>
-          <td style="color:var(--amber);">화력형</td>
-        </tr>
-        <tr>
-          <td><strong>🚀 마법 발리스타</strong></td>
-          <td>단일 마법 발리스타 발사</td>
-          <td>동시 2발 발사</td>
-          <td>유도 기능 추가 — 도망치는 적 추적</td>
-          <td style="color:var(--violet);">광역형</td>
-        </tr>
-        <tr>
-          <td><strong>⚡ 번개 마법진</strong></td>
-          <td>단일 감전 (2초)</td>
-          <td>체인 번개 (2마리 연쇄)</td>
-          <td>3마리 연쇄 + 감전 지속 4초</td>
-          <td style="color:var(--cyan);">저지형</td>
-        </tr>
-        <tr>
-          <td><strong>🫧 성수 제단</strong></td>
-          <td>소형 가호 아우라</td>
-          <td>아우라 범위 +50%</td>
-          <td>수문에도 가호 회복 적용</td>
-          <td style="color:var(--teal);">생존형</td>
-        </tr>
-        <tr>
-          <td><strong>🛡️ 수호 결계</strong></td>
-          <td>쉴드 1겹 (30피해 흡수)</td>
-          <td>쉴드 2겹 중첩</td>
-          <td>재생성 속도 2배 + 가시 효과 강화</td>
-          <td style="color:var(--coral);">수호형</td>
-        </tr>
-        <tr>
-          <td><strong>🔧 수리 정령</strong></td>
-          <td>정령 1기 (+8 HP/5초)</td>
-          <td>정령 2기 동시 가동</td>
-          <td>정령 3기 + 비행 경로 시각화</td>
-          <td style="color:var(--teal);">수리형</td>
-        </tr>
+        <tr><td><strong>🏹 석궁 포탑</strong></td><td><span class="badge b-teal">일반</span></td><td>근거리 단일 대상 연사</td><td>30</td><td>0.6s</td><td>280</td><td style="color:var(--amber);">화력형</td></tr>
+        <tr><td><strong>⚔️ 마법 발리스타</strong></td><td><span class="badge b-amber">희귀</span></td><td>원거리 고위력 관통탄</td><td>110</td><td>2.0s</td><td>420</td><td style="color:var(--violet);">관통형</td></tr>
+        <tr><td><strong>⚡ 번개 마법진</strong></td><td><span class="badge b-amber">희귀</span></td><td>범위 내 모든 적 전기 피해</td><td>72 (AoE)</td><td>1.8s</td><td>320</td><td style="color:var(--cyan);">광역형</td></tr>
+        <tr><td><strong>⛲ 성수 제단</strong></td><td><span class="badge b-teal">일반</span></td><td>주기적으로 가호 회복</td><td>가호 +8</td><td>3.0s</td><td>전체</td><td style="color:var(--teal);">생존형</td></tr>
+        <tr><td><strong>🛡️ 수호 결계</strong></td><td><span class="badge b-violet">영웅</span></td><td>수문 HP 주기적 회복</td><td>수문 +15</td><td>4.0s</td><td>전체</td><td style="color:var(--coral);">수호형</td></tr>
+        <tr><td><strong>🧚 서리 정령</strong></td><td><span class="badge b-violet">영웅</span></td><td>적 감속</td><td>감속 -25%</td><td>5.0s</td><td>300</td><td style="color:var(--violet);">디버프형</td></tr>
       </tbody>
     </table>
-    <div style="font-size:11px;color:var(--coral);margin-top:6px;">※ 해당 밸런스는 임시입니다.</div>
 
-    <div class="grid2">
-      <div class="callout">
-        <div class="callout-l">업그레이드 방식</div>
-        <div class="callout-b">Wave 브레이크(최대 15초)에 <strong>원하는 시설 터치 → 업그레이드 정보 확인 → 확정</strong>. 이동 불필요. 업그레이드 비용 = 다음 슬롯 오픈 비용의 <strong>절반</strong>.</div>
-      </div>
-      <div class="callout warn">
-        <div class="callout-l">신규 슬롯 vs 업그레이드</div>
-        <div class="callout-b">신규 슬롯 오픈 > 업그레이드 기본 효과. 단, <strong>Lv.3은 질적으로 다른 능력</strong>이 추가되어 특정 빌드에서 역전 가능. 자원 배분이 전략의 핵심.</div>
+    <!-- 업그레이드 예정 뱃지 -->
+    <div style="background:linear-gradient(135deg,rgba(255,184,48,.06),rgba(255,94,91,.04));border:2px dashed rgba(255,184,48,.3);border-radius:16px;padding:24px;text-align:center;">
+      <div class="badge-upcoming" style="margin-bottom:16px;">🔧 업데이트 예정 — 시설 업그레이드 시스템 (Lv.1 → Lv.2 → Lv.3)</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.8;max-width:600px;margin:0 auto;">
+        현재는 <strong style="color:var(--white);">Lv.1 건설만 가능</strong>합니다.<br>
+        향후 업데이트에서 <strong style="color:var(--amber);">시설별 3단계 업그레이드</strong>가 추가될 예정이며,<br>
+        Wave 브레이크 시 시설을 터치하여 업그레이드하는 방식으로 구현됩니다.<br>
+        <span style="font-size:11px;color:var(--coral);">※ Lv.3에서 질적으로 다른 능력이 추가되어 특정 빌드에서 역전 가능한 설계 목표</span>
       </div>
     </div>
   </div>
 
-  <!-- ── Phase 2 신규: 발키리 업그레이드 & 카드 선택 ── -->
+  <!-- 카드 선택 시스템 -->
   <div class="glass accent-top accent-amber" style="padding:28px;margin-top:16px;">
-    <div class="card-label mb4" style="color:var(--amber)">✨ PHASE 2 신규 — WAVE 클리어 카드 선택</div>
-    <div class="card-title mb4">업그레이드 분기 — 시설 vs 발키리 vs 혼합</div>
-    <div class="card-sub mb16">Wave 클리어 시 <strong>3장의 카테고리 고정 카드</strong> 중 1장을 선택한다. 매판 다른 빌드를 시도할 수 있어 재도전 동기가 생긴다.</div>
-
-    <div class="g12r mb16">
-      <div class="gs4 glass accent-top accent-cyan" style="padding:20px;">
-        <div class="card-label mb10" style="color:var(--cyan);font-size:10px;">🏹 시설 카드</div>
-        <div class="card-title mb4" style="font-size:17px;">방어 시설 강화</div>
-        <div class="card-sub">기존 시설 6종 업그레이드 또는 신규 슬롯 해제.<br><strong>자원 의존도 높음 · 안정 빌드.</strong></div>
-      </div>
-      <div class="gs4 glass accent-top accent-amber" style="padding:20px;">
-        <div class="card-label mb10" style="color:var(--amber);font-size:10px;">👑 발키리 카드 (신규)</div>
-        <div class="card-title mb4" style="font-size:17px;">발키리 직접 강화</div>
-        <div class="card-sub">공격력·속도·사거리·스킬 스탯 강화.<br><strong>조작 의존도 높음 · 공격 빌드.</strong></div>
-      </div>
-      <div class="gs4 glass accent-top accent-violet" style="padding:20px;">
-        <div class="card-label mb10" style="color:var(--violet);font-size:10px;">🌀 혼합 · 희귀 카드 (신규)</div>
-        <div class="card-title mb4" style="font-size:17px;">시설 × 발키리 시너지</div>
-        <div class="card-sub">두 시스템을 연결하는 특수 효과.<br><strong>드랍률 낮음 · 하이리스크 빌드.</strong></div>
-      </div>
-    </div>
+    <div class="card-label mb4" style="color:var(--amber)">ROGUELITE CARD DRAFT</div>
+    <div class="card-title mb4">카드 선택 — 매판 다른 빌드</div>
+    <div class="card-sub mb16">Wave 클리어 시 <strong>영웅 카드 3장 중 1택</strong>. 슬롯 해제 시 <strong>시설 카드 3장 중 1택</strong>. 키보드 1/2/3 키로 빠른 선택 가능.</div>
 
     <div class="g12r mb12">
       <div class="gs6 glass accent-top accent-amber" style="padding:22px;">
-        <div class="card-label mb12" style="color:var(--amber);font-size:10px;">👑 발키리 카드 풀 (Phase 2 초안)</div>
+        <div class="card-label mb12" style="color:var(--amber);font-size:10px;">👑 영웅 카드 풀 (11종)</div>
         <table class="tbl">
-          <thead><tr><th>카드명</th><th>효과</th><th>등급</th></tr></thead>
+          <thead><tr><th>카드명</th><th>효과</th><th>등급</th><th>최대</th></tr></thead>
           <tbody>
-            <tr><td><strong>검의 숙련</strong></td><td>검 투척 데미지 +15%</td><td><span class="badge b-teal">일반</span></td></tr>
-            <tr><td><strong>신속한 투척</strong></td><td>공격 속도 +20% (1.8 → 2.16/s)</td><td><span class="badge b-teal">일반</span></td></tr>
-            <tr><td><strong>장거리 사격</strong></td><td>사거리 +60 (320 → 380)</td><td><span class="badge b-teal">일반</span></td></tr>
-            <tr><td><strong>경량화 갑주</strong></td><td>이동 속도 +15% (220 → 253)</td><td><span class="badge b-teal">일반</span></td></tr>
-            <tr><td><strong>발큐리 심장</strong></td><td>가호 게이지 감소율 -20%</td><td><span class="badge b-amber">고급</span></td></tr>
-            <tr><td><strong>바람의 가호</strong></td><td>바람 질주 쿨 -1s (3 → 2s)</td><td><span class="badge b-amber">고급</span></td></tr>
-            <tr><td><strong>광역 확장</strong></td><td>성스러운 충격파 반경 +50 (220 → 270)</td><td><span class="badge b-amber">고급</span></td></tr>
-            <tr><td><strong>치명 직감</strong></td><td>크리티컬 확률 +10% (15 → 25%)</td><td><span class="badge b-amber">고급</span></td></tr>
-            <tr><td><strong>보주 공명</strong></td><td>보주 수집 시 주변 적 60 광역 피해</td><td><span class="badge b-violet">희귀</span></td></tr>
-            <tr><td><strong>이중 투척</strong></td><td>검 투척이 일정 확률로 2발 발사 (20%)</td><td><span class="badge b-violet">희귀</span></td></tr>
+            <tr><td><strong>검의 숙련</strong></td><td>공격력 ×1.15</td><td><span class="badge b-teal">일반</span></td><td>5회</td></tr>
+            <tr><td><strong>신속한 투척</strong></td><td>공속 +20%</td><td><span class="badge b-teal">일반</span></td><td>5회</td></tr>
+            <tr><td><strong>장거리 사격</strong></td><td>사거리 ×1.25</td><td><span class="badge b-teal">일반</span></td><td>3회</td></tr>
+            <tr><td><strong>경량 갑주</strong></td><td>이동속도 ×1.15</td><td><span class="badge b-teal">일반</span></td><td>4회</td></tr>
+            <tr><td><strong>발키리의 심장</strong></td><td>가호 최대치 +20 & 즉시 회복</td><td><span class="badge b-teal">일반</span></td><td>3회</td></tr>
+            <tr><td><strong>바람의 가호</strong></td><td>질주 쿨 -1s</td><td><span class="badge b-teal">일반</span></td><td>2회</td></tr>
+            <tr><td><strong>인력의 부적</strong></td><td>수집 반경 ×1.3</td><td><span class="badge b-teal">일반</span></td><td>3회</td></tr>
+            <tr><td><strong>광역 확장</strong></td><td>충격파 반경 ×1.3 & 피해 ×1.2</td><td><span class="badge b-amber">희귀</span></td><td>3회</td></tr>
+            <tr><td><strong>치명 직감</strong></td><td>크리티컬 +15%</td><td><span class="badge b-amber">희귀</span></td><td>4회</td></tr>
+            <tr><td><strong>보주 공명</strong></td><td>보주 회복량 ×1.5</td><td><span class="badge b-amber">희귀</span></td><td>3회</td></tr>
+            <tr><td><strong>이중 투척</strong></td><td>동시 2연발 투척</td><td><span class="badge b-violet">영웅</span></td><td>1회</td></tr>
           </tbody>
         </table>
-        <div style="font-size:11px;color:var(--coral);margin-top:6px;">※ 해당 밸런스는 임시입니다.</div>
       </div>
       <div class="gs6 glass accent-top accent-violet" style="padding:22px;">
-        <div class="card-label mb12" style="color:var(--violet);font-size:10px;">🌀 혼합·희귀 카드 풀 (Phase 2 초안)</div>
-        <table class="tbl">
-          <thead><tr><th>카드명</th><th>효과</th><th>등급</th></tr></thead>
+        <div class="card-label mb12" style="color:var(--violet);font-size:10px;">🏹 시설 카드 풀 (6종)</div>
+        <table class="tbl mb16">
+          <thead><tr><th>시설명</th><th>효과</th><th>등급</th></tr></thead>
           <tbody>
-            <tr><td><strong>연계의 포격</strong></td><td>발키리 주변 200 내 시설 데미지 +25%</td><td><span class="badge b-violet">희귀</span></td></tr>
-            <tr><td><strong>축복의 오라</strong></td><td>발키리 근처 시설이 매초 1% HP 회복</td><td><span class="badge b-violet">희귀</span></td></tr>
-            <tr><td><strong>영혼 공유</strong></td><td>가호 100% 시 시설 공격 속도 +30%</td><td><span class="badge b-coral">영웅</span></td></tr>
-            <tr><td><strong>크라켄 표식</strong></td><td>충격파 맞은 적 피해 +30% (8초)</td><td><span class="badge b-coral">영웅</span></td></tr>
+            <tr><td><strong>🏹 석궁 포탑</strong></td><td>근거리 연사 (30dmg/0.6s)</td><td><span class="badge b-teal">일반</span></td></tr>
+            <tr><td><strong>⚔️ 마법 발리스타</strong></td><td>관통 고위력 (110dmg/2.0s)</td><td><span class="badge b-amber">희귀</span></td></tr>
+            <tr><td><strong>⚡ 번개 마법진</strong></td><td>범위 전기 (72dmg/1.8s)</td><td><span class="badge b-amber">희귀</span></td></tr>
+            <tr><td><strong>⛲ 성수 제단</strong></td><td>가호 회복 (+8/3.0s)</td><td><span class="badge b-teal">일반</span></td></tr>
+            <tr><td><strong>🛡️ 수호 결계</strong></td><td>수문 회복 (+15/4.0s)</td><td><span class="badge b-violet">영웅</span></td></tr>
+            <tr><td><strong>🧚 서리 정령</strong></td><td>적 감속 (-25%/5.0s)</td><td><span class="badge b-violet">영웅</span></td></tr>
           </tbody>
         </table>
-        <div style="font-size:11px;color:var(--coral);margin-top:6px;">※ 해당 밸런스는 임시입니다.</div>
 
-        <div class="card-label mt16 mb8" style="color:var(--muted);font-size:10px;">카드 제시 & 밸런스 규칙</div>
+        <div class="card-label mt16 mb8" style="color:var(--muted);font-size:10px;">카드 등급별 출현 확률</div>
         <table class="tbl">
           <tbody>
-            <tr><td><strong>제시 구성</strong></td><td>시설 1 + 발키리 1 + 혼합 1 (카테고리 고정)</td></tr>
-            <tr><td><strong>혼합 카드 확률</strong></td><td>일반 90% / 희귀 8% / 영웅 2%</td></tr>
-            <tr><td><strong>중복 선택</strong></td><td>누적 적용 (스탯형 카드 기준)</td></tr>
-            <tr><td><strong>빌드 검증 기준</strong></td><td>3축 모두 5 Wave 클리어 가능</td></tr>
+            <tr><td><span class="badge b-teal">일반</span></td><td>60%</td></tr>
+            <tr><td><span class="badge b-amber">희귀</span></td><td>30%</td></tr>
+            <tr><td><span class="badge b-violet">영웅</span></td><td>10%</td></tr>
           </tbody>
         </table>
-      </div>
-    </div>
-
-    <div class="grid2">
-      <div class="callout">
-        <div class="callout-l">왜 이 시스템인가</div>
-        <div class="callout-b">시설만 강화하면 <strong>조작 재미가 약해진다</strong>. 발키리만 강화하면 <strong>후반 물량에 무너진다</strong>. 두 축의 균형과 혼합 카드의 특수 효과가 매판의 선택 맛을 만든다.</div>
-      </div>
-      <div class="callout warn">
-        <div class="callout-l">밸런스 설계 방향</div>
-        <div class="callout-b">시설 편중 = 후반 안정 / 발키리 편중 = 조작 부담 증가 / 혼합 편중 = 고위험 고리턴. <strong>세 축 모두 5 Wave 클리어 가능</strong>하도록 수치 조정 필요.</div>
       </div>
     </div>
   </div>
@@ -1904,53 +1452,60 @@ footer{
     <div class="sec-line"></div>
   </div>
   <h2 class="sec-title">보스전</h2>
-  <p class="sec-desc">Wave 5, 최후의 보스전. 세계관 기획서에 등장하는 <strong>"심해에서 올라온 대형 괴수"</strong>의 전초대.</p>
+  <p class="sec-desc">Wave 7, 최후의 보스전. 세계관 기획서에 등장하는 <strong>"심해에서 올라온 대형 괴수"</strong>의 전초대.</p>
 
   <div class="boss-hero mb14">
-    <div class="boss-icon" style="font-size:48px;">🐙</div>
-    <div class="boss-eyebrow">BOSS WAVE · WAVE 5 · FINAL</div>
+    <div class="boss-icon"><img src="AS_Assets/enemies/kraken.png" style="width:96px;height:96px;object-fit:contain;" alt="크라켄"/></div>
+    <div class="boss-eyebrow">BOSS WAVE · WAVE 7 · FINAL</div>
     <div class="boss-title">해양 크라켄</div>
-    <div class="boss-sub">수문을 향해 직진하는 거대한 해양 크라켄. HP 50% 이하에서 색이 붉게 변하며 2페이즈로 전환.</div>
+    <div class="boss-sub">호위병을 전멸시킨 뒤 등장하는 거대한 해양 크라켄. 페이즈별 이동 패턴이 변화하며, HP 구간에 따라 3페이즈로 전환.</div>
     <div class="mt16" style="display:flex;gap:10px;flex-wrap:wrap;">
-      <span class="badge b-coral">HP 500 (기본)</span>
-      <span class="badge b-amber">3패턴 교대</span>
-      <span class="badge b-coral">2페이즈 전환 — HP 50%</span>
-      <span class="badge b-violet">패턴 주기 3.5초</span>
+      <span class="badge b-coral">HP 1,200</span>
+      <span class="badge b-amber">5패턴 + 궁극기</span>
+      <span class="badge b-coral">3페이즈 전환</span>
+      <span class="badge b-violet">웨이포인트 이동</span>
     </div>
   </div>
 
   <div class="g12r mb12">
     <div class="gs7 glass accent-top accent-coral" style="padding:28px;">
-      <div class="card-label mb16" style="color:var(--coral)">BOSS PATTERNS</div>
+      <div class="card-label mb16" style="color:var(--coral)">BOSS PATTERNS (5 + ULTIMATE)</div>
       <div class="pattern-list">
         <div class="pattern">
-          <div class="p-icon">💨</div>
-          <div>
-            <div class="p-name">패턴 1 — 돌진</div>
-            <div class="p-desc">수문을 향해 고속 직선 돌진. 막지 않으면 수문에 큰 피해.</div>
-            <div class="p-tip">→ 발키리가 앞을 막고 검 투척·성스러운 충격파로 저지 / 맞으면 수문 -130 HP (13%)</div>
-          </div>
+          <div class="p-icon">🦑</div>
+          <div><div class="p-name">패턴 1 — 촉수 강타 (Slam)</div>
+            <div class="p-desc">경고 원 표시 후 내려찍기. 범위 내 발키리에게 피해.</div>
+            <div class="p-tip">→ 경고 원 밖으로 대시 회피. Phase 3에서 반경 140px로 확대.</div></div>
         </div>
         <div class="pattern">
           <div class="p-icon">💧</div>
-          <div>
-            <div class="p-name">패턴 2 — 물대포</div>
-            <div class="p-desc">발키리를 향해 부채꼴 6발 (2페이즈: 9발) 투사체 발사.</div>
-            <div class="p-tip">→ 투사체 사이 틈으로 이동 / 바람 질주로 순간 회피 가능</div>
-          </div>
+          <div><div class="p-name">패턴 2 — 먹물 투사체 (Barrage)</div>
+            <div class="p-desc">부채꼴 6발 (P2: 8발, P3: 10발) 투사체 발사.</div>
+            <div class="p-tip">→ 투사체 사이 틈으로 이동 / 바람 질주로 관통 회피</div></div>
         </div>
         <div class="pattern">
-          <div class="p-icon" style="display:flex;align-items:center;justify-content:center;">
-            <svg viewBox="0 0 56 32" style="width:30px;height:18px;filter:drop-shadow(0 0 5px rgba(0,229,255,.7));">
-              <path d="M4,16 Q14,5 34,9 L50,3 L46,16 L50,29 L34,23 Q14,27 4,16 Z" fill="rgba(0,229,255,.25)" stroke="#00e5ff" stroke-width="1.5" stroke-linejoin="round"/>
-              <circle cx="38" cy="14" r="1.6" fill="#00e5ff"/>
-            </svg>
-          </div>
-          <div>
-            <div class="p-name">패턴 3 — 잡몹 소환</div>
-            <div class="p-desc">주변에 2~4마리 (2페이즈: 4~6마리) 소환. 보스+잡몹 동시 상대.</div>
-            <div class="p-tip">→ 방어 시설이 잡몹 처리를 지원. 플레이어는 보스에 집중 공격</div>
-          </div>
+          <div class="p-icon">🌀</div>
+          <div><div class="p-name">패턴 3 — 잉크 감속 지대 (Ink Zone)</div>
+            <div class="p-desc">바닥에 감속 구역 설치 (반경 160px). 진입 시 이동속도 -40%.</div>
+            <div class="p-tip">→ 감속 지대 회피하며 포지셔닝. P3에서 2개 동시 설치.</div></div>
+        </div>
+        <div class="pattern">
+          <div class="p-icon">🐟</div>
+          <div><div class="p-name">패턴 4 — 잡몹 소환 (Summon)</div>
+            <div class="p-desc">3~4마리 소환 (P2: 4~5, P3: 5~6). 보스+잡몹 동시 상대.</div>
+            <div class="p-tip">→ 방어 시설이 잡몹 처리 지원. 플레이어는 보스 집중.</div></div>
+        </div>
+        <div class="pattern">
+          <div class="p-icon">🎯</div>
+          <div><div class="p-name">패턴 5 — 조준 투사체 (Snipe)</div>
+            <div class="p-desc">플레이어 조준 고속 투사체 1발 (P3: 2발). 높은 피해.</div>
+            <div class="p-tip">→ 발사 순간 대시로 회피. 벽에 닿으면 소멸.</div></div>
+        </div>
+        <div class="pattern" style="border-color:rgba(255,94,91,.3);background:rgba(255,94,91,.03);">
+          <div class="p-icon">💀</div>
+          <div><div class="p-name">궁극기 — 심해 격류 (Ultimate)</div>
+            <div class="p-desc">HP 25% 이하에서 1회 발동. 화면 전체 투사체 + 잉크 지대 동시 공격.</div>
+            <div class="p-tip">→ 투사체 회피 + 감속 지대 회피를 동시에 수행. 풀 집중 구간.</div></div>
         </div>
       </div>
     </div>
@@ -1959,21 +1514,20 @@ footer{
         <div class="card-label mb12" style="color:var(--amber)">BOSS SPEC</div>
         <table class="tbl">
           <tbody>
-            <tr><td><strong>기본 HP</strong></td><td>500 (수문 Lv.1~5 기준)</td></tr>
-            <tr><td><strong>패턴 주기</strong></td><td>3.5초</td></tr>
-            <tr><td><strong>돌진 피해</strong></td><td style="color:var(--coral);">수문 -130 (13%)</td></tr>
-            <tr><td><strong>물대포 피해</strong></td><td style="color:var(--amber);">수문 -80 (8%)</td></tr>
-            <tr><td><strong>쫄다구 피해</strong></td><td>수문 -25 각 (2.5%)</td></tr>
-            <tr><td><strong>2페이즈 조건</strong></td><td>HP 50% 이하</td></tr>
-            <tr><td><strong>2페이즈 변화</strong></td><td>돌진 2회 연속, 물대포 9발, 쫄다구 4~6마리</td></tr>
-            <tr><td><strong>색상 변화</strong></td><td>붉은 발광으로 전환</td></tr>
+            <tr><td><strong>HP</strong></td><td>1,200</td></tr>
+            <tr><td><strong>히트박스</strong></td><td>70px (원형)</td></tr>
+            <tr><td><strong>수문 접촉 피해</strong></td><td style="color:var(--coral);">200</td></tr>
+            <tr><td><strong>이동 방식</strong></td><td>웨이포인트 + 이징 보간</td></tr>
+            <tr><td><strong>Phase 1</strong></td><td>HP 100~60% — 8자 순회</td></tr>
+            <tr><td><strong>Phase 2</strong></td><td>HP 60~30% — 플레이어 추적 40%</td></tr>
+            <tr><td><strong>Phase 3</strong></td><td>HP 30% 이하 — 위협 다이브 + 오버헤드</td></tr>
+            <tr><td><strong>궁극기</strong></td><td>HP 25% 이하 1회 — 전방위 공격</td></tr>
           </tbody>
         </table>
-        <div style="font-size:11px;color:var(--coral);margin-top:6px;">※ 해당 밸런스는 임시입니다.</div>
       </div>
       <div class="callout danger">
-        <div class="callout-l">2페이즈 경고</div>
-        <div class="callout-b">HP 50% 시 붉은 발광 + <strong>경고 연출</strong>. 물대포 탄수 증가, 돌진 횟수 증가. 방어 시설 없이는 생존 어려움.</div>
+        <div class="callout-l">3페이즈 경고</div>
+        <div class="callout-b">HP 30% 이하에서 보스가 <strong>위협 다이브</strong>(y=320)로 수문에 가까이 접근. 투사체 수 증가, 잉크 2개 동시 설치. 방어 시설 없이는 생존 어려움.</div>
       </div>
     </div>
   </div>
@@ -2004,23 +1558,10 @@ footer{
       <div class="result">
         <div class="r-title">🛡️ 습격 방어 성공!</div>
         <div style="font-size:13.5px;color:var(--muted);line-height:1.9;">
-          수문 잔여 HP &nbsp; <strong style="color:var(--teal)">68%</strong> &nbsp;<span style="font-size:11px;color:var(--muted);">(★★☆ — 80% 이상이면 ★★★)</span><br>
+          수문 잔여 HP &nbsp; <strong style="color:var(--teal)">73%</strong><br>
           처치한 생물 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--white)">47마리</strong><br>
-          건설한 시설 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--amber)">3개</strong> &nbsp;<span style="font-size:11px;color:var(--muted);">/ 최고 Lv.2</span><br>
+          도달 Wave &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--amber)">7/7</strong><br>
           보스 처치 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--amber)">✓ 완료</strong>
-        </div>
-        <hr class="r-sep">
-        <!-- 이번 런 빌드 -->
-        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">이번 런 빌드</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-          <span style="font-size:11px;background:rgba(255,184,48,.12);border:1px solid rgba(255,184,48,.3);border-radius:4px;padding:2px 7px;color:var(--amber);">🏹 석궁 포탑 Lv.2</span>
-          <span style="font-size:11px;background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.25);border-radius:4px;padding:2px 7px;color:var(--cyan);">⚡ 전기충격 Lv.1</span>
-          <span style="font-size:11px;background:rgba(255,94,91,.1);border:1px solid rgba(255,94,91,.25);border-radius:4px;padding:2px 7px;color:var(--coral);">🛡️ 방어막 Lv.1</span>
-        </div>
-        <!-- 뱃지 -->
-        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">획득 뱃지</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-          <span style="font-size:11px;background:rgba(123,111,240,.12);border:1px solid rgba(123,111,240,.3);border-radius:4px;padding:2px 7px;color:var(--violet);">⚡ 감전 특화 빌드</span>
         </div>
         <hr class="r-sep">
         <div style="font-size:12px;color:var(--muted);">
@@ -2034,15 +1575,9 @@ footer{
       <div class="result fail">
         <div class="r-title">💀 수문 함락...</div>
         <div style="font-size:13.5px;color:var(--muted);line-height:1.9;">
-          도달한 Wave &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--white)">Wave 3</strong><br>
+          도달한 Wave &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--white)">Wave 4</strong><br>
           처치한 생물 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--white)">18마리</strong><br>
-          건설한 시설 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--amber)">1개</strong><br>
           수문 피해 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--coral)">-15%</strong>
-        </div>
-        <hr class="r-sep">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">이번 런 빌드</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-          <span style="font-size:11px;background:rgba(255,184,48,.12);border:1px solid rgba(255,184,48,.3);border-radius:4px;padding:2px 7px;color:var(--amber);">🏹 석궁 포탑 Lv.1</span>
         </div>
         <hr class="r-sep">
         <div style="font-size:12px;color:var(--coral);">⚠ 수문 HP가 감소했습니다.<br>수리 재료로 복구하세요.</div>
@@ -2057,17 +1592,6 @@ footer{
         <div style="background:rgba(255,40,40,.14);border:1px solid rgba(255,80,80,.4);border-radius:8px;padding:10px 14px;font-size:14px;text-align:center;">
           <strong style="color:#ff3b38;font-size:16px;letter-spacing:.04em;">수문 HP -10%</strong><br>
           <span style="color:rgba(255,160,160,.6);font-size:11px;">즉시 적용 · 복구 불가</span>
-        </div>
-      </div>
-      <!-- 뱃지 종류 -->
-      <div class="glass accent-top accent-violet" style="padding:16px;margin-top:8px;">
-        <div class="card-label mb8" style="color:var(--violet);font-size:10px;">BADGE LIST</div>
-        <div style="font-size:11.5px;color:var(--muted);line-height:2.1;">
-          🛡️ <strong style="color:var(--white);">수문 무결</strong> — HP 100% 클리어<br>
-          ⚡ <strong style="color:var(--white);">감전 특화</strong> — 전기충격기 Lv.3 달성<br>
-          🚀 <strong style="color:var(--white);">포격 장인</strong> — 시설 5개 건설<br>
-          💀 <strong style="color:var(--white);">솔로 킬러</strong> — 보스 단독 처치<br>
-          ⚡ <strong style="color:var(--white);">속전속결</strong> — Wave 4 이내 클리어
         </div>
       </div>
     </div>
@@ -2086,34 +1610,6 @@ footer{
         </table>
       </div>
     </div>
-    <div class="gs12">
-      <div class="glass accent-top accent-cyan" style="padding:24px;">
-        <div class="card-label mb12" style="color:var(--cyan)">WORLD INTEGRATION</div>
-        <div class="flow" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
-          <div class="flow-item">
-            <div class="flow-node fn-c">◈</div>
-            <div class="flow-text">
-              <div class="t">수문 레벨 연동</div>
-              <div class="d">레벨 ↑ = 습격 강도 ↑ — 성장과 위협이 함께 커진다</div>
-            </div>
-          </div>
-          <div class="flow-item">
-            <div class="flow-node fn-t">◈</div>
-            <div class="flow-text">
-              <div class="t">방어 시설 → 영지 연동</div>
-              <div class="d">클리어 시 획득한 수리 재료로 본 게임 수문 HP 회복 가능 (추후 연동)</div>
-            </div>
-          </div>
-          <div class="flow-item">
-            <div class="flow-node fn-r">◈</div>
-            <div class="flow-text">
-              <div class="t">보스 = 레이드 전초전</div>
-              <div class="d">대형 괴수 세계관과 미니게임 보스를 연결</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- WIN/LOSE -->
@@ -2123,14 +1619,14 @@ footer{
       <table class="tbl">
         <thead><tr><th colspan="2" style="color:var(--teal)">✅ 승리 조건</th></tr></thead>
         <tbody>
-          <tr><td><strong>Wave 5 보스 처치</strong></td><td>수문 HP 1 이상 유지 시 클리어</td></tr>
+          <tr><td><strong>Wave 7 보스 처치</strong></td><td>수문 HP 1 이상 유지 시 클리어</td></tr>
         </tbody>
       </table>
       <table class="tbl">
         <thead><tr><th colspan="2" style="color:var(--coral)">❌ 패배 조건</th></tr></thead>
         <tbody>
-          <tr><td><strong>수문 HP 0</strong></td><td>물고기가 수문을 파괴</td></tr>
-          <tr><td><strong>가호 게이지 0% 지속</strong></td><td>수문 HP -2%/초 자동 감소 (캡슐 수집 시 중단)</td></tr>
+          <tr><td><strong>수문 HP 0</strong></td><td>적이 수문을 파괴</td></tr>
+          <tr><td><strong>가호 게이지 0% 지속</strong></td><td>수문 HP -2%/초 자동 감소</td></tr>
           <tr><td><strong>1시간 미응전</strong></td><td>자동 패배 처리</td></tr>
         </tbody>
       </table>
@@ -2141,7 +1637,7 @@ footer{
 </div><!-- /wrap -->
 
 <footer>
-  ABYSSAL SIEGE &nbsp;·&nbsp; 심해 습격 미니게임 기획서 v0.8 &nbsp;·&nbsp; 2026-04-15 &nbsp;·&nbsp; 발키리, 성 수문을 사수하라
+  ABYSSAL SIEGE &nbsp;·&nbsp; 심해 습격 미니게임 기획서 v2.0 &nbsp;·&nbsp; 2026-04-16 &nbsp;·&nbsp; 발키리, 성 수문을 사수하라
 </footer>
 
 <script>
@@ -2159,6 +1655,55 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { rootMargin: '-30% 0px -60% 0px' });
 sections.forEach(s => observer.observe(s));
+
+// ═══════════════════════════════
+// Screenshot Carousel
+// ═══════════════════════════════
+(function(){
+  const labels = ['타이틀 화면', '게임플레이', '카드 드래프트', '보스전', '결과 화면'];
+  const track = document.getElementById('carouselTrack');
+  const dotsWrap = document.getElementById('carouselDots');
+  const labelEl = document.getElementById('carouselLabel');
+  const imgs = track.querySelectorAll('img');
+  let current = 0;
+  const total = imgs.length;
+
+  // Create dots
+  for(let i = 0; i < total; i++){
+    const dot = document.createElement('div');
+    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(dot);
+  }
+
+  function goTo(idx){
+    current = ((idx % total) + total) % total;
+    track.style.transform = 'translateX(-' + (current * 100) + '%)';
+    dotsWrap.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    labelEl.textContent = labels[current] || '';
+  }
+
+  window.moveCarousel = function(dir){ goTo(current + dir); };
+
+  // Touch / mouse drag support
+  let startX = 0, isDrag = false;
+  track.addEventListener('pointerdown', e => { startX = e.clientX; isDrag = true; track.setPointerCapture(e.pointerId); });
+  track.addEventListener('pointermove', e => {
+    if(!isDrag) return;
+    const diff = e.clientX - startX;
+    const pct = current * 100 - (diff / track.offsetWidth) * 100;
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(-' + pct + '%)';
+  });
+  track.addEventListener('pointerup', e => {
+    if(!isDrag) return;
+    isDrag = false;
+    track.style.transition = '';
+    const diff = e.clientX - startX;
+    if(Math.abs(diff) > 50) goTo(current + (diff < 0 ? 1 : -1));
+    else goTo(current);
+  });
+})();
 </script>
 </body>
 </html>
