@@ -28,6 +28,7 @@ body{
   font-family:'Noto Sans KR',sans-serif;
   background:var(--ink);
   color:var(--white);
+  overflow-x:hidden;
   min-height:100vh;
   overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
@@ -574,6 +575,7 @@ body{
 .gs7{grid-column:span 7;} .gs8{grid-column:span 8;} .gs12{grid-column:span 12;}
 
 .ds-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.enemy-detail-grid{display:grid;grid-template-columns:1.9fr 1fr;gap:12px;}
 .ds{
   background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);
   border-radius:14px;padding:16px;
@@ -637,6 +639,124 @@ footer{
   text-align:center;margin-top:6px;
   font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--muted);font-weight:500;
 }
+
+/* ═══════════════════════════════════════
+   MOBILE RESPONSIVE
+═══════════════════════════════════════ */
+@media(max-width:768px){
+  /* 전역 */
+  .wrap{padding:0 16px 60px;}
+
+  /* 네비게이션 — 링크 숨기고 로고+버전만 */
+  .nav{padding:0 14px;gap:8px;height:48px;}
+  .nav-links{display:none;}
+  .nav-end{gap:6px;}
+  .nav-ver{font-size:8px;padding:2px 6px;}
+  .nav-status{display:none;}
+  .nav-logo-sub{display:none;}
+
+  /* CTA 버튼 */
+  .float-cta{top:auto;bottom:12px;right:12px;left:12px;
+    flex-direction:row;justify-content:center;align-items:center;}
+  .dl-btn{padding:10px 14px;font-size:11px;flex:1;justify-content:center;text-align:center;}
+  .dl-btn .dl-size{display:none;}
+
+  /* 히어로 */
+  .hero{min-height:auto;padding:72px 0 40px;}
+  .hero-title{font-size:clamp(32px,10vw,52px);}
+  .hero-sub{font-size:14px;max-width:100%;}
+  .hero-pills{gap:6px;}
+  .pill{font-size:10px;padding:5px 10px;}
+  .hero-kpi{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .kpi{padding:14px;}
+  .kpi-val{font-size:28px;}
+  .hero-scroll{display:none;}
+
+  /* 섹션 */
+  .sec-title{font-size:24px;}
+  .sec-desc{font-size:13px;}
+
+  /* Bento 그리드 — 전부 1열 */
+  .bento{grid-template-columns:1fr;}
+  .b1,.b2,.b3,.b4,.b5,.b6,.b7{grid-column:span 1;}
+
+  /* 12-col 그리드 — 전부 1열 */
+  .g12r{grid-template-columns:1fr;}
+  .gs3,.gs4,.gs5,.gs6,.gs7,.gs8,.gs12{grid-column:span 1;}
+
+  /* Flow (설계 원칙 / 우선순위 가이드) */
+  .flow-item{gap:10px;padding:10px;}
+  .flow-text{min-width:0;overflow-wrap:break-word;word-break:keep-all;}
+  .flow-text .t{font-size:14px;}
+  .flow-text .d{font-size:12px;}
+  .flow-node{width:28px;height:28px;font-size:11px;flex-shrink:0;}
+
+  /* Wave 카드 */
+  .wave-row{flex-direction:column;gap:8px;}
+  .wc{min-width:0;}
+
+  /* 적 그리드 — 2열 */
+  .enemy-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+
+  /* 생존자 카드 — 1열 */
+  .sv-grid{grid-template-columns:1fr;gap:8px;}
+
+  /* 추가 그리드 — 1열 */
+  .grid2,.grid3,.ds-grid,.enemy-detail-grid{grid-template-columns:1fr;}
+
+  /* 테이블 — 스크롤 가능 */
+  .tbl{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .tbl thead,.tbl tbody,.tbl tr,.tbl th,.tbl td{white-space:nowrap;}
+  .tbl th{padding:8px 10px;font-size:10px;}
+  .tbl td{padding:8px 10px;font-size:12px;}
+
+  /* 보스 섹션 */
+  .boss-hero{padding:24px 16px;}
+  .boss-icon{position:relative;right:auto;top:auto;transform:none;
+    display:block;text-align:center;margin-bottom:16px;}
+  .boss-icon img{width:72px!important;height:72px!important;}
+  .boss-title{font-size:28px;}
+  .boss-sub{max-width:100%;font-size:13px;}
+  .boss-hero::before{width:160px;height:160px;right:-30px;top:-30px;}
+
+  /* 패턴 리스트 */
+  .pattern{flex-direction:column;gap:8px;padding:12px;}
+
+  /* Glass 카드 */
+  .glass{padding:16px!important;border-radius:14px;}
+  .card-title{font-size:15px;}
+  .card-sub{font-size:11.5px;}
+
+  /* 캐러셀 */
+  .carousel-wrap{border-radius:12px;}
+  .carousel-btn{width:28px;height:28px;font-size:14px;}
+
+  /* Callout */
+  .callout{padding:10px 12px;}
+  .callout-l{font-size:11px;}
+  .callout-b{font-size:12px;}
+
+  /* 진입방식 카드 */
+  .trig-row{flex-direction:column!important;gap:8px;}
+  .trig{border-radius:12px!important;border-right:1px solid rgba(255,255,255,.07)!important;min-width:0;}
+  .trig::after{display:none;}
+  .trig-row > *{flex:none!important;width:100%!important;}
+
+  /* Oxy-bar (가호 게이지) */
+  .oxy-bar{flex-wrap:wrap;gap:6px;}
+
+  /* 보상 카드 그리드 */
+  .result-cards{flex-direction:column!important;}
+  .result-cards > *{width:100%!important;}
+}
+
+/* 작은 모바일 (< 400px) */
+@media(max-width:400px){
+  .hero-title{font-size:28px;}
+  .hero-kpi{grid-template-columns:1fr;}
+  .enemy-grid{grid-template-columns:1fr;}
+  .nav-logo-name{font-size:10px;}
+}
 </style>
 </head>
 <body>
@@ -648,7 +768,7 @@ footer{
   </a>
   <a href="index.html" class="dl-btn play">
     <span class="dl-icon">🎮</span>
-    <span>웹에서 바로 플레이</span>
+    <span>웹에서 바로 플레이<br><span style="font-size:9px;opacity:.7;font-weight:500;">(PC 전용)</span></span>
   </a>
 </div>
 
@@ -1168,7 +1288,7 @@ footer{
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1.9fr 1fr;gap:12px;">
+  <div class="enemy-detail-grid">
     <div class="glass accent-top accent-cyan" style="padding:24px;">
       <div class="card-label mb12" style="color:var(--cyan)">ENEMY STATS — v2.0 현재 밸런스</div>
       <table class="tbl mb8">
