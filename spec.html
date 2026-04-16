@@ -1386,7 +1386,8 @@ footer{
         <div class="card-label mb10" style="color:var(--cyan);font-size:10px;">🏰 수문 방어</div>
         <div class="card-body">
           <strong>수문은 넉넉하지만 방치하면 급격히 무너집니다.</strong> 가호 게이지가 0%가 되면 수문 HP가 빠르게 줄어 위기감을 조성합니다.<br><br>
-          <strong>보주 수집이 핵심 루프</strong> — 적을 처치하고 보주를 주워 가호를 유지하는 것이 게임의 기본 흐름입니다. 보주를 놓치면 수문이 위험해지는 긴장 구조.
+          <strong>보주 수집이 핵심 루프</strong> — 적을 처치하고 보주를 주워 가호를 유지하는 것이 게임의 기본 흐름입니다. 보주를 놓치면 수문이 위험해지는 긴장 구조.<br><br>
+          <strong>수문은 HP에 따라 외형이 변합니다.</strong> 건강한 상태에서 서서히 붕괴되는 모습이 시각적으로 위기감을 전달합니다. (아래 상세)
         </div>
       </div>
       <div class="gs4 glass" style="padding:18px;">
@@ -1396,6 +1397,53 @@ footer{
           <strong>보조형 3종</strong> — 성수 제단(가호 회복), 수호 결계(수문 회복), 서리 정령(적 감속)으로 방어 라인을 구축합니다. 공격형과 보조형을 섞는 것이 핵심.
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- 수문 상태 시스템 -->
+  <div class="glass accent-top accent-cyan" style="padding:28px;margin-bottom:12px;">
+    <div class="card-label mb4" style="color:var(--cyan)">GATE STATUS</div>
+    <div class="card-title mb4">수문 상태 — HP에 따른 외형 변화</div>
+    <div class="card-sub mb16">수문은 HP가 줄어들수록 <strong>점차 붕괴되는 모습</strong>으로 변합니다. 플레이어가 수문의 위험도를 직관적으로 인지할 수 있도록 4단계 비주얼 시스템을 적용합니다.</div>
+
+    <div class="g12r mb16">
+      <div class="gs3 glass" style="padding:14px;text-align:center;">
+        <img src="AS_Assets/gate/gate_100.png" style="width:100px;height:auto;object-fit:contain;margin-bottom:8px;filter:drop-shadow(0 0 12px rgba(0,229,255,.4));" alt="건강"/>
+        <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--teal);margin-bottom:4px;">건강 (76%~100%)</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6;">
+          푸른 결정체가 빛나는 온전한 상태.<br>
+          <strong style="color:var(--cyan);">파란 보호막</strong> 활성, 시안 글로우.
+        </div>
+      </div>
+      <div class="gs3 glass" style="padding:14px;text-align:center;">
+        <img src="AS_Assets/gate/gate_60.png" style="width:100px;height:auto;object-fit:contain;margin-bottom:8px;filter:drop-shadow(0 0 12px rgba(0,180,255,.3));" alt="균열"/>
+        <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">균열 (51%~75%)</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6;">
+          돌 틈에 균열이 생기고 철봉이 휘어짐.<br>
+          보호막 <strong style="color:var(--amber);">약화</strong>, 글로우 감소.
+        </div>
+      </div>
+      <div class="gs3 glass" style="padding:14px;text-align:center;">
+        <img src="AS_Assets/gate/gate_30.png" style="width:100px;height:auto;object-fit:contain;margin-bottom:8px;filter:drop-shadow(0 0 12px rgba(255,160,40,.5));" alt="심각 손상"/>
+        <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--coral);margin-bottom:4px;">심각 손상 (26%~50%)</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6;">
+          벽이 무너지고 결정체가 거의 꺼짐.<br>
+          <strong style="color:var(--coral);">연기</strong> 발생, 주황 글로우.
+        </div>
+      </div>
+      <div class="gs3 glass" style="padding:14px;text-align:center;">
+        <img src="AS_Assets/gate/gate_danger.png" style="width:100px;height:auto;object-fit:contain;margin-bottom:8px;filter:drop-shadow(0 0 16px rgba(255,60,60,.7));" alt="붕괴 직전"/>
+        <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:#ff4d6d;margin-bottom:4px;">붕괴 직전 (0%~25%)</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6;">
+          잔해만 남고 붉은 잔불이 피어오름.<br>
+          <strong style="color:#ff4d6d;">빨간 펄스</strong> + 불씨 파티클.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-l">시각적 위기 전달</div>
+      <div class="callout-b">수문의 외형 변화는 HP바를 보지 않아도 현재 위험 상태를 직관적으로 전달합니다. 결계(보호막)가 사라지고 연기와 불씨가 피어오르면 즉각적인 위기감을 느끼게 됩니다.</div>
     </div>
   </div>
 
