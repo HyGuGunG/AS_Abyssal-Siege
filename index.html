@@ -6,6 +6,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="screen-orientation" content="landscape">
+<meta name="x5-orientation" content="landscape">
+<meta name="browsermode" content="application">
 <title>Abyssal Siege — 심해 습격</title>
 <style>
   :root{
@@ -1017,6 +1020,7 @@
   <div class="ow-icon">📱</div>
   <div class="ow-text">화면을 가로로 돌려주세요</div>
   <div class="ow-sub">이 게임은 가로 모드에서 플레이합니다</div>
+  <div class="ow-sub" style="margin-top:16px;color:var(--cyan);font-weight:700;font-size:14px;">터치하면 자동 전환</div>
 </div>
 <!-- 모바일 모드 토글 -->
 <button id="mobileToggle">📱 터치 모드</button>
@@ -1692,6 +1696,8 @@ const WAVE_DEFS=[
 ];
 
 function startGame(){
+  // 모바일: 게임 시작 시 가로 전환 시도
+  if(typeof tryLockLandscape==='function') tryLockLandscape();
   state.running=true; state.phase='playing';
   state.wave=1;
   state.gameStartTime=performance.now(); state.playElapsed=0;
@@ -4120,10 +4126,35 @@ if(AUTOPLAY){
   checkShowToggle();
   window.addEventListener('resize', checkShowToggle);
 
+  // 가로 모드 강제 전환 시도 (전체화면 + 가로 잠금)
+  window.tryLockLandscape = tryLockLandscape;
+  function tryLockLandscape(){
+    const el = document.documentElement;
+    const goFS = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if(goFS){
+      goFS.call(el).then(()=>{
+        if(screen.orientation && screen.orientation.lock){
+          screen.orientation.lock('landscape').catch(()=>{});
+        }
+      }).catch(()=>{
+        // fullscreen 거부 시에도 orientation lock 시도
+        if(screen.orientation && screen.orientation.lock){
+          screen.orientation.lock('landscape').catch(()=>{});
+        }
+      });
+    } else if(screen.orientation && screen.orientation.lock){
+      screen.orientation.lock('landscape').catch(()=>{});
+    }
+  }
+
   // 자동 활성화: 터치 디바이스이고 화면이 작으면
   if(isTouchDevice && window.innerWidth <= 1024){
     enableMobile();
+    tryLockLandscape();
   }
+
+  // orientWarn 닫기 버튼 — 터치 시 가로 전환 재시도
+  document.getElementById('orientWarn').addEventListener('click', tryLockLandscape);
 
   toggle.addEventListener('click', ()=>{
     if(mobileMode) disableMobile(); else enableMobile();
