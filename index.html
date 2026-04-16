@@ -167,15 +167,12 @@
   #gate.dmg-2 .gate-smoke{opacity:1}
   #gate.dmg-2 .gate-img{filter:brightness(.9) saturate(.85)}
   /* 단계 3: 25% — 붕괴 직전 */
-  #gate.dmg-3{filter:drop-shadow(0 0 30px rgba(255,50,50,.8)) drop-shadow(0 0 60px rgba(255,20,0,.35));
-    animation:gateDangerPulse .9s ease-in-out infinite}
+  #gate.dmg-3{filter:drop-shadow(0 0 30px rgba(255,50,50,.8)) drop-shadow(0 0 60px rgba(255,20,0,.35))}
   #gate.dmg-3 .barrier{opacity:0}
   #gate.dmg-3 .gate-smoke{opacity:1;
     background:radial-gradient(ellipse at center bottom,rgba(120,20,0,.5) 0%,rgba(80,10,0,.3) 40%,transparent 65%)}
   #gate.dmg-3 .gate-embers-fx{opacity:1}
   #gate.dmg-3 .gate-img{filter:brightness(.8) saturate(.7) sepia(.15)}
-  @keyframes gateDangerPulse{0%,100%{filter:drop-shadow(0 0 30px rgba(255,50,50,.8)) drop-shadow(0 0 60px rgba(255,20,0,.35))}
-    50%{filter:drop-shadow(0 0 45px rgba(255,30,30,1)) drop-shadow(0 0 80px rgba(255,0,0,.5))}}
 
   .item{filter:drop-shadow(0 0 10px var(--cyan));animation:bob 1.2s ease-in-out infinite}
   .item.normal{width:40px;height:40px;filter:drop-shadow(0 0 8px #b4c4d8)}
