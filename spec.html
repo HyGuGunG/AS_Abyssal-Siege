@@ -714,7 +714,7 @@ footer{
     display:flex;align-items:center;gap:6px;z-index:2;
     transition:opacity .4s;white-space:nowrap;}
   .tbl-wrap .tbl-hint.hide{opacity:0;}
-  .tbl-wrap::after{content:'';position:absolute;top:0;right:0;bottom:0;width:28px;
+  .tbl-wrap.has-scroll::after{content:'';position:absolute;top:0;right:0;bottom:0;width:28px;
     background:linear-gradient(to right,transparent,rgba(0,0,0,.35));
     pointer-events:none;z-index:1;transition:opacity .3s;}
   .tbl-wrap.scrolled-end::after{opacity:0;}
@@ -1807,6 +1807,8 @@ sections.forEach(s => observer.observe(s));
     // 스크롤이 필요한지 확인
     requestAnimationFrame(() => {
       if(scroll.scrollWidth <= scroll.clientWidth + 2) return;
+      // 스크롤 필요 표시
+      wrap.classList.add('has-scroll');
       // 힌트 생성
       const hint = document.createElement('div');
       hint.className = 'tbl-hint';

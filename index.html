@@ -985,7 +985,8 @@
   /* ═══ MOBILE TOUCH CONTROLS ═══ */
   /* 모바일 컨트롤은 #stage 내부에 위치 (1280×720 좌표계) */
   #mobileControls{display:none;position:absolute;z-index:9999;top:0;left:0;width:1280px;height:720px;pointer-events:none;}
-  body.mobile-mode #mobileControls{display:block;}
+  body.mobile-mode.game-playing #mobileControls{display:block;}
+  body.mobile-mode.game-playing.draft-open #mobileControls{display:none;}
   body.mobile-mode #hudControls{display:none!important;}
 
   /* 가상 조이스틱 */
@@ -1765,6 +1766,7 @@ function startGame(){
   player.orbMultiplier=1; player.shockwaveRadius=220; player.shockwaveDmg=90;
   player.pickupRadius=120;
   skills.Q.cd=0; skills.Q.max=3; skills.E.cd=0; skills.E.max=18;
+  document.body.classList.add('game-playing');
   document.getElementById('titleScreen').classList.add('hidden');
   document.getElementById('resultScreen').classList.add('hidden');
   document.getElementById('cardDraft').classList.remove('show');
@@ -1959,6 +1961,7 @@ function openCardDraft(){
   });
   state.draftPicks=picks;
   draft.classList.add('show');
+  document.body.classList.add('draft-open');
 }
 function selectCard(card,el){
   if(state.phase!=='carddraft') return;
@@ -1973,6 +1976,7 @@ function selectCard(card,el){
   // v1.1.7: 스탯 패널 슬라이드 인 제거 (패널 삭제됨)
   setTimeout(()=>{
     document.getElementById('cardDraft').classList.remove('show');
+    document.body.classList.remove('draft-open');
     beginWave(state.wave+1);
   }, 550);
 }
@@ -2163,6 +2167,7 @@ function openFacilityDraft(slotIdx){
     row.appendChild(wrap);
   });
   draft.classList.add('show');
+  document.body.classList.add('draft-open');
 }
 function selectFacility(f, el){
   if(state.phase!=='facilitydraft') return;
@@ -2181,6 +2186,7 @@ function selectFacility(f, el){
   if(el) el.classList.add('selected');
   setTimeout(()=>{
     document.getElementById('cardDraft').classList.remove('show');
+    document.body.classList.remove('draft-open');
     // 다음 슬롯 오픈 준비
     state.slotTier++;
     refreshSlotUI();
@@ -2508,6 +2514,7 @@ function showResult(win){
     bestEl.textContent='';
     bestEl.className='result-best';
   }
+  document.body.classList.remove('game-playing');
   scr.classList.remove('hidden');
   // 카운트업 시퀀스 — 등급 먼저 등장, 이후 숫자 롤업
   setTimeout(()=>{
