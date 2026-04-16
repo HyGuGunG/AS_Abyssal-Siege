@@ -298,7 +298,7 @@
     color:#fff;font-size:10px;letter-spacing:.05em;text-shadow:0 0 4px var(--cyan);margin-right:4px}
 
   /* 우하 플레이어 스탯 — v1.1.1 폰트/패딩 축소 */
-  #hudRightStack{position:absolute;bottom:14px;right:14px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;z-index:5;pointer-events:none}
+  #hudRightStack{position:absolute;bottom:14px;right:14px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;z-index:5;pointer-events:none;transition:opacity .3s ease}
   #hudRightStack>*{pointer-events:auto}
   #hudPlayer{position:static;min-width:150px;font-size:9px;padding:6px 8px}
   #hudPlayer .p-label{margin-bottom:3px;font-size:9px}
@@ -1071,7 +1071,30 @@
   @keyframes rotPhone{0%,100%{transform:rotate(0deg)}50%{transform:rotate(90deg)}}
   @media(max-width:768px) and (orientation:portrait){
     #orientWarn{display:flex!important;}
+    #orientWarn.ow-dismissed{display:none!important;}
   }
+
+  /* === 모바일 세로 (portrait-mode) UI 최적화 === */
+  body.portrait-mode{align-items:flex-end}
+  body.portrait-mode #stage{transform-origin:center bottom}
+  body.portrait-mode #skillBar{
+    bottom:6px;left:6px;gap:4px;padding:4px 6px;border-radius:8px;
+  }
+  body.portrait-mode #skillBar .sb-slot{width:40px;gap:1px}
+  body.portrait-mode #skillBar .sb-atk{width:36px;height:36px;border-radius:8px;font-size:16px}
+  body.portrait-mode #skillBar .sb-label{font-size:6px}
+  body.portrait-mode .skill-keycap{display:none}
+  body.portrait-mode .skill-slot{width:40px}
+  body.portrait-mode .skill-btn{width:36px;height:36px}
+  body.portrait-mode .skill-btn .skill-img{width:30px;height:30px;inset:3px}
+  body.portrait-mode .sb-atk-gauge{width:34px;height:4px}
+  body.portrait-mode #hudRightStack{bottom:6px;right:6px;gap:3px}
+  body.portrait-mode #hudPlayer{min-width:100px;font-size:7px;padding:3px 5px}
+  body.portrait-mode #hudCards{max-width:120px;font-size:9px}
+  body.portrait-mode #hudWave{padding:3px 12px;min-width:100px}
+  body.portrait-mode #hudWave .wv-tag{font-size:8px}
+  body.portrait-mode #hudWave .wv-num{font-size:14px}
+  body.portrait-mode #hudWaveInfo{min-width:100px;font-size:9px;padding:4px 6px}
 
   /* === 모바일 가로 (wide-mode) UI 최적화 === */
   body.wide-mode #skillBar{
@@ -1116,8 +1139,9 @@
 <div id="orientWarn">
   <div class="ow-icon">📱</div>
   <div class="ow-text">화면을 가로로 돌려주세요</div>
-  <div class="ow-sub">이 게임은 가로 모드에서 플레이합니다</div>
+  <div class="ow-sub">이 게임은 가로 모드에서 최적화되어 있습니다</div>
   <div class="ow-sub" style="margin-top:16px;color:var(--cyan);font-weight:700;font-size:14px;">터치하면 자동 전환</div>
+  <div class="ow-skip" id="orientSkip" style="margin-top:12px;font-size:12px;color:rgba(255,255,255,.4);cursor:pointer;text-decoration:underline;">세로 모드로 플레이</div>
 </div>
 <div id="stage">
   <!-- 모바일 모드 토글 -->
@@ -1549,20 +1573,30 @@ function fitStage(){
   const vw=window.innerWidth, vh=window.innerHeight;
   const sW=vw/1280, sH=vh/720;
   const isWide=(vw>vh)&&(vw/vh>1.82); // 16:9(1.78)보다 넓은 화면
+  const isMobilePortrait=(vw<vh)&&(vw<=768); // 모바일 세로 모드
   let s, cropTop=0;
   if(isWide){
     // 가로 채우기, 최대 상단 100px 게임좌표 잘림 허용
     const sMax=vh/(720-100);
     s=Math.min(sW, sMax);
-    // 하단 고정 시 상단 잘림량 계산
     const renderedH=720*s;
     const overflowPx=Math.max(0, renderedH-vh);
     cropTop=Math.ceil(overflowPx/s);
     document.body.classList.add('wide-mode');
+    document.body.classList.remove('portrait-mode');
+  } else if(isMobilePortrait){
+    // 모바일 세로: 가로 폭에 맞추고 하단에 표시 (상단은 잘림)
+    s=sW;
+    const renderedH=720*s;
+    const overflowPx=Math.max(0, renderedH-vh);
+    cropTop=Math.ceil(overflowPx/s);
+    document.body.classList.remove('wide-mode');
+    document.body.classList.add('portrait-mode');
   } else {
     s=Math.min(sW, sH);
     cropTop=0;
     document.body.classList.remove('wide-mode');
+    document.body.classList.remove('portrait-mode');
   }
   stage.style.transform=`scale(${s})`;
   stage.style.setProperty('--fit',`scale(${s})`);
@@ -3241,6 +3275,28 @@ function updateHudAutoHide(){
   }
 }
 
+// v2.1: 플레이어 ↔ 우측 HUD 겹침 시 패널 반투명 처리
+function updateHudProximityFade(){
+  const hrs=document.getElementById('hudRightStack');
+  if(!hrs || !state.running) return;
+  // 우측 HUD 영역 (게임 좌표 기준)
+  const hudRight=W;       // 1280
+  const hudLeft=W-200;    // ~1080
+  const hudBottom=H;      // 720
+  const hudTop=H-260;     // ~460
+  // 플레이어가 이 영역 내에 있으면 패널 반투명
+  const inZone = player.x > hudLeft-40 && player.y > hudTop-40;
+  if(inZone){
+    const dx=Math.max(0, player.x-(hudLeft-40))/(hudRight-hudLeft+40);
+    const dy=Math.max(0, player.y-(hudTop-40))/(hudBottom-hudTop+40);
+    const proximity=Math.min(1, Math.max(dx,dy));
+    const opacity=1-proximity*0.65; // 최소 0.35
+    hrs.style.opacity=opacity.toFixed(2);
+  } else {
+    hrs.style.opacity='1';
+  }
+}
+
 
 // v1.0.9: playerGaugeTop (가호) — 발키리 머리 위
 let _pgtLastGauge=-1, _pgtGaugeChangeT=0;
@@ -3389,6 +3445,7 @@ function loop(ts){
   updatePlayerInfoBarFollow();
   updatePlayerAtkBar();
   updateHudAutoHide();
+  updateHudProximityFade();
   requestAnimationFrame(loop);
 }
 
@@ -4292,10 +4349,13 @@ if(AUTOPLAY){
     const warn = document.getElementById('inappWarn');
     warn.style.display = 'flex';
     document.getElementById('inappCopy').addEventListener('click', ()=>{
-      navigator.clipboard.writeText(location.href).then(()=>{
+      // 캐시 방지: URL에 타임스탬프 파라미터 추가
+      const cleanUrl = location.origin + location.pathname;
+      const urlWithCacheBust = cleanUrl + '?v=' + Date.now();
+      navigator.clipboard.writeText(urlWithCacheBust).then(()=>{
         document.getElementById('inappCopy').textContent = '복사 완료!';
       }).catch(()=>{
-        prompt('아래 URL을 복사하세요:', location.href);
+        prompt('아래 URL을 복사하세요:', urlWithCacheBust);
       });
     });
     document.getElementById('inappSkip').addEventListener('click', ()=>{
@@ -4365,6 +4425,21 @@ if(AUTOPLAY){
 
   // orientWarn 닫기 버튼 — 터치 시 가로 전환 재시도
   document.getElementById('orientWarn').addEventListener('click', tryLockLandscape);
+
+  // 세로 모드로 플레이 버튼
+  const orientSkipBtn = document.getElementById('orientSkip');
+  if(orientSkipBtn){
+    orientSkipBtn.addEventListener('click', function(e){
+      e.stopPropagation(); // orientWarn 클릭 이벤트 전파 방지
+      const ow = document.getElementById('orientWarn');
+      ow.style.display = 'none';
+      // CSS 미디어 쿼리 무력화: orientWarn에 강제 숨김 클래스
+      ow.classList.add('ow-dismissed');
+      // 모바일 모드 자동 활성화
+      if(!mobileMode) enableMobile();
+      fitStage();
+    });
+  }
 
   toggle.addEventListener('click', ()=>{
     if(mobileMode) disableMobile(); else enableMobile();
