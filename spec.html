@@ -615,7 +615,7 @@ footer{
    SCREENSHOT CAROUSEL
 ═══════════════════════════════════════ */
 .carousel-wrap{position:relative;width:100%;overflow:hidden;border-radius:12px;border:1px solid rgba(0,229,255,.25);background:#000;}
-.carousel-track{display:flex;transition:transform .4s cubic-bezier(.25,.8,.25,1);will-change:transform;}
+.carousel-track{display:flex;transition:transform .4s cubic-bezier(.25,.8,.25,1);will-change:transform;touch-action:pan-y pinch-zoom;}
 .carousel-track img{width:100%;height:auto;flex-shrink:0;display:block;object-fit:contain;cursor:grab;}
 .carousel-track img:active{cursor:grabbing;}
 .carousel-btn{
@@ -1057,13 +1057,13 @@ footer{
       <div class="glass accent-top accent-cyan" style="padding:24px;">
         <div class="card-label mb8" style="color:var(--cyan);font-size:10px;">성 레벨 → 난이도 매핑</div>
         <table class="tbl">
-          <thead><tr><th>성 레벨</th><th>난이도</th><th>적 HP 배율</th><th>적 피해 배율</th></tr></thead>
+          <thead><tr><th>성 레벨</th><th>난이도</th><th>적 HP</th><th>적 피해</th></tr></thead>
           <tbody>
-            <tr><td>1 ~ 5</td><td><span class="badge b-teal">쉬움</span></td><td>×1.0</td><td>×1.0</td></tr>
-            <tr><td>6 ~ 10</td><td><span class="badge b-cyan">보통</span></td><td>×1.3</td><td>×1.15</td></tr>
-            <tr><td>11 ~ 15</td><td><span class="badge b-amber">어려움</span></td><td>×1.6</td><td>×1.3</td></tr>
-            <tr><td>16 ~ 20</td><td><span class="badge b-coral">매우 어려움</span></td><td>×2.0</td><td>×1.5</td></tr>
-            <tr><td>21+</td><td><span class="badge b-violet">지옥</span></td><td>×2.5</td><td>×1.8</td></tr>
+            <tr><td>1 ~ 5</td><td><span class="badge b-teal">쉬움</span></td><td>기본</td><td>기본</td></tr>
+            <tr><td>6 ~ 10</td><td><span class="badge b-cyan">보통</span></td><td>+30%</td><td>+15%</td></tr>
+            <tr><td>11 ~ 15</td><td><span class="badge b-amber">어려움</span></td><td>+60%</td><td>+30%</td></tr>
+            <tr><td>16 ~ 20</td><td><span class="badge b-coral">매우 어려움</span></td><td>+100%</td><td>+50%</td></tr>
+            <tr><td>21+</td><td><span class="badge b-violet">지옥</span></td><td>+150%</td><td>+80%</td></tr>
           </tbody>
         </table>
       </div>
@@ -1076,12 +1076,12 @@ footer{
           <tbody>
             <tr><td><strong>적 HP</strong></td><td>+12% / Wave</td><td>일반 몬스터</td></tr>
             <tr><td><strong>적 피해</strong></td><td>+8% / Wave</td><td>일반 몬스터</td></tr>
-            <tr><td><strong>보스</strong></td><td>스케일링 없음</td><td>고정 스탯 (HP 1200)</td></tr>
+            <tr><td><strong>보스</strong></td><td>스케일링 없음</td><td>고정 스탯 (HP 1,200)</td></tr>
           </tbody>
         </table>
         <div class="callout mt12">
           <div class="callout-l">난이도 공식</div>
-          <div class="callout-b">최종 스탯 = <strong>기본값 × 성 레벨 배율 × (1 + Wave 스케일링)</strong><br>보스는 성 레벨 배율만 적용, Wave 스케일링 미적용.</div>
+          <div class="callout-b">최종 능력치 = <strong>기본값 + 난이도 보너스 + Wave별 증가분</strong><br>보스는 난이도 보너스만 적용, Wave별 증가 없음.</div>
         </div>
       </div>
     </div>
@@ -1090,12 +1090,12 @@ footer{
   <div class="glass" style="padding:20px;">
     <div class="card-label mb8" style="color:var(--muted);font-size:10px;">난이도별 보상 배율</div>
     <table class="tbl">
-      <thead><tr><th>난이도</th><th>자원 드랍량</th><th>완료 보상</th><th>랭크 점수 배율</th></tr></thead>
+      <thead><tr><th>난이도</th><th>자원 드랍량</th><th>완료 보상</th><th>랭크 점수</th></tr></thead>
       <tbody>
-        <tr><td><span class="badge b-teal">쉬움</span></td><td>×1.0</td><td>기본</td><td>×1.0</td></tr>
-        <tr><td><span class="badge b-cyan">보통</span></td><td>×1.2</td><td>기본 + 추가 자원</td><td>×1.3</td></tr>
-        <tr><td><span class="badge b-amber">어려움</span></td><td>×1.5</td><td>기본 + 희귀 자원</td><td>×1.6</td></tr>
-        <tr><td><span class="badge b-coral">매우 어려움</span></td><td>×1.8</td><td>기본 + 에픽 자원</td><td>×2.0</td></tr>
+        <tr><td><span class="badge b-teal">쉬움</span></td><td>기본</td><td>기본</td><td>기본</td></tr>
+        <tr><td><span class="badge b-cyan">보통</span></td><td>+20%</td><td>기본 + 추가 자원</td><td>+30%</td></tr>
+        <tr><td><span class="badge b-amber">어려움</span></td><td>+50%</td><td>기본 + 희귀 자원</td><td>+60%</td></tr>
+        <tr><td><span class="badge b-coral">매우 어려움</span></td><td>+80%</td><td>기본 + 에픽 자원</td><td>+100%</td></tr>
         <tr><td><span class="badge b-violet">지옥</span></td><td>×2.2</td><td>기본 + 에픽 자원 + 특수 보상</td><td>×2.5</td></tr>
       </tbody>
     </table>
@@ -1137,18 +1137,30 @@ footer{
 
     <div class="gs6 glass accent-top accent-amber" style="padding:28px;">
       <div class="card-label mb12" style="color:var(--amber)">CONTROLS</div>
+      <div class="card-label mb8" style="color:var(--muted);font-size:10px;">⌨ PC</div>
       <table class="tbl mb12">
         <thead><tr><th style="width:36%">조작</th><th>설명</th></tr></thead>
         <tbody>
           <tr><td><strong>WASD 키</strong></td><td>발키리 상하좌우 이동<br><span style="font-size:12px;opacity:.6">아이템 근접 시 자동 수집</span></td></tr>
-          <tr><td><strong>자동 검 투척</strong></td><td>사거리 200px 내 최근접 적 자동 조준 · 발사<br><span style="font-size:12px;opacity:.6">유저 입력 불필요 — 포지셔닝이 전략</span></td></tr>
+          <tr><td><strong>자동 검 투척</strong></td><td>사거리 내 최근접 적 자동 조준 · 발사<br><span style="font-size:12px;opacity:.6">유저 입력 불필요 — 포지셔닝이 전략</span></td></tr>
           <tr><td><strong>Shift — 바람 질주</strong></td><td>방향 대시 + 0.2초 무적<br><span style="font-size:12px;opacity:.6">쿨타임 3초 (독립 쿨다운)</span></td></tr>
           <tr><td><strong>E — 성스러운 충격파</strong></td><td>360° 충격파 — 주변 적 전체 밀어냄 + 90 피해<br><span style="font-size:12px;opacity:.6">쿨타임 18초 (독립 쿨다운)</span></td></tr>
         </tbody>
       </table>
+      <div class="card-label mb8" style="color:var(--muted);font-size:10px;">📱 모바일 (가로 모드)</div>
+      <table class="tbl mb12">
+        <thead><tr><th style="width:36%">조작</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><strong>가상 조이스틱</strong></td><td>화면 좌측 하단 드래그로 상하좌우 이동<br><span style="font-size:12px;opacity:.6">WASD와 동일 — 아이템 자동 수집</span></td></tr>
+          <tr><td><strong>자동 검 투척</strong></td><td>PC와 동일 — 별도 조작 없이 자동 발사</td></tr>
+          <tr><td><strong>⇧ 버튼 — 바람 질주</strong></td><td>화면 우측 하단 터치<br><span style="font-size:12px;opacity:.6">쿨타임 3초 (독립 쿨다운)</span></td></tr>
+          <tr><td><strong>E 버튼 — 충격파</strong></td><td>화면 우측 하단 터치<br><span style="font-size:12px;opacity:.6">쿨타임 18초 (독립 쿨다운)</span></td></tr>
+          <tr><td><strong>모드 전환</strong></td><td>좌측 상단 토글 버튼으로 PC ↔ 터치 모드 전환</td></tr>
+        </tbody>
+      </table>
       <div class="callout">
         <div class="callout-l">검 투척 메커닉</div>
-        <div class="callout-b">검은 공격 범위 내 최근접 적에게 <strong>자동 발사</strong>. 유저는 <strong>포지셔닝</strong>으로 검 투척 효율을 결정한다. 기본 DPS = 22 × 1.54/초 = <strong>~34 HP/초</strong>.</div>
+        <div class="callout-b">검은 공격 범위 내 가장 가까운 적에게 <strong>자동 발사</strong>. 플레이어는 <strong>위치 선정</strong>으로 검 투척 효율을 결정한다. 초당 약 <strong>34</strong>의 데미지를 줄 수 있다.</div>
       </div>
       <div class="callout warn mt8">
         <div class="callout-l">독립 쿨타임</div>
@@ -1156,9 +1168,103 @@ footer{
       </div>
     </div>
   </div>
+</div>
+
+<div class="sec-sep"></div>
+
+<!-- ═══════════════════════════════
+  04 ENEMIES
+═══════════════════════════════ -->
+<div class="section" id="sec-enemies">
+  <div class="sec-label">
+    <span class="sec-num">04 — ENEMIES</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="sec-title">적 구성</h2>
+  <p class="sec-desc">단순히 몰려오는 구체가 아니다. 각자의 <strong>고유 행동 패턴</strong>이 있어 Wave마다 다른 대응이 필요하다.</p>
+
+  <div class="enemy-grid mb16">
+    <div class="ec">
+      <div class="ec-glow"></div>
+      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/sogari.png" alt="피라냐 고블린" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(0,229,255,.7));"></span>
+      <div class="ec-name">피라냐 고블린</div>
+      <div class="ec-trait">빠름 · 약함 · 직선 돌진<br>여러 마리 동시 접근</div>
+      <div class="ec-warn">⚠ 방심하면 수문 먼저 도달</div>
+    </div>
+    <div class="ec">
+      <div class="ec-glow"></div>
+      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/bangeo.png" alt="어인 기사" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(180,220,240,.6));"></span>
+      <div class="ec-name">어인 기사</div>
+      <div class="ec-trait">표준형 · 중간 속도<br>높은 HP, 떼로 위협적</div>
+      <div class="ec-warn">떼로 오면 부담</div>
+    </div>
+    <div class="ec">
+      <div class="ec-glow"></div>
+      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/agwi.png" alt="심해 오우거" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,184,48,.5));"></span>
+      <div class="ec-name">심해 오우거</div>
+      <div class="ec-trait">느림 · HP 180 탱커<br>수문 피해 120 — 반드시 저지</div>
+      <div class="ec-warn">⚠ 놔두면 수문 대피해</div>
+    </div>
+    <div class="ec">
+      <div class="ec-glow"></div>
+      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/gaori.png" alt="그림자 가오리" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,143,200,.55));"></span>
+      <div class="ec-name">그림자 가오리</div>
+      <div class="ec-trait">지그재그 이동 · 경로 예측 어려움<br>이동 경로 막고 검으로 요격</div>
+      <div class="ec-warn">발키리 위치로 검 투척 각도 조절</div>
+    </div>
+    <div class="ec">
+      <div class="ec-glow"></div>
+      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/bokeo.png" alt="폭발 슬라임" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,184,48,.55));"></span>
+      <div class="ec-name">폭발 슬라임</div>
+      <div class="ec-trait">폭발형 · 1초 경고 후 광역 폭발<br>폭발 반경 100px, 피해 60</div>
+      <div class="ec-warn">⚠ 수문 근처 폭발 = 위험</div>
+    </div>
+  </div>
+
+  <div class="enemy-detail-grid">
+    <div class="glass accent-top accent-cyan" style="padding:24px;">
+      <div class="card-label mb12" style="color:var(--cyan)">적 능력치 — v2.0 기준</div>
+      <table class="tbl mb8">
+        <thead><tr><th>종류</th><th>HP</th><th>속도</th><th>수문 피해</th><th>히트박스</th><th>특수 행동</th></tr></thead>
+        <tbody>
+          <tr><td><strong>피라냐 고블린</strong></td><td>35</td><td>빠름 160/s</td><td style="color:var(--teal);">40</td><td>34px</td><td>직선 돌진 (rush)</td></tr>
+          <tr><td><strong>어인 기사</strong></td><td>80</td><td>보통 90/s</td><td style="color:var(--amber);">70</td><td>40px</td><td>직선 이동 (straight)</td></tr>
+          <tr><td><strong>그림자 가오리</strong></td><td>60</td><td>빠름 110/s</td><td style="color:var(--amber);">55</td><td>38px</td><td>지그재그 이동 (zigzag)</td></tr>
+          <tr><td><strong>심해 오우거</strong></td><td>180</td><td>느림 55/s</td><td style="color:var(--coral);">120</td><td>48px</td><td>직선 이동 · 고HP 탱커</td></tr>
+          <tr><td><strong>폭발 슬라임</strong></td><td>45</td><td>보통 100/s</td><td style="color:var(--coral);">최대 95<br><span style="font-size:11px;opacity:.6;">접촉35 + 폭발60</span></td><td>32px</td><td>사망 시 1초 후 광역 폭발<br>반경 100px</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:10.5px;color:var(--muted);">* 히트박스 = 원형 판정 반경 (size/2). 모든 적은 원형 마스크로 표시됨.</div>
+    </div>
+    <div class="glass accent-top accent-coral" style="padding:24px;">
+      <div class="card-label mb12" style="color:var(--coral)">PRIORITY GUIDE</div>
+      <div class="flow">
+        <div class="flow-item">
+          <div class="flow-node fn-r">1</div>
+          <div class="flow-text"><div class="t">복어 최우선 처치</div><div class="d">수문 근처 폭발 시 대형 피해. 원거리에서 먼저 처리.</div></div>
+        </div>
+        <div class="flow-connector"></div>
+        <div class="flow-item">
+          <div class="flow-node fn-a">2</div>
+          <div class="flow-text"><div class="t">오우거 집중 공격</div><div class="d">HP 180, 수문 피해 120. 방어 시설과 함께 집중 공략.</div></div>
+        </div>
+        <div class="flow-connector"></div>
+        <div class="flow-item">
+          <div class="flow-node fn-t">3</div>
+          <div class="flow-text"><div class="t">피라냐 무리 정리</div><div class="d">빠르게 수문에 닿기 전에 충격파로 밀어내기.</div></div>
+        </div>
+        <div class="flow-connector"></div>
+        <div class="flow-item">
+          <div class="flow-node fn-c">4</div>
+          <div class="flow-text"><div class="t">어인 기사 / 가오리</div><div class="d">방어 시설 자동 공격에 맡기고 고위협 처리에 집중.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Wave Structure -->
-  <div class="glass accent-top accent-teal" style="padding:28px;">
+  <div class="glass accent-top accent-teal" style="padding:28px;margin-top:32px;">
     <div class="card-label mb16" style="color:var(--teal)">WAVE STRUCTURE — 6 Wave + 보스 Wave = 총 7 Wave</div>
     <div class="wave-row">
       <div class="wc">
@@ -1248,100 +1354,6 @@ footer{
       <div class="callout-b">자원 충분 시 <strong>Wave 진행 중 언제든</strong> 잠긴 슬롯 근처 이동 → 자원 자동 투입 → 슬롯 해제. 해제 순간 <strong>슬로우모션</strong> + 시설 카드 3장 중 1택 후 즉시 건설.</div>
     </div>
   </div>
-</div>
-
-<div class="sec-sep"></div>
-
-<!-- ═══════════════════════════════
-  04 ENEMIES
-═══════════════════════════════ -->
-<div class="section" id="sec-enemies">
-  <div class="sec-label">
-    <span class="sec-num">04 — ENEMIES</span>
-    <div class="sec-line"></div>
-  </div>
-  <h2 class="sec-title">적 구성</h2>
-  <p class="sec-desc">단순히 몰려오는 구체가 아니다. 각자의 <strong>고유 행동 패턴</strong>이 있어 Wave마다 다른 대응이 필요하다.</p>
-
-  <div class="enemy-grid mb16">
-    <div class="ec">
-      <div class="ec-glow"></div>
-      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/sogari.png" alt="피라냐 고블린" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(0,229,255,.7));"></span>
-      <div class="ec-name">피라냐 고블린</div>
-      <div class="ec-trait">빠름 · 약함 · 직선 돌진<br>여러 마리 동시 접근</div>
-      <div class="ec-warn">⚠ 방심하면 수문 먼저 도달</div>
-    </div>
-    <div class="ec">
-      <div class="ec-glow"></div>
-      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/bangeo.png" alt="어인 기사" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(180,220,240,.6));"></span>
-      <div class="ec-name">어인 기사</div>
-      <div class="ec-trait">표준형 · 중간 속도<br>높은 HP, 떼로 위협적</div>
-      <div class="ec-warn">떼로 오면 부담</div>
-    </div>
-    <div class="ec">
-      <div class="ec-glow"></div>
-      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/agwi.png" alt="심해 오우거" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,184,48,.5));"></span>
-      <div class="ec-name">심해 오우거</div>
-      <div class="ec-trait">느림 · HP 180 탱커<br>수문 피해 120 — 반드시 저지</div>
-      <div class="ec-warn">⚠ 놔두면 수문 대피해</div>
-    </div>
-    <div class="ec">
-      <div class="ec-glow"></div>
-      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/gaori.png" alt="그림자 가오리" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,143,200,.55));"></span>
-      <div class="ec-name">그림자 가오리</div>
-      <div class="ec-trait">지그재그 이동 · 경로 예측 어려움<br>이동 경로 막고 검으로 요격</div>
-      <div class="ec-warn">발키리 위치로 검 투척 각도 조절</div>
-    </div>
-    <div class="ec">
-      <div class="ec-glow"></div>
-      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/bokeo.png" alt="폭발 슬라임" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,184,48,.55));"></span>
-      <div class="ec-name">폭발 슬라임</div>
-      <div class="ec-trait">폭발형 · 1초 경고 후 광역 폭발<br>폭발 반경 100px, 피해 60</div>
-      <div class="ec-warn">⚠ 수문 근처 폭발 = 위험</div>
-    </div>
-  </div>
-
-  <div class="enemy-detail-grid">
-    <div class="glass accent-top accent-cyan" style="padding:24px;">
-      <div class="card-label mb12" style="color:var(--cyan)">ENEMY STATS — v2.0 현재 밸런스</div>
-      <table class="tbl mb8">
-        <thead><tr><th>종류</th><th>HP</th><th>속도</th><th>수문 피해</th><th>히트박스</th><th>특수 행동</th></tr></thead>
-        <tbody>
-          <tr><td><strong>피라냐 고블린</strong></td><td>35</td><td>빠름 160/s</td><td style="color:var(--teal);">40</td><td>34px</td><td>직선 돌진 (rush)</td></tr>
-          <tr><td><strong>어인 기사</strong></td><td>80</td><td>보통 90/s</td><td style="color:var(--amber);">70</td><td>40px</td><td>직선 이동 (straight)</td></tr>
-          <tr><td><strong>그림자 가오리</strong></td><td>60</td><td>빠름 110/s</td><td style="color:var(--amber);">55</td><td>38px</td><td>지그재그 이동 (zigzag)</td></tr>
-          <tr><td><strong>심해 오우거</strong></td><td>180</td><td>느림 55/s</td><td style="color:var(--coral);">120</td><td>48px</td><td>직선 이동 · 고HP 탱커</td></tr>
-          <tr><td><strong>폭발 슬라임</strong></td><td>45</td><td>보통 100/s</td><td style="color:var(--coral);">최대 95<br><span style="font-size:11px;opacity:.6;">접촉35 + 폭발60</span></td><td>32px</td><td>사망 시 1초 후 광역 폭발<br>반경 100px</td></tr>
-        </tbody>
-      </table>
-      <div style="font-size:10.5px;color:var(--muted);">* 히트박스 = 원형 판정 반경 (size/2). 모든 적은 원형 마스크로 표시됨.</div>
-    </div>
-    <div class="glass accent-top accent-coral" style="padding:24px;">
-      <div class="card-label mb12" style="color:var(--coral)">PRIORITY GUIDE</div>
-      <div class="flow">
-        <div class="flow-item">
-          <div class="flow-node fn-r">1</div>
-          <div class="flow-text"><div class="t">복어 최우선 처치</div><div class="d">수문 근처 폭발 시 대형 피해. 원거리에서 먼저 처리.</div></div>
-        </div>
-        <div class="flow-connector"></div>
-        <div class="flow-item">
-          <div class="flow-node fn-a">2</div>
-          <div class="flow-text"><div class="t">오우거 집중 공격</div><div class="d">HP 180, 수문 피해 120. 방어 시설과 함께 집중 공략.</div></div>
-        </div>
-        <div class="flow-connector"></div>
-        <div class="flow-item">
-          <div class="flow-node fn-t">3</div>
-          <div class="flow-text"><div class="t">피라냐 무리 정리</div><div class="d">빠르게 수문에 닿기 전에 충격파로 밀어내기.</div></div>
-        </div>
-        <div class="flow-connector"></div>
-        <div class="flow-item">
-          <div class="flow-node fn-c">4</div>
-          <div class="flow-text"><div class="t">어인 기사 / 가오리</div><div class="d">방어 시설 자동 공격에 맡기고 고위협 처리에 집중.</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <div class="sec-sep"></div>
 
@@ -1370,7 +1382,7 @@ footer{
             <tr><td><strong>검 투척 기본 피해</strong></td><td>22 / 발</td></tr>
             <tr><td><strong>발사 주기</strong></td><td>0.65초 (~1.54회/초)</td></tr>
             <tr><td><strong>기본 DPS</strong></td><td>~34 HP / 초</td></tr>
-            <tr><td><strong>공격 사거리</strong></td><td>200px (엣지 기반)</td></tr>
+            <tr><td><strong>공격 사거리</strong></td><td>중거리 (화면의 약 1/6)</td></tr>
             <tr><td><strong>이동 속도</strong></td><td>220 px/s</td></tr>
             <tr><td><strong>충격파 피해</strong></td><td>90 (반경 220px)</td></tr>
             <tr><td><strong>충격파 쿨</strong></td><td>18초</td></tr>
@@ -1383,7 +1395,7 @@ footer{
         <table class="tbl">
           <tbody>
             <tr><td><strong>MAX HP</strong></td><td>1,500</td></tr>
-            <tr><td><strong>가호 고갈 피해</strong></td><td style="color:var(--coral);">-2%/초 (gateHpMax 기준)</td></tr>
+            <tr><td><strong>가호 고갈 피해</strong></td><td style="color:var(--coral);">-2%/초 (수문 최대 HP 기준)</td></tr>
             <tr><td><strong>미응전 패널티</strong></td><td style="color:var(--coral);">-10%</td></tr>
           </tbody>
         </table>
@@ -1392,9 +1404,9 @@ footer{
         <div class="card-label mb10" style="color:var(--violet);font-size:10px;">🏹 방어 시설 (현재 Lv.1)</div>
         <table class="tbl">
           <tbody>
-            <tr><td><strong>석궁 포탑</strong></td><td>30 dmg / 0.6s / 280 range</td></tr>
-            <tr><td><strong>마법 발리스타</strong></td><td>110 dmg / 2.0s / 420 range</td></tr>
-            <tr><td><strong>번개 마법진</strong></td><td>72 dmg / 1.8s / 320 range</td></tr>
+            <tr><td><strong>석궁 포탑</strong></td><td>빠른 연사로 가까운 적을 빠르게 처리</td></tr>
+            <tr><td><strong>마법 발리스타</strong></td><td>느리지만 강력한 한 방, 관통 효과</td></tr>
+            <tr><td><strong>번개 마법진</strong></td><td>범위 전기 공격, 다수의 적 동시 타격</td></tr>
             <tr><td><strong>성수 제단</strong></td><td>가호 +8 / 3.0s</td></tr>
             <tr><td><strong>수호 결계</strong></td><td>수문 +15 / 4.0s</td></tr>
             <tr><td><strong>서리 정령</strong></td><td>감속 -25% / 5.0s / 300 range</td></tr>
@@ -1432,10 +1444,10 @@ footer{
         </div>
       </div>
       <div class="gs6">
-        <div class="card-label mb10" style="color:var(--muted);font-size:10px;">GAUGE SPEC</div>
+        <div class="card-label mb10" style="color:var(--muted);font-size:10px;">가호 게이지 수치</div>
         <table class="tbl">
           <tbody>
-            <tr><td><strong>기본 최대치</strong></td><td>100 (카드로 증가 가능)</td></tr>
+            <tr><td><strong>기본 최대치</strong></td><td>100 (스킬로 증가 가능)</td></tr>
             <tr><td><strong>기본 감소 속도</strong></td><td>-1.5% / 초 (게임 내내 지속)</td></tr>
             <tr><td><strong>가호의 보주 회복</strong></td><td>적 처치 시 28% 확률 드랍</td></tr>
             <tr><td><strong>경고 구간</strong></td><td>30% 이하 — HUD 빨간 펄스</td></tr>
@@ -1452,7 +1464,7 @@ footer{
 
   <!-- 드랍 아이템 -->
   <div class="glass accent-top accent-amber" style="padding:28px;margin-bottom:12px;">
-    <div class="card-label mb4" style="color:var(--amber)">ITEM DROP SYSTEM</div>
+    <div class="card-label mb4" style="color:var(--amber)">아이템 드랍 시스템</div>
     <div class="card-title mb4">드랍 수집 — 이동의 목적</div>
     <div class="card-sub mb16">적 처치 시 아이템이 화면에 남는다. 발키리가 직접 이동해 밟으면 수집 (수집 반경 120px).</div>
 
@@ -1552,9 +1564,9 @@ footer{
         <table class="tbl mb16">
           <thead><tr><th>시설명</th><th>효과</th><th>등급</th></tr></thead>
           <tbody>
-            <tr><td><strong>🏹 석궁 포탑</strong></td><td>근거리 연사 (30dmg/0.6s)</td><td><span class="badge b-teal">일반</span></td></tr>
-            <tr><td><strong>⚔️ 마법 발리스타</strong></td><td>관통 고위력 (110dmg/2.0s)</td><td><span class="badge b-amber">희귀</span></td></tr>
-            <tr><td><strong>⚡ 번개 마법진</strong></td><td>범위 전기 (72dmg/1.8s)</td><td><span class="badge b-amber">희귀</span></td></tr>
+            <tr><td><strong>🏹 석궁 포탑</strong></td><td>빠른 연사, 근거리 자동 방어</td><td><span class="badge b-teal">일반</span></td></tr>
+            <tr><td><strong>⚔️ 마법 발리스타</strong></td><td>느린 공속, 관통 고위력 한 방</td><td><span class="badge b-amber">희귀</span></td></tr>
+            <tr><td><strong>⚡ 번개 마법진</strong></td><td>범위 전기 공격, 다수 적 동시 타격</td><td><span class="badge b-amber">희귀</span></td></tr>
             <tr><td><strong>⛲ 성수 제단</strong></td><td>가호 회복 (+8/3.0s)</td><td><span class="badge b-teal">일반</span></td></tr>
             <tr><td><strong>🛡️ 수호 결계</strong></td><td>수문 회복 (+15/4.0s)</td><td><span class="badge b-violet">영웅</span></td></tr>
             <tr><td><strong>🧚 서리 정령</strong></td><td>적 감속 (-25%/5.0s)</td><td><span class="badge b-violet">영웅</span></td></tr>
@@ -1855,23 +1867,31 @@ sections.forEach(s => observer.observe(s));
   window.moveCarousel = function(dir){ goTo(current + dir); };
 
   // Touch / mouse drag support
-  let startX = 0, isDrag = false;
-  track.addEventListener('pointerdown', e => { startX = e.clientX; isDrag = true; track.setPointerCapture(e.pointerId); });
+  let startX = 0, isDrag = false, dragId = -1;
+  track.addEventListener('pointerdown', e => {
+    startX = e.clientX; isDrag = true; dragId = e.pointerId;
+    track.setPointerCapture(e.pointerId);
+  });
   track.addEventListener('pointermove', e => {
-    if(!isDrag) return;
+    if(!isDrag || e.pointerId !== dragId) return;
     const diff = e.clientX - startX;
+    // 수평 드래그가 확실하면 스크롤 방지
+    if(Math.abs(diff) > 8) { e.preventDefault(); track.style.touchAction = 'none'; }
     const pct = current * 100 - (diff / track.offsetWidth) * 100;
     track.style.transition = 'none';
     track.style.transform = 'translateX(-' + pct + '%)';
   });
-  track.addEventListener('pointerup', e => {
-    if(!isDrag) return;
-    isDrag = false;
+  function endDrag(e){
+    if(!isDrag || e.pointerId !== dragId) return;
+    isDrag = false; dragId = -1;
     track.style.transition = '';
+    track.style.touchAction = '';
     const diff = e.clientX - startX;
-    if(Math.abs(diff) > 50) goTo(current + (diff < 0 ? 1 : -1));
+    if(Math.abs(diff) > 30) goTo(current + (diff < 0 ? 1 : -1));
     else goTo(current);
-  });
+  }
+  track.addEventListener('pointerup', endDrag);
+  track.addEventListener('pointercancel', endDrag);
 })();
 </script>
 </body>

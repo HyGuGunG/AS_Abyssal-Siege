@@ -1078,7 +1078,7 @@
   <div id="gateLabel">수문</div>
   <!-- v1.0.2: 인월드 수문 HP 바 -->
   <div id="gateHpBar">
-    <div class="ghp-val"><span class="ghp-icons" style="font-size:12px;margin-right:2px"><span class="ghp-fixed-ico">🏰</span></span><span id="gateHpText">1500</span>/<span id="gateHpMaxText">1500</span></div>
+    <div class="ghp-val"><span class="ghp-icons" style="font-size:12px;margin-right:2px"><span class="ghp-fixed-ico">🏰</span></span><span id="gateHpText">1,500</span>/<span id="gateHpMaxText">1,500</span></div>
     <div class="ghp-track tier-blue"><div class="ghp-fill" id="gateHpFill" style="width:100%"></div></div>
     <div class="ghp-warn">⚠ 가호 부족 — HP 감소 중</div>
   </div>
@@ -1123,7 +1123,7 @@
     <div id="bossHpBar" class="hidden">
       <div class="boss-hp-label">🦑 <span id="bossName">해양 크라켄</span></div>
       <div class="boss-hp-track"><div class="boss-hp-fill" id="bossHpFill" style="width:100%"></div></div>
-      <div class="boss-hp-text"><span id="bossHpText">1200</span> / <span id="bossHpMaxText">1200</span></div>
+      <div class="boss-hp-text"><span id="bossHpText">1,200</span> / <span id="bossHpMaxText">1,200</span></div>
     </div>
 
     <!-- v1.1.7: #hudStats(전투 기록 패널) 제거됨 -->
@@ -1778,7 +1778,7 @@ function startGame(){
   if(comboH) comboH.classList.remove('show','hot','pop');
   // v1.0.2: 인월드 바 초기값 설정
   const _ghpMax=document.getElementById('gateHpMaxText');
-  if(_ghpMax) _ghpMax.textContent=Math.round(state.gateHpMax);
+  if(_ghpMax) _ghpMax.textContent=Math.round(state.gateHpMax).toLocaleString();
   const _gMaxEl=document.getElementById('gaugeMaxText');
   if(_gMaxEl) _gMaxEl.textContent=Math.round(state.gaugeMax);
   beginWave(1);
@@ -3970,7 +3970,7 @@ function setBarTier(barEl, pct){
 function updateHud(){
   const hpPct=state.gateHp/state.gateHpMax*100;
   document.getElementById('gateHpFill').style.width=hpPct+'%';
-  document.getElementById('gateHpText').textContent=Math.round(state.gateHp);
+  document.getElementById('gateHpText').textContent=Math.round(state.gateHp).toLocaleString();
   // v1.0.2: 인월드 수문 HP 바 tier 색상
   const ghpTrack=document.querySelector('#gateHpBar .ghp-track');
   if(ghpTrack) setBarTier(ghpTrack, hpPct);
@@ -4038,8 +4038,8 @@ function updateHud(){
     bossBar.classList.remove('hidden');
     const bPct=Math.max(0,bossE.hp/bossE.hpMax*100);
     document.getElementById('bossHpFill').style.width=bPct+'%';
-    document.getElementById('bossHpText').textContent=Math.round(Math.max(0,bossE.hp));
-    document.getElementById('bossHpMaxText').textContent=bossE.hpMax;
+    document.getElementById('bossHpText').textContent=Math.round(Math.max(0,bossE.hp)).toLocaleString();
+    document.getElementById('bossHpMaxText').textContent=bossE.hpMax.toLocaleString();
     // 페이즈별 색상 변화
     const fill=document.getElementById('bossHpFill');
     if(bPct>66) fill.style.background='linear-gradient(90deg,#7b2ff2,#c8a0ff)';
