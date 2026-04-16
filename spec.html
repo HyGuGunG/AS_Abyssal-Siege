@@ -705,6 +705,19 @@ footer{
   .grid2,.grid3,.ds-grid,.enemy-detail-grid{grid-template-columns:1fr;}
 
   /* 테이블 — 스크롤 가능 */
+  .tbl-wrap{position:relative;overflow:hidden;}
+  .tbl-wrap .tbl-scroll{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .tbl-wrap .tbl-scroll table{margin:0;}
+  .tbl-wrap .tbl-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+    background:rgba(0,0,0,.7);color:rgba(255,255,255,.8);font-size:11px;
+    padding:4px 14px;border-radius:20px;pointer-events:none;
+    display:flex;align-items:center;gap:6px;z-index:2;
+    transition:opacity .4s;white-space:nowrap;}
+  .tbl-wrap .tbl-hint.hide{opacity:0;}
+  .tbl-wrap::after{content:'';position:absolute;top:0;right:0;bottom:0;width:28px;
+    background:linear-gradient(to right,transparent,rgba(0,0,0,.35));
+    pointer-events:none;z-index:1;transition:opacity .3s;}
+  .tbl-wrap.scrolled-end::after{opacity:0;}
   .tbl{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
   .tbl thead,.tbl tbody,.tbl tr,.tbl th,.tbl td{white-space:nowrap;}
   .tbl th{padding:8px 10px;font-size:10px;}
@@ -768,7 +781,7 @@ footer{
   </a>
   <a href="index.html" class="dl-btn play">
     <span class="dl-icon">🎮</span>
-    <span>웹에서 바로 플레이<br><span style="font-size:9px;opacity:.7;font-weight:500;">(PC 전용)</span></span>
+    <span>웹에서 바로 플레이</span>
   </a>
 </div>
 
@@ -1775,6 +1788,40 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { rootMargin: '-30% 0px -60% 0px' });
 sections.forEach(s => observer.observe(s));
+
+// ═══════════════════════════════
+// Table scroll hint (mobile)
+// ═══════════════════════════════
+(function(){
+  if(window.innerWidth > 768) return;
+  document.querySelectorAll('.tbl').forEach(tbl => {
+    // tbl을 tbl-wrap > tbl-scroll > table 구조로 래핑
+    const wrap = document.createElement('div');
+    wrap.className = 'tbl-wrap';
+    const scroll = document.createElement('div');
+    scroll.className = 'tbl-scroll';
+    tbl.parentNode.insertBefore(wrap, tbl);
+    scroll.appendChild(tbl);
+    wrap.appendChild(scroll);
+
+    // 스크롤이 필요한지 확인
+    requestAnimationFrame(() => {
+      if(scroll.scrollWidth <= scroll.clientWidth + 2) return;
+      // 힌트 생성
+      const hint = document.createElement('div');
+      hint.className = 'tbl-hint';
+      hint.innerHTML = '← 좌우 스크롤 →';
+      wrap.appendChild(hint);
+
+      // 스크롤 시 힌트 숨기기 + 오른쪽 그라데이션 제어
+      scroll.addEventListener('scroll', () => {
+        hint.classList.add('hide');
+        const atEnd = scroll.scrollLeft + scroll.clientWidth >= scroll.scrollWidth - 4;
+        wrap.classList.toggle('scrolled-end', atEnd);
+      }, {passive:true});
+    });
+  });
+})();
 
 // ═══════════════════════════════
 // Screenshot Carousel

@@ -129,7 +129,7 @@
   /* 수문 */
   #gate{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);width:252px;height:147px;
     pointer-events:none;z-index:2;filter:drop-shadow(0 0 16px rgba(0,229,255,.4))}
-  #gate .gate-img{width:100%;height:100%;object-fit:contain;display:block;position:absolute;inset:0}
+  #gate .gate-img{width:100%;height:100%;object-fit:contain;display:block;position:absolute;inset:0;mix-blend-mode:lighten}
   #gate.hit{animation:gateShake .35s ease-out}
   #gate.danger{filter:drop-shadow(0 0 24px rgba(255,77,109,.6))}
   @keyframes gateShake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 10px))}75%{transform:translateX(calc(-50% + 10px))}}
@@ -983,38 +983,39 @@
     cursor:pointer;text-decoration:underline;}
 
   /* ═══ MOBILE TOUCH CONTROLS ═══ */
-  #mobileControls{display:none;position:fixed;z-index:9999;top:0;left:0;right:0;bottom:0;pointer-events:none;}
+  /* 모바일 컨트롤은 #stage 내부에 위치 (1280×720 좌표계) */
+  #mobileControls{display:none;position:absolute;z-index:9999;top:0;left:0;width:1280px;height:720px;pointer-events:none;}
   body.mobile-mode #mobileControls{display:block;}
   body.mobile-mode #hudControls{display:none!important;}
 
   /* 가상 조이스틱 */
-  #joystickZone{position:absolute;left:0;bottom:0;width:45%;height:55%;pointer-events:auto;touch-action:none;}
-  #joystickBase{position:absolute;width:120px;height:120px;border-radius:50%;
+  #joystickZone{position:absolute;left:0;bottom:0;width:500px;height:400px;pointer-events:auto;touch-action:none;}
+  #joystickBase{position:absolute;width:140px;height:140px;border-radius:50%;
     background:rgba(0,229,255,.08);border:2px solid rgba(0,229,255,.25);
-    left:40px;bottom:40px;display:flex;align-items:center;justify-content:center;}
-  #joystickThumb{width:48px;height:48px;border-radius:50%;
+    left:50px;bottom:50px;display:flex;align-items:center;justify-content:center;}
+  #joystickThumb{width:56px;height:56px;border-radius:50%;
     background:radial-gradient(circle,rgba(0,229,255,.5),rgba(0,229,255,.2));
     border:2px solid rgba(0,229,255,.6);box-shadow:0 0 12px rgba(0,229,255,.4);
     transition:transform .05s;pointer-events:none;}
 
   /* 스킬 버튼 */
-  #touchSkills{position:absolute;right:20px;bottom:30px;display:flex;gap:14px;pointer-events:auto;touch-action:none;}
-  .touch-skill{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-    font-size:24px;font-weight:900;color:#fff;
+  #touchSkills{position:absolute;right:30px;bottom:40px;display:flex;gap:18px;pointer-events:auto;touch-action:none;}
+  .touch-skill{width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:28px;font-weight:900;color:#fff;
     border:2px solid rgba(255,255,255,.3);
     background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
     box-shadow:0 0 16px rgba(0,0,0,.4);
     position:relative;user-select:none;-webkit-user-select:none;}
   .touch-skill.on-cd{opacity:.4;border-color:rgba(255,255,255,.1);}
-  .touch-skill .ts-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
-    font-size:9px;color:rgba(255,255,255,.6);white-space:nowrap;font-weight:600;}
-  .touch-skill .ts-cd{position:absolute;font-size:14px;font-weight:900;color:var(--cyan);}
+  .touch-skill .ts-label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);
+    font-size:11px;color:rgba(255,255,255,.6);white-space:nowrap;font-weight:600;}
+  .touch-skill .ts-cd{position:absolute;font-size:16px;font-weight:900;color:var(--cyan);}
   #tsQ{background:rgba(0,229,255,.15);border-color:rgba(0,229,255,.5);}
   #tsE{background:rgba(123,111,240,.15);border-color:rgba(123,111,240,.5);}
 
-  /* 모바일 모드 토글 */
-  #mobileToggle{position:fixed;z-index:10000;top:8px;left:8px;
-    padding:6px 10px;border-radius:8px;font-size:10px;font-weight:700;
+  /* 모바일 모드 토글 — stage 내부 */
+  #mobileToggle{position:absolute;z-index:10000;top:10px;left:10px;
+    padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;
     background:rgba(0,0,0,.6);border:1px solid rgba(0,229,255,.3);color:var(--cyan);
     cursor:pointer;backdrop-filter:blur(8px);display:none;touch-action:manipulation;}
   body.show-mobile-toggle #mobileToggle{display:block;}
@@ -1049,19 +1050,19 @@
   <div class="ow-sub">이 게임은 가로 모드에서 플레이합니다</div>
   <div class="ow-sub" style="margin-top:16px;color:var(--cyan);font-weight:700;font-size:14px;">터치하면 자동 전환</div>
 </div>
-<!-- 모바일 모드 토글 -->
-<button id="mobileToggle">📱 터치 모드</button>
-<!-- 모바일 터치 컨트롤 -->
-<div id="mobileControls">
-  <div id="joystickZone">
-    <div id="joystickBase"><div id="joystickThumb"></div></div>
-  </div>
-  <div id="touchSkills">
-    <div class="touch-skill" id="tsQ">⇧<span class="ts-label">질주</span><span class="ts-cd" id="tsCdQ"></span></div>
-    <div class="touch-skill" id="tsE">E<span class="ts-label">충격파</span><span class="ts-cd" id="tsCdE"></span></div>
-  </div>
-</div>
 <div id="stage">
+  <!-- 모바일 모드 토글 -->
+  <button id="mobileToggle">📱 터치 모드</button>
+  <!-- 모바일 터치 컨트롤 -->
+  <div id="mobileControls">
+    <div id="joystickZone">
+      <div id="joystickBase"><div id="joystickThumb"></div></div>
+    </div>
+    <div id="touchSkills">
+      <div class="touch-skill" id="tsQ">⇧<span class="ts-label">질주</span><span class="ts-cd" id="tsCdQ"></span></div>
+      <div class="touch-skill" id="tsE">E<span class="ts-label">충격파</span><span class="ts-cd" id="tsCdE"></span></div>
+    </div>
+  </div>
   <div id="bgFx"></div>
   <canvas id="bgParticleCanvas" width="1280" height="720"></canvas>
   <div id="world"></div>
@@ -4162,7 +4163,14 @@ if(AUTOPLAY){
   let joyActive = false;
   let joyId = null;
   let joyCenter = {x:0, y:0};
-  const JOY_R = 50; // max thumb travel
+  const JOY_R = 55; // max thumb travel (in stage coords)
+  // stage scale 보정: stage가 transform:scale()로 축소되므로, 화면 픽셀 → stage 내부 픽셀 변환 필요
+  function getStageScale(){
+    const st = document.getElementById('stage');
+    if(!st) return 1;
+    const r = st.getBoundingClientRect();
+    return r.width / 1280;
+  }
 
   // 모바일 또는 작은 화면에서 토글 표시
   function checkShowToggle(){
@@ -4253,8 +4261,10 @@ if(AUTOPLAY){
     }
   }
   function updateJoy(cx, cy){
-    let dx = cx - joyCenter.x;
-    let dy = cy - joyCenter.y;
+    const sc = getStageScale();
+    // 화면 좌표 차이를 stage 내부 좌표로 변환
+    let dx = (cx - joyCenter.x) / sc;
+    let dy = (cy - joyCenter.y) / sc;
     const dist = Math.hypot(dx, dy);
     if(dist > JOY_R){ dx = dx/dist*JOY_R; dy = dy/dist*JOY_R; }
     jThumb.style.transform = `translate(${dx}px,${dy}px)`;
