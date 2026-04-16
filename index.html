@@ -25,9 +25,12 @@
     --ok:#26ffa8; --warn:#ffb830; --danger:#ff4d6d;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{width:100%;height:100%;height:100dvh;background:#000;overflow:hidden;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:#e6f3ff;user-select:none;-webkit-user-select:none;touch-action:manipulation;
+  html,body{width:100%;height:100%;height:100dvh;background:linear-gradient(180deg,#060c18 0%,#0a1526 30%,#0d1b2a 60%,#081420 100%);overflow:hidden;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:#e6f3ff;user-select:none;-webkit-user-select:none;touch-action:manipulation;
     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
   body{display:flex;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;bottom:0;}
+  body::before{content:'';position:fixed;inset:0;background:url('AS_Assets/bg/castle_gate.png') center/cover no-repeat;
+    filter:blur(28px) brightness(0.2) saturate(0.7);z-index:-1;pointer-events:none}
+  body.wide-mode{align-items:flex-end}
 
   #stage{position:relative;width:1280px;height:720px;
     background:
@@ -36,8 +39,9 @@
       radial-gradient(ellipse at 50% 25%, rgba(0,140,180,.04), transparent 55%),
       linear-gradient(to bottom, rgba(10,14,26,.75) 0%, rgba(13,27,42,.7) 30%, rgba(27,40,56,.65) 60%, rgba(10,22,40,.8) 100%),
       url('AS_Assets/bg/castle_gate.png') center/cover no-repeat;
-    box-shadow:0 0 60px rgba(0,229,255,.3);overflow:hidden;cursor:crosshair;
+    box-shadow:0 0 60px rgba(0,229,255,.3),0 0 120px 40px rgba(10,20,40,.8);overflow:hidden;cursor:crosshair;
     transform-origin:center}
+  body.wide-mode #stage{transform-origin:center bottom}
   #stage.shake{animation:stageShake .35s ease-out}
   @keyframes stageShake{
     0%,100%{transform:var(--fit,scale(1)) translate(0,0)}
@@ -128,15 +132,33 @@
 
   /* 수문 */
   #gate{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);width:252px;height:147px;
-    pointer-events:none;z-index:2;filter:drop-shadow(0 0 16px rgba(0,229,255,.4))}
-  #gate .gate-img{width:100%;height:100%;object-fit:contain;display:block;position:absolute;inset:0;mix-blend-mode:lighten}
+    pointer-events:none;z-index:2;filter:drop-shadow(0 0 16px rgba(0,229,255,.4));transition:filter .6s}
+  #gate .gate-img{width:100%;height:100%;object-fit:contain;display:block;position:absolute;inset:0;
+    transition:opacity .5s}
   #gate.hit{animation:gateShake .35s ease-out}
-  #gate.danger{filter:drop-shadow(0 0 24px rgba(255,77,109,.6))}
   @keyframes gateShake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 10px))}75%{transform:translateX(calc(-50% + 10px))}}
   #gate .barrier{position:absolute;inset:0;pointer-events:none;opacity:.6;
     background:radial-gradient(ellipse at center top,rgba(0,229,255,.25),transparent 70%);
-    animation:barrierPulse 2.4s ease-in-out infinite}
+    animation:barrierPulse 2.4s ease-in-out infinite;transition:opacity .6s}
   @keyframes barrierPulse{0%,100%{opacity:.4}50%{opacity:.75}}
+  /* 수문 손상 단계 이펙트 */
+  #gate .gate-smoke{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .8s;
+    background:radial-gradient(ellipse at center bottom,rgba(80,80,80,.35),transparent 60%)}
+  #gate .gate-embers-fx{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .8s;overflow:hidden}
+  /* 단계 1: 60% — 약간 손상 */
+  #gate.dmg-1{filter:drop-shadow(0 0 14px rgba(0,180,255,.3))}
+  #gate.dmg-1 .barrier{opacity:.4}
+  /* 단계 2: 30% — 심각 손상 */
+  #gate.dmg-2{filter:drop-shadow(0 0 18px rgba(255,160,40,.5))}
+  #gate.dmg-2 .barrier{opacity:.15}
+  #gate.dmg-2 .gate-smoke{opacity:1}
+  /* 단계 3: 위험 — 붕괴 직전 */
+  #gate.dmg-3{filter:drop-shadow(0 0 24px rgba(255,60,60,.7));animation:gateDangerPulse 1.2s ease-in-out infinite}
+  #gate.dmg-3 .barrier{opacity:0}
+  #gate.dmg-3 .gate-smoke{opacity:1;background:radial-gradient(ellipse at center bottom,rgba(60,0,0,.4),transparent 60%)}
+  #gate.dmg-3 .gate-embers-fx{opacity:1}
+  @keyframes gateDangerPulse{0%,100%{filter:drop-shadow(0 0 24px rgba(255,60,60,.7))}
+    50%{filter:drop-shadow(0 0 36px rgba(255,30,30,.9))}}
 
   .item{filter:drop-shadow(0 0 10px var(--cyan));animation:bob 1.2s ease-in-out infinite}
   .item.normal{width:40px;height:40px;filter:drop-shadow(0 0 8px #b4c4d8)}
@@ -166,9 +188,9 @@
   .panel .p-label{font-size:10px;color:var(--cyan);letter-spacing:.18em;margin-bottom:5px;
     text-shadow:0 0 6px var(--cyan);text-transform:uppercase;font-weight:900}
 
-  /* 상단 중앙 WAVE (v1.7 확대) */
-  #hudWave{top:10px;left:50%;transform:translateX(-50%);padding:6px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:0;
-    min-width:160px}
+  /* 상단 중앙 WAVE (v1.7 확대) — wide-mode: 상단 잘림 보상 */
+  #hudWave{top:var(--crop-top,10px);left:50%;transform:translateX(-50%);padding:6px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:0;
+    min-width:160px;transition:top .3s}
   #hudWave .wv-tag{font-size:11px;color:var(--gold);letter-spacing:.25em;font-weight:900;text-shadow:0 0 8px var(--gold)}
   #hudWave .wv-num{font-family:'Outfit',sans-serif;font-size:22px;color:#fff;font-weight:900;letter-spacing:.06em}
   #hudWave .wv-num .slash{color:#6cc5ff;font-weight:400;margin:0 3px}
@@ -236,7 +258,7 @@
   @keyframes rscGain{0%{transform:scale(1)}50%{transform:scale(1.08);box-shadow:0 0 24px rgba(255,184,48,.6)}100%{transform:scale(1)}}
 
   /* 우측 Wave 구성 (미니) — v1.7 가독성 강화 */
-  #hudWaveInfo{top:10px;right:14px;min-width:150px;font-size:11px;padding:8px 12px;background:rgba(5,18,34,.78)}
+  #hudWaveInfo{top:var(--crop-top,10px);right:14px;min-width:150px;font-size:11px;padding:8px 12px;background:rgba(5,18,34,.78);transition:top .3s}
   #hudWaveInfo .p-label{font-size:9px;margin-bottom:4px;opacity:.9}
   #hudWaveInfo .enemy-list{display:flex;flex-direction:row;gap:10px;margin-top:2px;flex-wrap:wrap}
   #hudWaveInfo .e-row{display:flex;align-items:center;gap:3px;padding:0}
@@ -926,7 +948,7 @@
   #screenFade.active{opacity:1;pointer-events:auto}
 
   /* v1.6: 콤보 카운터 */
-  #comboHud{position:absolute;top:70px;right:14px;z-index:8;pointer-events:none;
+  #comboHud{position:absolute;top:calc(var(--crop-top,10px) + 60px);right:14px;z-index:8;pointer-events:none;
     font-family:'Outfit',sans-serif;text-align:right;opacity:0;transition:opacity .3s;transform-origin:right center;
     display:flex;flex-direction:column;align-items:flex-end;gap:2px}
   #comboHud.show{opacity:1}
@@ -1015,7 +1037,7 @@
   #tsE{background:rgba(123,111,240,.15);border-color:rgba(123,111,240,.5);}
 
   /* 모바일 모드 토글 — stage 내부 */
-  #mobileToggle{position:absolute;z-index:10000;top:10px;left:10px;
+  #mobileToggle{position:absolute;z-index:10000;top:var(--crop-top,10px);left:10px;
     padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;
     background:rgba(0,0,0,.6);border:1px solid rgba(0,229,255,.3);color:var(--cyan);
     cursor:pointer;backdrop-filter:blur(8px);display:none;touch-action:manipulation;}
@@ -1033,6 +1055,35 @@
   @media(max-width:768px) and (orientation:portrait){
     #orientWarn{display:flex!important;}
   }
+
+  /* === 모바일 가로 (wide-mode) UI 최적화 === */
+  body.wide-mode #skillBar{
+    bottom:8px;left:8px;gap:6px;padding:5px 8px;border-radius:10px;
+  }
+  body.wide-mode #skillBar .sb-slot{width:48px;gap:1px}
+  body.wide-mode #skillBar .sb-atk{width:42px;height:42px;border-radius:10px;font-size:20px}
+  body.wide-mode #skillBar .sb-label{font-size:7px}
+  body.wide-mode .skill-keycap{font-size:8px;padding:1px 4px;margin-bottom:2px}
+  body.wide-mode .skill-slot{width:48px}
+  body.wide-mode .skill-btn{width:42px;height:42px}
+  body.wide-mode .skill-btn .skill-img{width:36px;height:36px;inset:3px}
+  body.wide-mode .sb-atk-gauge{width:40px;height:5px}
+
+  body.wide-mode #hudRightStack{bottom:8px;right:8px;gap:4px}
+  body.wide-mode #hudPlayer{min-width:120px;font-size:8px;padding:4px 6px}
+  body.wide-mode #hudPlayer .p-label{font-size:8px;margin-bottom:2px}
+  body.wide-mode #hudPlayer .prow .v{font-size:9px}
+  body.wide-mode #hudCards{max-width:150px;font-size:10px}
+  body.wide-mode #hudCards .c-ico{font-size:12px}
+  body.wide-mode #hudCards .c-nm{font-size:9px}
+
+  body.wide-mode #hudWave{padding:4px 16px;min-width:130px}
+  body.wide-mode #hudWave .wv-tag{font-size:9px}
+  body.wide-mode #hudWave .wv-num{font-size:18px}
+  body.wide-mode #hudWaveInfo{min-width:120px;font-size:10px;padding:6px 8px}
+
+  /* 건설 슬롯 항상 가시 보장 */
+  .fslot{z-index:4!important}
 </style>
 </head>
 <body>
@@ -1071,7 +1122,9 @@
   <!-- 수문 -->
   <div id="gate">
     <div class="barrier"></div>
-    <img class="gate-img" src="AS_Assets/gate/castle_gate_object.png" alt="">
+    <img class="gate-img" id="gateImg" src="AS_Assets/gate/gate_100.png" alt="">
+    <div class="gate-smoke"></div>
+    <div class="gate-embers-fx" id="gateEmbersFx"></div>
   </div>
   <div id="gateEmbers"></div>
   <!-- Wave 진행 링 (v0.9.7: 제거 — 상단 HUD 타이머로 일원화) -->
@@ -1474,11 +1527,30 @@ function screenFade(cb,dur=400){
   }, dur);
 }
 
-// 뷰포트 피트 (FHD까지 스케일)
+// 뷰포트 피트 — 모바일 가로 시 화면 가로 채우기 (하단 고정, 상단 잘림)
 function fitStage(){
-  const s=Math.min(window.innerWidth/1280, window.innerHeight/720);
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const sW=vw/1280, sH=vh/720;
+  const isWide=(vw>vh)&&(vw/vh>1.82); // 16:9(1.78)보다 넓은 화면
+  let s, cropTop=0;
+  if(isWide){
+    // 가로 채우기, 최대 상단 100px 게임좌표 잘림 허용
+    const sMax=vh/(720-100);
+    s=Math.min(sW, sMax);
+    // 하단 고정 시 상단 잘림량 계산
+    const renderedH=720*s;
+    const overflowPx=Math.max(0, renderedH-vh);
+    cropTop=Math.ceil(overflowPx/s);
+    document.body.classList.add('wide-mode');
+  } else {
+    s=Math.min(sW, sH);
+    cropTop=0;
+    document.body.classList.remove('wide-mode');
+  }
   stage.style.transform=`scale(${s})`;
   stage.style.setProperty('--fit',`scale(${s})`);
+  stage.style.setProperty('--crop-top',(cropTop+10)+'px'); // 10px 기본 마진 포함
+  stage.style.setProperty('--scale',s);
 }
 window.addEventListener('resize',fitStage); fitStage();
 
@@ -1731,6 +1803,12 @@ function startGame(){
   state.wave=1;
   state.gameStartTime=performance.now(); state.playElapsed=0;
   state.gateDamageStage=0; state.gateCracks.length=0; state.prevGateHp=state.gateHpMax;
+  // 수문 이미지/이펙트 리셋
+  _prevGateImgStage=-1;
+  const _gEl=document.getElementById('gate');
+  if(_gEl){_gEl.classList.remove('dmg-1','dmg-2','dmg-3');}
+  const _gImg=document.getElementById('gateImg');
+  if(_gImg){_gImg.src=GATE_IMAGES[0];}
   state.battleLog.forEach(l=>{if(l.el.parentNode)l.el.parentNode.removeChild(l.el)});
   state.battleLog.length=0;
   // v1.0.2: 잔존 플로팅 DOM 전부 제거 (데미지 넘버, 파티클 DOM 등)
@@ -2997,12 +3075,32 @@ function spawnDamageNumber(x,y,amount,crit){
   setTimeout(()=>{if(el.parentNode)el.parentNode.removeChild(el)}, crit?1000:900);
 }
 
+// 수문 이미지 맵 (HP 단계별) + 프리로드
+const GATE_IMAGES=['AS_Assets/gate/gate_100.png','AS_Assets/gate/gate_60.png','AS_Assets/gate/gate_30.png','AS_Assets/gate/gate_danger.png'];
+GATE_IMAGES.forEach(src=>{const img=new Image();img.src=src;});
+let _prevGateImgStage=-1;
+
 function updateGateDamage(){
   const pct=state.gateHp/state.gateHpMax*100;
   let newStage=0;
   if(pct<=25) newStage=3;
   else if(pct<=50) newStage=2;
   else if(pct<=75) newStage=1;
+
+  // 이미지 + CSS 이펙트 단계 업데이트 (회복 시에도 반영)
+  const gateEl=document.getElementById('gate');
+  const gateImg=document.getElementById('gateImg');
+  if(gateEl && newStage!==_prevGateImgStage){
+    // CSS 단계 클래스 교체
+    gateEl.classList.remove('dmg-1','dmg-2','dmg-3');
+    if(newStage>0) gateEl.classList.add('dmg-'+newStage);
+    // 이미지 교체 (페이드 효과는 CSS transition으로)
+    if(gateImg && GATE_IMAGES[newStage]){
+      gateImg.src=GATE_IMAGES[newStage];
+    }
+    _prevGateImgStage=newStage;
+  }
+
   if(newStage>state.gateDamageStage){
     // 새 균열 2~3개 추가
     for(let i=0;i<2+newStage;i++){
@@ -3016,7 +3114,8 @@ function updateGateDamage(){
       });
     }
     state.gateDamageStage=newStage;
-    pushBattleLog(`수문 손상도 ${[0,25,50,75][newStage]}% 도달!`);
+    const msgs=['','수문에 균열 발생!','수문 심각하게 손상!','수문 붕괴 직전!'];
+    pushBattleLog(msgs[newStage]||`수문 손상도 ${[0,25,50,75][newStage]}% 도달!`);
   }
 }
 
@@ -3032,8 +3131,16 @@ function renderGateCracks(){
     ctx.beginPath();ctx.moveTo(c.x1,c.y1);ctx.lineTo(c.x2,c.y2);ctx.stroke();
   }
   ctx.restore();
-  // 25% 아래: ember 파티클 주기적 방출
-  if(state.gateDamageStage>=3 && Math.random()<0.15){
+  // 50% 아래: 연기 파티클
+  if(state.gateDamageStage>=2 && Math.random()<0.08){
+    particles.push({
+      x:W/2+(Math.random()-.5)*180, y:H-100-Math.random()*30,
+      vx:(Math.random()-.5)*15, vy:-20-Math.random()*30,
+      life:1.2, size:3+Math.random()*4, color:'rgba(120,120,120,'
+    });
+  }
+  // 25% 아래: ember 파티클 (빨간 불씨) — 빈도 증가
+  if(state.gateDamageStage>=3 && Math.random()<0.2){
     particles.push({
       x:W/2+(Math.random()-.5)*200, y:H-110,
       vx:(Math.random()-.5)*40, vy:-60-Math.random()*80,
