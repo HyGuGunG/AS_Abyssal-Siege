@@ -2676,10 +2676,11 @@ function spawnEnemy(type){
     // 보스: 화면 상단 중앙에서 등장
     x=W/2; y=-60;
   } else {
+    // 전체 가로 폭 활용: 좌(20~420) / 중(380~900) / 우(860~1260) — 영역 겹쳐서 빈 사각지대 제거
     const side=Math.floor(Math.random()*3);
-    if(side===0){x=60+Math.random()*200; y=-40}
-    else if(side===1){x=W/2+(Math.random()-.5)*300; y=-40}
-    else {x=W-60-Math.random()*200; y=-40}
+    if(side===0){x=20+Math.random()*400; y=-40}
+    else if(side===1){x=380+Math.random()*520; y=-40}
+    else {x=860+Math.random()*400; y=-40}
   }
   // v0.9.7 자동플레이: 수문 근처에서 스폰 → 금방 자연사
   if(AUTOPLAY && !def.boss){ x=W/2+(Math.random()-0.5)*60; y=H-200; }
@@ -3637,7 +3638,7 @@ function update(dt){
             }
           }
           // 화면 밖 방지
-          e._bossWpX=Math.max(120,Math.min(W-120,e._bossWpX));
+          e._bossWpX=Math.max(60,Math.min(W-60,e._bossWpX));
           e._bossWpY=Math.max(100,Math.min(320,e._bossWpY));
         }
         // lerp 보간 (ease-in-out 느낌의 무게감)
