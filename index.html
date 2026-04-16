@@ -5,10 +5,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="screen-orientation" content="landscape">
 <meta name="x5-orientation" content="landscape">
 <meta name="browsermode" content="application">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
 <title>Abyssal Siege — 심해 습격</title>
 <style>
   :root{
@@ -21,8 +25,9 @@
     --ok:#26ffa8; --warn:#ffb830; --danger:#ff4d6d;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:#e6f3ff;user-select:none}
-  body{display:flex;align-items:center;justify-content:center}
+  html,body{width:100%;height:100%;height:100dvh;background:#000;overflow:hidden;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:#e6f3ff;user-select:none;-webkit-user-select:none;touch-action:manipulation;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
+  body{display:flex;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;bottom:0;}
 
   #stage{position:relative;width:1280px;height:720px;
     background:
@@ -963,6 +968,20 @@
   .result-grade:not(.reveal){opacity:0;transform:scale(0)}
   .result-grade.reveal{opacity:1;transform:scale(1);transition:opacity .5s,transform .5s cubic-bezier(.17,.67,.2,1.3)}
 
+  /* ═══ IN-APP BROWSER WARNING ═══ */
+  #inappWarn{display:none;position:fixed;z-index:999999;top:0;left:0;right:0;bottom:0;
+    background:rgba(4,8,15,.97);color:#fff;
+    flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    font-family:'Noto Sans KR',sans-serif;text-align:center;padding:32px;}
+  #inappWarn .iw-icon{font-size:48px;}
+  #inappWarn .iw-title{font-size:18px;font-weight:900;color:var(--cyan);}
+  #inappWarn .iw-desc{font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;}
+  #inappWarn .iw-btn{margin-top:8px;padding:14px 28px;border-radius:12px;border:none;
+    background:linear-gradient(135deg,var(--cyan),#0a84ff);color:#000;
+    font-size:14px;font-weight:900;cursor:pointer;}
+  #inappWarn .iw-skip{margin-top:8px;font-size:11px;color:rgba(255,255,255,.3);
+    cursor:pointer;text-decoration:underline;}
+
   /* ═══ MOBILE TOUCH CONTROLS ═══ */
   #mobileControls{display:none;position:fixed;z-index:9999;top:0;left:0;right:0;bottom:0;pointer-events:none;}
   body.mobile-mode #mobileControls{display:block;}
@@ -1015,6 +1034,14 @@
 </style>
 </head>
 <body>
+<!-- 인앱 브라우저 경고 -->
+<div id="inappWarn">
+  <div class="iw-icon">🌐</div>
+  <div class="iw-title">외부 브라우저에서 열어주세요</div>
+  <div class="iw-desc">카카오톡 / 인스타 등 인앱 브라우저에서는<br>전체화면과 가로 모드가 지원되지 않습니다.<br><br>우측 상단 <strong style="color:#fff;">⋮ → Chrome으로 열기</strong> 또는<br><strong style="color:#fff;">Safari로 열기</strong>를 눌러주세요.</div>
+  <button class="iw-btn" id="inappCopy">URL 복사하기</button>
+  <div class="iw-skip" id="inappSkip">그냥 여기서 플레이</div>
+</div>
 <!-- 가로 모드 안내 -->
 <div id="orientWarn">
   <div class="ow-icon">📱</div>
@@ -4101,6 +4128,26 @@ if(AUTOPLAY){
 // ═══════════════════════════════════════
 //   MOBILE TOUCH CONTROLS
 // ═══════════════════════════════════════
+// ═══ 인앱 브라우저 감지 ═══
+(function detectInApp(){
+  const ua = navigator.userAgent || '';
+  const isInApp = /KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line|Snapchat|Twitter/i.test(ua);
+  if(isInApp){
+    const warn = document.getElementById('inappWarn');
+    warn.style.display = 'flex';
+    document.getElementById('inappCopy').addEventListener('click', ()=>{
+      navigator.clipboard.writeText(location.href).then(()=>{
+        document.getElementById('inappCopy').textContent = '복사 완료!';
+      }).catch(()=>{
+        prompt('아래 URL을 복사하세요:', location.href);
+      });
+    });
+    document.getElementById('inappSkip').addEventListener('click', ()=>{
+      warn.style.display = 'none';
+    });
+  }
+})();
+
 (function initMobile(){
   const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
   const toggle = document.getElementById('mobileToggle');
