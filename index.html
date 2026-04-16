@@ -13,6 +13,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#000000">
+<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
 <title>Abyssal Siege — 심해 습격</title>
 <style>
   :root{
@@ -295,9 +298,9 @@
     color:#fff;font-size:10px;letter-spacing:.05em;text-shadow:0 0 4px var(--cyan);margin-right:4px}
 
   /* 우하 플레이어 스탯 — v1.1.1 폰트/패딩 축소 */
-  #hudRightStack{position:absolute;bottom:14px;right:14px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;z-index:5;pointer-events:none;transition:opacity .3s ease}
+  #hudRightStack{position:absolute;bottom:130px;right:14px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;z-index:5;pointer-events:none;transition:opacity .3s ease}
   #hudRightStack>*{pointer-events:auto}
-  #hudPlayer{position:static;min-width:150px;font-size:9px;padding:6px 8px}
+  #hudPlayer{position:absolute;bottom:14px;left:14px;min-width:150px;font-size:9px;padding:6px 8px;z-index:5}
   #hudPlayer .p-label{margin-bottom:3px;font-size:9px}
   #hudPlayer .prow{display:flex;justify-content:space-between;color:#9cd8ff;margin:1px 0;font-weight:400}
   #hudPlayer .prow .v{color:#fff;font-family:'Outfit',sans-serif;font-weight:900;font-size:10px}
@@ -723,7 +726,7 @@
     border:1px solid rgba(0,229,255,.35);opacity:.9;z-index:5;pointer-events:none}
 
   /* 4. 스킬 바 좌하단 고정 (v0.9.6 롤백) */
-  #skillBar{position:absolute;bottom:14px;left:14px;display:flex;gap:14px;z-index:6;pointer-events:auto;
+  #skillBar{position:absolute;bottom:14px;right:14px;display:flex;gap:14px;z-index:6;pointer-events:auto;
     background:var(--hud-bg);border:1px solid var(--hud-border);border-radius:12px;padding:8px 14px;backdrop-filter:blur(8px);
     box-shadow:0 6px 22px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);overflow:visible}
   #skillBar .sb-slot{display:flex;flex-direction:column;align-items:center;gap:2px;width:60px;overflow:visible}
@@ -1075,7 +1078,7 @@
   body.portrait-mode{align-items:flex-end}
   body.portrait-mode #stage{transform-origin:center bottom}
   body.portrait-mode #skillBar{
-    bottom:6px;left:6px;gap:4px;padding:4px 6px;border-radius:8px;
+    bottom:6px;right:6px;left:auto;gap:4px;padding:4px 6px;border-radius:8px;
   }
   body.portrait-mode #skillBar .sb-slot{width:40px;gap:1px}
   body.portrait-mode #skillBar .sb-atk{width:36px;height:36px;border-radius:8px;font-size:16px}
@@ -1085,8 +1088,9 @@
   body.portrait-mode .skill-btn{width:36px;height:36px}
   body.portrait-mode .skill-btn .skill-img{width:30px;height:30px;inset:3px}
   body.portrait-mode .sb-atk-gauge{width:34px;height:4px}
-  body.portrait-mode #hudRightStack{bottom:6px;right:6px;gap:3px}
-  body.portrait-mode #hudPlayer{min-width:100px;font-size:7px;padding:3px 5px}
+  body.portrait-mode #hudRightStack{bottom:100px;right:6px;gap:3px}
+  body.portrait-mode #hudPlayer{bottom:6px;left:6px;min-width:100px;font-size:7px;padding:3px 5px}
+  body.portrait-mode #touchSkills{display:none!important}
   body.portrait-mode #hudCards{max-width:120px;font-size:9px}
   body.portrait-mode #hudWave{padding:3px 12px;min-width:100px}
   body.portrait-mode #hudWave .wv-tag{font-size:8px}
@@ -1095,21 +1099,23 @@
 
   /* === 모바일 가로 (wide-mode) UI 최적화 === */
   body.wide-mode #skillBar{
-    bottom:8px;left:8px;gap:6px;padding:5px 8px;border-radius:10px;
+    bottom:8px;right:8px;left:auto;gap:6px;padding:5px 8px;border-radius:10px;
   }
   body.wide-mode #skillBar .sb-slot{width:48px;gap:1px}
   body.wide-mode #skillBar .sb-atk{width:42px;height:42px;border-radius:10px;font-size:20px}
   body.wide-mode #skillBar .sb-label{font-size:7px}
-  body.wide-mode .skill-keycap{font-size:8px;padding:1px 4px;margin-bottom:2px}
+  body.wide-mode .skill-keycap{display:none}
   body.wide-mode .skill-slot{width:48px}
   body.wide-mode .skill-btn{width:42px;height:42px}
   body.wide-mode .skill-btn .skill-img{width:36px;height:36px;inset:3px}
   body.wide-mode .sb-atk-gauge{width:40px;height:5px}
 
-  body.wide-mode #hudRightStack{bottom:8px;right:8px;gap:4px}
-  body.wide-mode #hudPlayer{min-width:120px;font-size:8px;padding:4px 6px}
+  body.wide-mode #hudRightStack{bottom:85px;right:8px;gap:4px}
+  body.wide-mode #hudPlayer{bottom:8px;left:8px;min-width:120px;font-size:8px;padding:4px 6px}
   body.wide-mode #hudPlayer .p-label{font-size:8px;margin-bottom:2px}
   body.wide-mode #hudPlayer .prow .v{font-size:9px}
+  body.wide-mode .skill-info{display:none}
+  body.wide-mode #touchSkills{display:none!important}
   body.wide-mode #hudCards{max-width:150px;font-size:10px}
   body.wide-mode #hudCards .c-ico{font-size:12px}
   body.wide-mode #hudCards .c-nm{font-size:9px}
@@ -1238,22 +1244,22 @@
       <div style="margin-top:2px;color:#9d7bff"><span class="k">K</span> 적 전멸 · <span class="k">L</span> 웨이브 스킵 · <span class="k">O</span> 강제 패배</div>
     </div>
 
-    <!-- 우하단 스택: 획득 스킬 + 발키리 스탯 (겹침 방지) -->
+    <!-- 우하단 스택: 획득 스킬 목록 (스킬바 위에 배치) -->
     <div id="hudRightStack">
       <!-- 획득 스킬 목록 (동적 표시) -->
       <div class="panel" id="hudCards">
         <div class="p-label">🎴 획득 스킬</div>
         <div class="cards-list" id="cardsList"></div>
       </div>
-      <!-- 발키리 스탯 -->
-      <div class="panel" id="hudPlayer">
-        <div class="p-label">👑 발키리 스탯</div>
-        <div class="prow"><span>⚔ 공격력</span><span class="v" id="spAtk">22</span></div>
-        <div class="prow"><span>⏱ 공속</span><span class="v" id="spAs">1.5/s</span></div>
-        <div class="prow"><span>📐 사거리</span><span class="v" id="spRng">200</span></div>
-        <div class="prow"><span>🏃 이동속도</span><span class="v" id="spSpd">220</span></div>
-        <div class="prow"><span>🎯 치명타</span><span class="v" id="spCrit">0%</span></div>
-      </div>
+    </div>
+    <!-- 발키리 스탯 (좌하단 고정) -->
+    <div class="panel" id="hudPlayer">
+      <div class="p-label">👑 발키리 스탯</div>
+      <div class="prow"><span>⚔ 공격력</span><span class="v" id="spAtk">22</span></div>
+      <div class="prow"><span>⏱ 공속</span><span class="v" id="spAs">1.5/s</span></div>
+      <div class="prow"><span>📐 사거리</span><span class="v" id="spRng">200</span></div>
+      <div class="prow"><span>🏃 이동속도</span><span class="v" id="spSpd">220</span></div>
+      <div class="prow"><span>🎯 치명타</span><span class="v" id="spCrit">0%</span></div>
     </div>
 
     <!-- 전투 기록 로그 -->
@@ -1261,7 +1267,7 @@
 
     <!-- v1.0.5: resourcePop 제거 → #playerInfoBar(stage 내부)로 통합 -->
 
-    <!-- 스킬 바 (좌하단 고정) -->
+    <!-- 스킬 바 (우하단 고정) -->
     <div id="skillBar">
       <div class="sb-slot">
         <span class="skill-keycap">AUTO</span>
