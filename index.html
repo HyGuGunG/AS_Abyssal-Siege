@@ -176,10 +176,13 @@
   @keyframes bossRage{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% + 2.5px),calc(-50% - 2px))}75%{transform:translate(calc(-50% - 2.5px),calc(-50% + 2px))}}
   .enemy.boss.boss-p3{animation:bossRage .12s ease-in-out infinite;}
   /* 투척 가오리 독침 투사체 */
-  .ray-spine{position:absolute;width:16px;height:6px;border-radius:1px 50% 50% 1px;
-    background:linear-gradient(90deg,#00ffaa,#00cc77);
-    box-shadow:0 0 8px rgba(0,255,150,.8),0 0 16px rgba(0,200,100,.3);
+  .ray-spine{position:absolute;width:22px;height:5px;border-radius:2px 50% 50% 2px;
+    background:linear-gradient(90deg,#00ffcc 0%,#00e5aa 55%,#004433 100%);
+    box-shadow:0 0 10px rgba(0,255,180,.9),0 0 20px rgba(0,200,120,.35);
     pointer-events:none;z-index:6;transform-origin:center center;}
+  .ray-spine::after{content:'';position:absolute;right:-3px;top:50%;transform:translateY(-50%);
+    width:4px;height:9px;clip-path:polygon(0 50%,100% 0,100% 100%);
+    background:#00ffcc;}
   /* 투척 가오리 발사 게이지 */
   .enemy .shootbar{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
     width:44px;height:3px;background:rgba(0,0,0,.55);border-radius:2px;overflow:hidden;}
@@ -3749,13 +3752,24 @@ function showResult(win){
 }
 
 function spawnRayProj(e){
-  const dx=player.x-e.x, dy=player.y-e.y, d=Math.hypot(dx,dy)||1;
-  const angle=Math.atan2(dy,dx);
+  // 선행 조준(lead shot): 플레이어 속도를 고려해 예측 위치를 목표로 삼음
+  // 비행 시간 추정으로 예측 보정 (단, 오차 ±0.15rad 추가로 회피 여지 제공)
+  const rawDx=player.x-e.x, rawDy=player.y-e.y;
+  const dist=Math.hypot(rawDx,rawDy)||1;
+  const travelT=dist/e.projSpeed; // 예상 비행 시간
+  // 플레이어 속도 기반 예측 (player.vx/vy 없으면 현재 위치 그대로)
+  const pvx=player.vx||0, pvy=player.vy||0;
+  const predX=player.x+pvx*travelT*0.55;
+  const predY=player.y+pvy*travelT*0.55;
+  const dx=predX-e.x, dy=predY-e.y, d=Math.hypot(dx,dy)||1;
+  // 약간의 오차각 추가 (±0.12rad ≈ ±7도) — 회피 여지
+  const scatter=(Math.random()-0.5)*0.24;
+  const angle=Math.atan2(dy,dx)+scatter;
   const el=document.createElement('div');
   el.className='ray-spine';
   el.style.cssText=`left:${e.x}px;top:${e.y}px;transform:translate(-50%,-50%) rotate(${angle}rad)`;
   stage.appendChild(el);
-  state.rayProjectiles.push({x:e.x,y:e.y,vx:dx/d*e.projSpeed,vy:dy/d*e.projSpeed,
+  state.rayProjectiles.push({x:e.x,y:e.y,vx:Math.cos(angle)*e.projSpeed,vy:Math.sin(angle)*e.projSpeed,
     dmg:e.projDmg,r:8,life:5,el,angle});
 }
 
@@ -4766,62 +4780,78 @@ function update(dt){
       const offX=Math.sin(e._zigT)*70;
       moveTowards(e,tgtX+offX,tgtY,dt,spdMul);
     } else if(e.ai==='hover_shoot'){
-      // ── 투척 가오리: 플레이어 추적 원거리 AI ──
-      // Y 밴드: 270~420 (발키리가 공격할 수 있는 높이)
-      const GAORI_Y_MIN=270, GAORI_Y_MAX=420;
-      // 사격 범위: 발키리 기본 공격범위(200) × 1.3 = 260px (동적 고려: 최소 260)
-      const SHOOT_RANGE=Math.max(260, player._base.attackRange*1.3);
+      // ── 투척 가오리: 플레이어 추적 원거리 AI (v2.3 전면 재설계) ──
+      // 최적 공격 거리: 220~340px. 너무 가까우면 후퇴, 너무 멀면 추적
+      const GAORI_IDEAL_MIN=200, GAORI_IDEAL_MAX=350;
+      // Y 밴드: 160~500 — 플레이어가 어디에 있든 따라다닐 수 있도록 확장
+      const GAORI_Y_MIN=160, GAORI_Y_MAX=500;
+      // HP 낮을수록 발사 간격 단축 (분노 상태)
+      const hpRatio=e.hp/e.hpMax;
+      const curInterval=hpRatio<0.35 ? e.shootInterval*0.65 : e.shootInterval;
+
       if(!e._hovering){
-        // 입장: 목표 Y(200~280)까지 하강
+        // 입장: hoverY까지 하강
         e.y+=e.speed*dt*spdMul;
         if(e.y>=e.hoverY){
-          e.y=Math.min(e.hoverY, GAORI_Y_MAX);
+          e.y=e.hoverY;
           e._hovering=true;
-          e._shootT=0;
+          e._shootT=curInterval*0.5; // 첫 사격을 절반 쿨다운에서 시작
+          e._strafeAngle=Math.random()*Math.PI*2;
+          e._strafeT=0;
           if(e._sfill) e._sfill.style.width='0%';
         }
       } else {
-        // 추적: 플레이어 방향으로 천천히 이동 (공격 사거리 안에 들어오면 정지)
-        const distToPlayer=Math.hypot(player.x-e.x, player.y-e.y);
-        const inRange=distToPlayer<SHOOT_RANGE;
-        if(!inRange){
-          // 플레이어 추적 (X는 빠르게, Y는 밴드 내에서 천천히)
-          const dx=player.x-e.x, dy=player.y-e.y;
-          const d=Math.hypot(dx,dy)||1;
-          const chaseSpd=80*spdMul;
+        const dist=Math.hypot(player.x-e.x, player.y-e.y);
+
+        // ─ 이동 상태 결정 ─
+        if(dist < GAORI_IDEAL_MIN){
+          // 너무 가깝다 → 플레이어 반대 방향으로 후퇴
+          const dx=e.x-player.x, dy=e.y-player.y, d=Math.hypot(dx,dy)||1;
+          const retreatSpd=110*spdMul;
+          const nx=e.x+dx/d*retreatSpd*dt;
+          const targetY=Math.max(GAORI_Y_MIN, Math.min(GAORI_Y_MAX, e.y+(dy/d)*retreatSpd*dt));
+          e.x=Math.max(80, Math.min(W-80, nx));
+          e.y=targetY;
+        } else if(dist > GAORI_IDEAL_MAX){
+          // 너무 멀다 → 플레이어를 향해 빠르게 추적
+          const dx=player.x-e.x, dy=player.y-e.y, d=Math.hypot(dx,dy)||1;
+          const chaseSpd=95*spdMul;
           const nx=e.x+dx/d*chaseSpd*dt;
-          // Y는 밴드 내에서만 이동
-          const targetY=Math.max(GAORI_Y_MIN, Math.min(GAORI_Y_MAX, player.y-180));
-          const ny=e.y+(targetY-e.y)*dt*1.2;
-          e.x=Math.max(100, Math.min(W-100, nx));
+          // Y는 발키리 위쪽(offset -120) 목표, 밴드 내로 클램프
+          const targetY=Math.max(GAORI_Y_MIN, Math.min(GAORI_Y_MAX, player.y-120));
+          const ny=e.y+(targetY-e.y)*dt*1.8;
+          e.x=Math.max(80, Math.min(W-80, nx));
           e.y=Math.max(GAORI_Y_MIN, Math.min(GAORI_Y_MAX, ny));
         } else {
-          // 사거리 내: 좌우로 살짝 배회
-          if(!e._wAngle) e._wAngle=Math.random()*Math.PI*2;
-          e._wTurnT=(e._wTurnT||0)+dt;
-          if(e._wTurnT>=(e._wTurnInt||1.5)){
-            e._wTurnT=0; e._wTurnInt=1.2+Math.random()*1.5;
-            e._wAngle=Math.random()*Math.PI*2;
+          // 최적 거리 — 스트레이핑으로 위치 유지
+          e._strafeT=(e._strafeT||0)+dt;
+          if(e._strafeT>=(e._strafeDur||1.8)){
+            e._strafeT=0; e._strafeDur=1.4+Math.random()*1.6;
+            // 방향: 플레이어 기준 좌/우 수직 방향
+            const perpSign=(Math.random()<0.5)?1:-1;
+            const dx=player.x-e.x, dy=player.y-e.y, d=Math.hypot(dx,dy)||1;
+            e._strafeAngle=Math.atan2(-dx*perpSign, dy*perpSign); // 플레이어 기준 수직
           }
-          const nx=e.x+Math.cos(e._wAngle)*30*dt;
-          const targetY=Math.max(GAORI_Y_MIN, Math.min(GAORI_Y_MAX, player.y-150));
-          const ny=e.y+(targetY-e.y)*dt*0.8;
-          e.x=Math.max(100, Math.min(W-100, nx));
+          const strafeSpd=55*spdMul;
+          const nx=e.x+Math.cos(e._strafeAngle)*strafeSpd*dt;
+          const targetY=Math.max(GAORI_Y_MIN, Math.min(GAORI_Y_MAX, player.y-110));
+          const ny=e.y+(targetY-e.y)*dt*1.0;
+          e.x=Math.max(80, Math.min(W-80, nx));
           e.y=Math.max(GAORI_Y_MIN, Math.min(GAORI_Y_MAX, ny));
         }
-        // 발사 타이머 (사거리 내에서만)
-        if(inRange){
-          e._shootT+=dt;
-          const pct=Math.min(e._shootT/e.shootInterval,1)*100;
-          if(e._sfill) e._sfill.style.width=pct+'%';
-          if(e._shootT>=e.shootInterval){
-            e._shootT=0;
-            if(e._sfill) e._sfill.style.width='0%';
-            spawnRayProj(e);
-          }
-        } else {
-          // 사거리 밖에서는 게이지 정지
+
+        // ─ 사격 타이머 (거리 무관, 항상 카운트) ─
+        e._shootT+=dt;
+        const pct=Math.min(e._shootT/curInterval,1)*100;
+        if(e._sfill) e._sfill.style.width=pct+'%';
+        if(e._shootT>=curInterval){
+          e._shootT=0;
           if(e._sfill) e._sfill.style.width='0%';
+          // HP 낮으면 2연발
+          spawnRayProj(e);
+          if(hpRatio<0.35){
+            setTimeout(()=>{ if(e._alive) spawnRayProj(e); }, 220);
+          }
         }
       }
     } else if(e.ai==='boss'){
