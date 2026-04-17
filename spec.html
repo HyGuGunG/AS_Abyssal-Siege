@@ -846,10 +846,11 @@ footer{
     <a class="nav-link" href="#sec-systems">시스템</a>
     <a class="nav-link" href="#sec-boss">보스전</a>
     <a class="nav-link" href="#sec-reward">보상 & 연동</a>
+    <a class="nav-link" href="#sec-gcresource">GC 리소스</a>
   </div>
   <div class="nav-end">
-    <span class="nav-ver">v2.0</span>
-    <div class="nav-status"><div class="nav-dot"></div>2026-04-16</div>
+    <span class="nav-ver">v2.3</span>
+    <div class="nav-status"><div class="nav-dot"></div>2026-04-17</div>
   </div>
 </nav>
 
@@ -1229,7 +1230,7 @@ footer{
     <div class="card-label mb16" style="color:var(--cyan)">CHARACTER OVERVIEW</div>
     <div class="g12r" style="gap:20px;">
       <div class="gs4" style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <img src="AS_Assets/characters/valkyrie.png" alt="발키리" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid rgba(0,229,255,.45);filter:drop-shadow(0 0 16px rgba(0,229,255,.5));">
+        <img src="AS_Assets/characters/valkyrie_illust.png" alt="발키리" style="width:100px;height:100px;border-radius:50%;object-fit:cover;object-position:50% 15%;border:2px solid rgba(0,229,255,.45);filter:drop-shadow(0 0 16px rgba(0,229,255,.5));">
         <div style="text-align:center;">
           <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;color:var(--cyan);">발키리 (Valkyrie)</div>
           <div style="font-size:12px;color:var(--muted);margin-top:4px;">다이버 클래스 · SSR</div>
@@ -1257,7 +1258,7 @@ footer{
       <!-- 성창 질주 -->
       <div class="gs6 glass" style="padding:20px;">
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
-          <img src="AS_Assets/skills/valk_dash.png" alt="성창 질주" style="width:52px;height:52px;border-radius:10px;object-fit:cover;border:2px solid rgba(0,229,255,.4);flex-shrink:0;filter:drop-shadow(0 0 6px rgba(0,229,255,.4));">
+          <img src="AS_Assets/skills/gc_valk_spear.png" alt="성창 질주" style="width:52px;height:52px;border-radius:10px;object-fit:cover;border:2px solid rgba(0,229,255,.4);flex-shrink:0;filter:drop-shadow(0 0 6px rgba(0,229,255,.4));">
           <div>
             <div style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:var(--cyan);">성창 질주</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px;">단축키: ⇧ Shift (PC) · 좌 버튼 (모바일)</div>
@@ -1280,7 +1281,7 @@ footer{
       <!-- 성검 폭풍 -->
       <div class="gs6 glass" style="padding:20px;">
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
-          <img src="AS_Assets/skills/valk_shockwave.png" alt="성검 폭풍" style="width:52px;height:52px;border-radius:10px;object-fit:cover;border:2px solid rgba(123,111,240,.4);flex-shrink:0;filter:drop-shadow(0 0 6px rgba(123,111,240,.4));">
+          <img src="AS_Assets/skills/gc_valk_swords.png" alt="성검 폭풍" style="width:52px;height:52px;border-radius:10px;object-fit:cover;border:2px solid rgba(123,111,240,.4);flex-shrink:0;filter:drop-shadow(0 0 6px rgba(123,111,240,.4));">
           <div>
             <div style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:var(--violet);">성검 폭풍</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px;">단축키: E (PC) · 우 버튼 (모바일)</div>
@@ -1362,8 +1363,8 @@ footer{
       <div class="ec-glow"></div>
       <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/gaori.png" alt="투척 가오리" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,143,200,.55));"></span>
       <div class="ec-name">투척 가오리</div>
-      <div class="ec-trait">호버형 원거리 · 상단에 머물며 독침 투척<br>날아오는 독침을 이동으로 회피</div>
-      <div class="ec-warn">⚠ 독침 경로 예측 후 측면 이동 회피</div>
+      <div class="ec-trait">추적형 원거리 · 플레이어를 따라다니며 독침 투척<br>일정 간격으로 독침을 연속 발사</div>
+      <div class="ec-warn">⚠ 이동으로 독침 회피, 접근 후 빠르게 처치</div>
     </div>
     <div class="ec">
       <div class="ec-glow"></div>
@@ -1375,13 +1376,13 @@ footer{
   </div>
 
   <div class="glass accent-top accent-cyan" style="padding:24px;">
-    <div class="card-label mb12" style="color:var(--cyan)">적 능력치 — v2.0 기준</div>
+    <div class="card-label mb12" style="color:var(--cyan)">적 능력치 — v2.3 기준</div>
     <table class="tbl mb8">
       <thead><tr><th>종류</th><th>HP</th><th>속도</th><th>수문 피해</th><th>히트박스</th><th>특수 행동</th></tr></thead>
       <tbody>
         <tr><td><strong>피라냐 고블린</strong></td><td>35</td><td>빠름</td><td style="color:var(--teal);">40</td><td>좁음</td><td>직선 돌진</td></tr>
         <tr><td><strong>어인 기사</strong></td><td>80</td><td>보통</td><td style="color:var(--amber);">70</td><td>보통</td><td>직선 이동</td></tr>
-        <tr><td><strong>투척 가오리</strong></td><td>45</td><td>보통</td><td style="color:var(--teal);">0</td><td>보통</td><td>호버링 + 독침 투척 (18 피해)</td></tr>
+        <tr><td><strong>투척 가오리</strong></td><td>45</td><td>보통</td><td style="color:var(--teal);">0</td><td>보통</td><td>플레이어 추적 + 독침 원거리 투척 (18 피해)</td></tr>
         <tr><td><strong>심해 오우거</strong></td><td>180</td><td>느림</td><td style="color:var(--coral);">120</td><td>넓음</td><td>직선 이동 · 고HP 탱커</td></tr>
         <tr><td><strong>폭발 복어</strong></td><td>45</td><td>보통</td><td style="color:var(--coral);">최대 95<br><span style="font-size:11px;opacity:.6;">접촉35 + 폭발60</span></td><td>좁음</td><td>사망 시 1초 후 광역 폭발</td></tr>
       </tbody>
@@ -1529,47 +1530,47 @@ footer{
   <!-- 수문 상태 시스템 -->
   <div class="glass accent-top accent-cyan" style="padding:28px;margin-bottom:12px;">
     <div class="card-label mb4" style="color:var(--cyan)">GATE STATUS</div>
-    <div class="card-title mb4">수문 상태 — HP에 따른 외형 변화</div>
-    <div class="card-sub mb16">수문은 HP가 줄어들수록 <strong>점차 붕괴되는 모습</strong>으로 변합니다. 플레이어가 수문의 위험도를 직관적으로 인지할 수 있도록 4단계 비주얼 시스템을 적용합니다.</div>
+    <div class="card-title mb4">수문 상태 — HP에 따른 동적 이펙트 변화 <span style="font-size:11px;color:var(--muted);font-weight:400;">(v2.3 — 단일 이미지 + CSS 방식)</span></div>
+    <div class="card-sub mb16">GC 관문 리소스(단일 이미지)에 CSS 클래스를 동적으로 적용해 HP 단계별 파손 상태를 표현합니다. 4단계 이미지 교체 방식에서 CSS 이펙트 방식으로 변경되었습니다.</div>
 
     <div class="g12r mb16">
       <div class="gs3 glass" style="padding:14px;text-align:center;">
-        <img src="AS_Assets/gate/gate_100.png" style="width:100px;height:auto;object-fit:contain;margin-bottom:8px;filter:drop-shadow(0 0 12px rgba(0,229,255,.4));" alt="건강"/>
+        <img src="AS_Assets/gate/gate_front.png" style="width:100px;height:100px;object-fit:cover;object-position:50% 42%;margin-bottom:8px;filter:brightness(0.52) saturate(0.62) hue-rotate(192deg) contrast(1.1) drop-shadow(0 0 12px rgba(0,229,255,.4));" alt="건강"/>
         <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--teal);margin-bottom:4px;">건강 (100%~76%)</div>
         <div style="font-size:11px;color:var(--muted);line-height:1.6;">
-          푸른 결정체가 빛나는 온전한 상태.<br>
-          <strong style="color:var(--cyan);">파란 보호막</strong> 활성, 시안 글로우.
+          기본 상태. 수문 원본 필터 적용.<br>
+          <strong style="color:var(--cyan);">시안 글로우</strong> 효과.
         </div>
       </div>
       <div class="gs3 glass" style="padding:14px;text-align:center;">
-        <img src="AS_Assets/gate/gate_60.png" style="width:100px;height:auto;object-fit:contain;margin-bottom:8px;filter:drop-shadow(0 0 12px rgba(0,180,255,.3));" alt="균열"/>
+        <img src="AS_Assets/gate/gate_front.png" style="width:100px;height:100px;object-fit:cover;object-position:50% 42%;margin-bottom:8px;filter:brightness(0.45) saturate(0.4) hue-rotate(192deg) contrast(1.15) drop-shadow(0 0 12px rgba(200,160,40,.3));" alt="균열"/>
         <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">균열 (75%~51%)</div>
         <div style="font-size:11px;color:var(--muted);line-height:1.6;">
-          돌 틈에 균열이 생기고 철봉이 휘어짐.<br>
-          보호막 <strong style="color:var(--amber);">약화</strong>, 글로우 감소.
+          CSS .dmg-1 적용. 채도↓ 약화.<br>
+          <strong style="color:var(--amber);">균열 균열 오버레이</strong> 등장.
         </div>
       </div>
       <div class="gs3 glass" style="padding:14px;text-align:center;">
-        <img src="AS_Assets/gate/gate_30.png" style="width:100px;height:auto;object-fit:contain;margin-bottom:8px;filter:drop-shadow(0 0 12px rgba(255,160,40,.5));" alt="심각 손상"/>
+        <img src="AS_Assets/gate/gate_front.png" style="width:100px;height:100px;object-fit:cover;object-position:50% 42%;margin-bottom:8px;filter:brightness(0.38) saturate(0.2) hue-rotate(10deg) sepia(0.4) contrast(1.2) drop-shadow(0 0 12px rgba(255,120,30,.5));" alt="심각 손상"/>
         <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--coral);margin-bottom:4px;">심각 손상 (50%~26%)</div>
         <div style="font-size:11px;color:var(--muted);line-height:1.6;">
-          벽이 무너지고 결정체가 거의 꺼짐.<br>
-          <strong style="color:var(--coral);">연기</strong> 발생, 주황 글로우.
+          CSS .dmg-2 적용. 붉은 틴트 강화.<br>
+          <strong style="color:var(--coral);">균열 오버레이 진해짐</strong>.
         </div>
       </div>
       <div class="gs3 glass" style="padding:14px;text-align:center;">
-        <img src="AS_Assets/gate/gate_danger.png" style="width:100px;height:auto;object-fit:contain;margin-bottom:8px;filter:drop-shadow(0 0 16px rgba(255,60,60,.7));" alt="붕괴 직전"/>
+        <img src="AS_Assets/gate/gate_front.png" style="width:100px;height:100px;object-fit:cover;object-position:50% 42%;margin-bottom:8px;filter:brightness(0.28) saturate(0.1) hue-rotate(0deg) sepia(0.8) contrast(1.3) drop-shadow(0 0 16px rgba(255,60,60,.7));" alt="붕괴 직전"/>
         <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:#ff4d6d;margin-bottom:4px;">붕괴 직전 (25%~0%)</div>
         <div style="font-size:11px;color:var(--muted);line-height:1.6;">
-          잔해만 남고 붉은 잔불이 피어오름.<br>
-          <strong style="color:#ff4d6d;">화면 빨간 깜빡임</strong> + 불씨 파티클.
+          CSS .dmg-3 적용. 거의 암흑.<br>
+          <strong style="color:#ff4d6d;">화면 적색 깜빡임</strong> + 쉐이크.
         </div>
       </div>
     </div>
 
     <div class="callout">
-      <div class="callout-l">시각적 위기 전달</div>
-      <div class="callout-b">수문의 외형 변화는 HP바를 보지 않아도 현재 위험 상태를 직관적으로 전달합니다. 결계(보호막)가 사라지고 연기와 불씨가 피어오르면 즉각적인 위기감을 느끼게 됩니다.</div>
+      <div class="callout-l">GC 리소스 활용 전략</div>
+      <div class="callout-b">Grand Cross의 관문 일러스트(bg_character_basic_castle_gate.png) 단일 이미지에 CSS filter(brightness·saturate·hue-rotate·sepia)와 crack overlay를 조합해 4단계 파손 연출을 구현합니다. 이미지 용량을 줄이면서도 풍부한 연출이 가능합니다.</div>
     </div>
   </div>
 
@@ -1861,15 +1862,15 @@ footer{
         <table class="tbl mb16">
           <thead><tr><th>시설명</th><th>효과</th><th>등급</th></tr></thead>
           <tbody>
-            <tr style="background:rgba(158,158,158,.04)"><td><strong>🏹 석궁 포탑</strong></td><td>빠른 연사, 근거리 단일 타격</td><td><span class="badge b-gray">일반</span></td></tr>
-            <tr style="background:rgba(158,158,158,.04)"><td><strong>⛲ 성수 제단</strong></td><td>주기적으로 가호 회복</td><td><span class="badge b-gray">일반</span></td></tr>
-            <tr style="background:rgba(76,175,80,.04)"><td><strong>⚔️ 마법 발리스타</strong></td><td>관통 고위력 한 방</td><td><span class="badge b-green">고급</span></td></tr>
-            <tr style="background:rgba(76,175,80,.04)"><td><strong>❄️ 서리 정령</strong></td><td>주변 적 이동속도 감소</td><td><span class="badge b-green">고급</span></td></tr>
-            <tr style="background:rgba(33,150,243,.04)"><td><strong>💥 마법 박격포</strong></td><td>밀집 지점 광역 포격</td><td><span class="badge b-blue">희귀</span></td></tr>
-            <tr style="background:rgba(33,150,243,.04)"><td><strong>🛡️ 수호 결계</strong></td><td>주기적으로 수문 회복</td><td><span class="badge b-blue">희귀</span></td></tr>
-            <tr style="background:rgba(156,39,176,.05)"><td><strong>⚡ 뇌격 마법진</strong></td><td>번개 3연쇄 공격</td><td><span class="badge b-violet">고유</span></td></tr>
-            <tr style="background:rgba(156,39,176,.05)"><td><strong>✨ 성스러운 방벽</strong></td><td>인근 시설 공격력 +30%</td><td><span class="badge b-violet">고유</span></td></tr>
-            <tr style="background:rgba(255,152,0,.05)"><td><strong>🔥 발키리의 분노</strong></td><td>신성 포격 광역 폭발</td><td><span class="badge b-orange">전설</span></td></tr>
+            <tr style="background:rgba(158,158,158,.04)"><td><strong>🏹 석궁 망루</strong></td><td>빠른 연사, 근거리 단일 타격</td><td><span class="badge b-gray">일반</span></td></tr>
+            <tr style="background:rgba(158,158,158,.04)"><td><strong>⛺ 치유 야영지</strong></td><td>주기적으로 가호 회복</td><td><span class="badge b-gray">일반</span></td></tr>
+            <tr style="background:rgba(76,175,80,.04)"><td><strong>🎯 원거리 망루</strong></td><td>관통 고위력 한 방</td><td><span class="badge b-green">고급</span></td></tr>
+            <tr style="background:rgba(76,175,80,.04)"><td><strong>❄️ 빙결 탑</strong></td><td>주변 적 이동속도 감소</td><td><span class="badge b-green">고급</span></td></tr>
+            <tr style="background:rgba(33,150,243,.04)"><td><strong>💥 마법구 포탑</strong></td><td>밀집 지점 광역 포격</td><td><span class="badge b-blue">희귀</span></td></tr>
+            <tr style="background:rgba(33,150,243,.04)"><td><strong>🛡️ 수호 요새</strong></td><td>주기적으로 수문 회복</td><td><span class="badge b-blue">희귀</span></td></tr>
+            <tr style="background:rgba(156,39,176,.05)"><td><strong>⚡ 뇌전 요새</strong></td><td>번개 3연쇄 공격</td><td><span class="badge b-violet">고유</span></td></tr>
+            <tr style="background:rgba(156,39,176,.05)"><td><strong>✨ 성광 첨탑</strong></td><td>인근 시설 공격력 +30%</td><td><span class="badge b-violet">고유</span></td></tr>
+            <tr style="background:rgba(255,152,0,.05)"><td><strong>🔥 발키리 망루</strong></td><td>전방위 신성 포격 광역 폭발 (사거리: 전체 1280px)</td><td><span class="badge b-orange">전설</span></td></tr>
           </tbody>
         </table>
 
@@ -2118,10 +2119,114 @@ footer{
   </div>
 </div>
 
+<div class="sec-sep"></div>
+
+<!-- ═══════════════════════════════
+  09 GC RESOURCES
+═══════════════════════════════ -->
+<div class="section" id="sec-gcresource">
+  <div class="sec-label">
+    <span class="sec-num">09 — GC RESOURCES</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="sec-title">Grand Cross 리소스 통합</h2>
+  <p class="sec-desc">게임 내 비주얼은 Grand Cross 원작 게임 리소스를 직접 참조합니다. 아래 목록은 현재 사용 중인 GC 리소스 매핑 현황입니다.</p>
+
+  <div class="g12r mb12">
+    <!-- 캐릭터 리소스 -->
+    <div class="gs6 glass accent-top accent-cyan" style="padding:24px;">
+      <div class="card-label mb12" style="color:var(--cyan)">캐릭터 / 일러스트</div>
+      <table class="tbl">
+        <thead><tr><th>용도</th><th>GC 원본 파일</th><th>경로</th></tr></thead>
+        <tbody>
+          <tr><td>타이틀 발키리 일러스트</td><td>HeroValkyrie.png</td><td>AS_Assets/characters/valkyrie_illust.png</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 스킬 아이콘 -->
+    <div class="gs6 glass accent-top accent-violet" style="padding:24px;">
+      <div class="card-label mb12" style="color:var(--violet)">스킬 아이콘 (5종)</div>
+      <table class="tbl">
+        <thead><tr><th>스킬명</th><th>GC 원본</th><th>적용 파일</th></tr></thead>
+        <tbody>
+          <tr><td>창 던지기 (Q)</td><td>발키리 창 스킬 아이콘</td><td>gc_valk_spear.png</td></tr>
+          <tr><td>심장 보주 (W)</td><td>발키리 정신 스킬 아이콘</td><td>gc_valk_spirit.png</td></tr>
+          <tr><td>이중 투척 (E)</td><td>발키리 검 스킬 아이콘</td><td>gc_valk_swords.png</td></tr>
+          <tr><td>성스러운 방패 (R)</td><td>발키리 방패 스킬 아이콘</td><td>gc_valk_shield.png</td></tr>
+          <tr><td>발키리 각성 (T)</td><td>발키리 날개 스킬 아이콘</td><td>gc_valk_wings.png</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="g12r mb12">
+    <!-- 이펙트 텍스처 -->
+    <div class="gs7 glass accent-top accent-teal" style="padding:24px;">
+      <div class="card-label mb12" style="color:var(--teal)">이펙트 텍스처 (Canvas 렌더링)</div>
+      <table class="tbl">
+        <thead><tr><th>텍스처명</th><th>형식</th><th>사용처</th><th>blend mode</th></tr></thead>
+        <tbody>
+          <tr><td>fx_shine_splash.png</td><td>4×2 스프라이트시트</td><td>크리티컬 히트, 폭발 이펙트</td><td>screen</td></tr>
+          <tr><td>fx_lightning.png</td><td>4×2 스프라이트시트</td><td>연쇄 번개 스킬 이펙트</td><td>screen</td></tr>
+          <tr><td>fx_glow.png</td><td>단일</td><td>투사체 선단 글로우, 폭발 글로우</td><td>screen</td></tr>
+          <tr><td>fx_shine.png</td><td>단일</td><td>파티클 반짝임</td><td>screen</td></tr>
+          <tr><td>fx_shine2.png</td><td>단일</td><td>파티클 반짝임 (변형)</td><td>screen</td></tr>
+          <tr><td>fx_circle.png</td><td>단일</td><td>원형 이펙트</td><td>screen</td></tr>
+          <tr><td>fx_glow2.png</td><td>단일</td><td>글로우 변형</td><td>screen</td></tr>
+          <tr><td>fx_dust.png</td><td>단일</td><td>먼지/파편</td><td>screen</td></tr>
+          <tr><td>fx_wave.png</td><td>단일</td><td>파도 이펙트</td><td>screen</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:11px;color:rgba(156,216,255,.55);">※ 모든 이펙트 텍스처는 GC_FX 객체로 프리로드 후 Canvas globalCompositeOperation='screen'으로 렌더링. 검은 배경이 투명 처리됨.</div>
+    </div>
+
+    <!-- 수문 리소스 -->
+    <div class="gs5 glass accent-top accent-amber" style="padding:24px;">
+      <div class="card-label mb12" style="color:var(--amber)">수문(관문) 리소스</div>
+      <table class="tbl mb12">
+        <thead><tr><th>용도</th><th>GC 원본 파일</th><th>적용</th></tr></thead>
+        <tbody>
+          <tr><td>수문 메인 이미지</td><td>bg_character_basic_castle_gate.png</td><td>gate_front.png (단일화)</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:11px;color:rgba(156,216,255,.55);">
+        <strong style="color:var(--amber)">HP 단계별 처리 방식 변경</strong><br>
+        기존: gate_100 / gate_60 / gate_30 / gate_danger.png 4개 이미지 교체<br>
+        현재: 단일 gate_front.png + CSS 클래스(dmg-1/2/3)로 동적 이펙트 표현<br>
+        — CSS filter(채도↓, 붉은 tint) + crack overlay + 쉐이크 애니메이션
+      </div>
+    </div>
+  </div>
+
+  <!-- GC 이펙트 렌더링 시스템 -->
+  <div class="glass accent-top accent-coral" style="padding:24px;margin-bottom:16px;">
+    <div class="card-label mb12" style="color:var(--coral)">GC 이펙트 렌더링 시스템 — 기술 개요</div>
+    <div class="grid2">
+      <div>
+        <div style="font-size:12px;color:var(--cyan);font-weight:700;margin-bottom:6px;">스파인(shine_splash) 애니메이션</div>
+        <div style="font-size:12px;color:rgba(156,216,255,.8);">4×2 격자 스프라이트시트를 life 값으로 프레임 인덱스 계산, 순차 재생. 크리티컬 히트·폭발·박격포 명중 시 트리거.</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--violet);font-weight:700;margin-bottom:6px;">번개(lightning) 애니메이션</div>
+        <div style="font-size:12px;color:rgba(156,216,255,.8);">연쇄 번개 스킬(chainLightningFX) 연결 지점마다 GC 번개 텍스처 렌더링. 4×2 스프라이트시트 랜덤 컬럼 선택.</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--teal);font-weight:700;margin-bottom:6px;">글로우(glow) 오버레이</div>
+        <div style="font-size:12px;color:rgba(156,216,255,.8);">투사체 선단에 실시간 glow 텍스처 합성. 관통/크리티컬 여부에 따라 크기 조절 (20~36px).</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--amber);font-weight:700;margin-bottom:6px;">이펙트 풀 관리</div>
+        <div style="font-size:12px;color:rgba(156,216,255,.8);">_gcShineFxs / _gcLightFxs / _gcGlowFxs 3개 배열로 활성 이펙트 관리. 매 프레임 life 감소 후 0 이하 시 제거.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div><!-- /wrap -->
 
 <footer>
-  ABYSSAL SIEGE &nbsp;·&nbsp; 심해 습격 미니게임 기획서 v2.1 &nbsp;·&nbsp; 2026-04-17 &nbsp;·&nbsp; 발키리, 성 수문을 사수하라
+  ABYSSAL SIEGE &nbsp;·&nbsp; 심해 습격 미니게임 기획서 v2.3 &nbsp;·&nbsp; 2026-04-17 &nbsp;·&nbsp; 발키리, 성 수문을 사수하라
 </footer>
 
 <script>

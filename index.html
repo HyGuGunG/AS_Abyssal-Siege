@@ -228,14 +228,9 @@
     /* 탑+아치가 있는 중앙 하단부 포커싱 (하늘·나무 제거) */
     object-position:50% 42%;
     display:block;position:absolute;left:-60px;top:-30px;
-    /* 상단(하늘) / 하단(돌길) / 양측(나무) 그라디언트 마스크로 제거 */
-    mask-image:
-      linear-gradient(to bottom, transparent 0%, black 14%, black 70%, transparent 92%),
-      linear-gradient(to right,  transparent 0%, black 16%, black 84%, transparent 100%);
-    -webkit-mask-image:
-      linear-gradient(to bottom, transparent 0%, black 14%, black 70%, transparent 92%),
-      linear-gradient(to right,  transparent 0%, black 16%, black 84%, transparent 100%);
-    mask-composite:intersect;-webkit-mask-composite:destination-in;
+    /* 상단(하늘) / 하단(돌길) / 양측(나무) 마스크 제거 — 브라우저 범용 radial-gradient 단일 마스크 */
+    mask-image:radial-gradient(ellipse 52% 54% at 50% 44%, black 28%, rgba(0,0,0,.9) 50%, rgba(0,0,0,.4) 68%, transparent 82%);
+    -webkit-mask-image:radial-gradient(ellipse 52% 54% at 50% 44%, black 28%, rgba(0,0,0,.9) 50%, rgba(0,0,0,.4) 68%, transparent 82%);
     /* 수중 분위기 보정: 전체 어둡게 + 시안 틴트 강화 */
     filter:brightness(0.52) saturate(0.62) hue-rotate(192deg) contrast(1.1);
     transition:filter .5s}
