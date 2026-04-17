@@ -221,21 +221,16 @@
   .boss-hp-text{font-family:'Outfit',sans-serif;font-size:11px;font-weight:900;color:#e0d0ff;margin-top:2px;
     text-shadow:0 1px 2px #000}
 
-  /* 수문 — GC bg_character_basic_castle_gate 정면 일러스트 */
-  #gate{position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);width:270px;height:195px;
-    pointer-events:none;z-index:2;transition:box-shadow .6s;overflow:hidden}
+  /* 수문 — GC 관문 (AI 배경 제거 완료, 투명 PNG) */
+  #gate{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);width:340px;height:230px;
+    pointer-events:none;z-index:2;transition:box-shadow .6s;overflow:visible}
   #gate .gate-img{
-    /* 이미지 실제 크기에서 게이트 구조물만 크롭 */
-    width:390px;height:390px;
-    object-fit:cover;
-    /* 탑+아치가 있는 중앙 하단부 포커싱 (하늘·나무 제거) */
-    object-position:50% 42%;
-    display:block;position:absolute;left:-60px;top:-30px;
-    /* 상단(하늘) / 하단(돌길) / 양측(나무) 마스크 제거 — 브라우저 범용 radial-gradient 단일 마스크 */
-    mask-image:radial-gradient(ellipse 52% 54% at 50% 44%, black 28%, rgba(0,0,0,.9) 50%, rgba(0,0,0,.4) 68%, transparent 82%);
-    -webkit-mask-image:radial-gradient(ellipse 52% 54% at 50% 44%, black 28%, rgba(0,0,0,.9) 50%, rgba(0,0,0,.4) 68%, transparent 82%);
-    /* 수중 분위기 보정: 전체 어둡게 + 시안 틴트 강화 */
-    filter:brightness(0.52) saturate(0.62) hue-rotate(192deg) contrast(1.1);
+    width:100%;height:100%;
+    object-fit:contain;
+    object-position:50% 100%;
+    display:block;
+    /* 수중 분위기 보정: 어둡게 + 시안 틴트 */
+    filter:brightness(0.58) saturate(0.7) hue-rotate(188deg) contrast(1.08);
     transition:filter .5s}
   /* 수문 균열 오버레이 */
   #gate .gate-crack-overlay{position:absolute;inset:-4px;pointer-events:none;opacity:0;transition:opacity .6s;
@@ -645,6 +640,8 @@
     border:2px solid var(--hud-border);border-radius:16px;padding:0;cursor:pointer;position:relative;overflow:hidden;
     display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform .18s,box-shadow .18s,border-color .18s;
     box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);pointer-events:auto}
+  /* 전설 카드만 overflow:visible → 테두리 빙글빙글 파티클 표시 */
+  .draft-card.r-orange{overflow:visible}
   .draft-card:hover{transform:translateY(-8px) scale(1.03);border-color:var(--cyan);box-shadow:0 16px 40px rgba(0,229,255,.45)}
   .draft-card.r-teal{border-color:rgba(38,255,233,.55)}
   .draft-card.r-teal:hover{border-color:var(--teal);box-shadow:0 16px 40px rgba(38,255,233,.5)}
@@ -695,15 +692,28 @@
   @keyframes legendSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
   @keyframes legendaryGlow{0%,100%{box-shadow:0 0 20px rgba(255,152,0,.3),inset 0 0 20px rgba(255,152,0,.05)}50%{box-shadow:0 0 40px rgba(255,220,0,.55),inset 0 0 30px rgba(255,200,0,.12)}}
   .draft-card.card--hero.r-orange:hover{border-color:#ffd740;box-shadow:0 18px 50px rgba(255,152,0,.75)}
-  /* 전설 카드 파티클 스파크 (JS로 동적 추가) */
-  .legend-spark{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:10;
-    background:radial-gradient(circle,#fff9e0,#ffcc00);
-    animation:sparkFly var(--dur,1.4s) ease-out var(--delay,0s) infinite;}
-  @keyframes sparkFly{
-    0%{transform:translate(var(--sx,0px),var(--sy,0px)) scale(1);opacity:.9}
-    60%{opacity:.5}
-    100%{transform:translate(calc(var(--sx,0px)+var(--vx,0px)),calc(var(--sy,0px)+var(--vy,0px))) scale(0);opacity:0}
-  }
+  /* ── 전설 카드 테두리 orbit 파티클 ── */
+  /* 테두리를 따라 이동하는 orb (offset-path 사용) */
+  .legend-orb-wrap{position:absolute;left:50%;top:50%;pointer-events:none;z-index:15;
+    width:0;height:0;overflow:visible;}
+  .legend-orb{
+    position:absolute;
+    width:5px;height:5px;border-radius:50%;
+    margin:-2.5px 0 0 -2.5px;
+    background:radial-gradient(circle,#fff 30%,#ffd060 70%,rgba(255,150,0,0) 100%);
+    box-shadow:0 0 5px 2px rgba(255,210,80,.95),0 0 10px 3px rgba(255,150,0,.5);
+    offset-path:path('M -108,-153 L 108,-153 L 108,153 L -108,153 Z');
+    animation:legendOrbit var(--od,3s) linear infinite;
+    animation-delay:var(--odel,0s);}
+  @keyframes legendOrbit{from{offset-distance:0%}to{offset-distance:100%}}
+  /* 반짝임 */
+  .legend-orb::after{content:'';position:absolute;inset:-3px;border-radius:50%;
+    background:rgba(255,240,180,.0);
+    animation:legendOrbGlint calc(var(--od,3s)*0.4) ease-in-out infinite;
+    animation-delay:var(--odel,0s);}
+  @keyframes legendOrbGlint{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(2.5);opacity:0.2}}
+  /* 기존 호환 (이미 생성된 sparks용) */
+  .legend-spark{display:none}
   /* HUD 투명도 전환 */
   #hudWave,#hudRightStack,#skillBar,#mobileSkillPanel{transition:opacity .35s ease;}
   #joystickZone{transition:opacity .35s ease;}
@@ -730,27 +740,26 @@
     background:radial-gradient(circle,rgba(255,255,255,.1),rgba(0,0,0,.2));
     box-shadow:0 4px 24px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.1)}
 
-  /* ── 스킬 카드 상단 디자인 — 마법진/아치형 ── */
+  /* ── 스킬 카드 상단 디자인 — 심플 곡선 배너 ── */
   .draft-card.card--hero .rarity-tag{
-    clip-path:polygon(0 50%,50% 0%,100% 50%,100% 100%,0 100%);
-    padding:10px 0 4px;letter-spacing:.12em;font-size:9px}
+    clip-path:polygon(0 0,100% 0,100% 75%,50% 100%,0 75%);
+    padding:5px 0 12px;letter-spacing:.12em;font-size:9px}
   .draft-card.card--hero::before{
-    content:'';position:absolute;top:0;left:0;right:0;height:48px;
-    clip-path:polygon(0 100%,0 20%,20% 5%,50% 0%,80% 5%,100% 20%,100% 100%);
-    background:linear-gradient(180deg,rgba(0,229,255,.18) 0%,rgba(0,100,180,.06) 100%);
+    content:'';position:absolute;top:0;left:0;right:0;height:36px;
+    background:linear-gradient(180deg,rgba(0,229,255,.12) 0%,transparent 100%);
     z-index:1;pointer-events:none}
-  /* 스킬 카드 상단 빛 포인트 (마법진 중심) */
+  /* 스킬 카드 상단 중앙 다이아몬드 장식 */
   .draft-card.card--hero::after{
-    content:'✦';position:absolute;top:2px;left:50%;transform:translateX(-50%);
-    font-size:11px;color:rgba(0,229,255,.65);z-index:2;pointer-events:none;
-    text-shadow:0 0 6px rgba(0,229,255,.8),0 0 12px rgba(0,229,255,.4)}
+    content:'◆';position:absolute;top:30px;left:50%;transform:translateX(-50%);
+    font-size:9px;color:rgba(0,229,255,.55);z-index:2;pointer-events:none;
+    text-shadow:0 0 6px rgba(0,229,255,.8)}
   .draft-card.card--hero.r-orange::before{
-    background:linear-gradient(180deg,rgba(255,152,0,.22) 0%,rgba(255,100,0,.06) 100%)}
-  .draft-card.card--hero.r-orange::after{color:rgba(255,200,60,.8);text-shadow:0 0 6px rgba(255,200,0,.9),0 0 12px rgba(255,150,0,.5)}
+    background:linear-gradient(180deg,rgba(255,152,0,.18) 0%,transparent 100%)}
+  .draft-card.card--hero.r-orange::after{color:rgba(255,200,60,.7);text-shadow:0 0 6px rgba(255,200,0,.9)}
   .draft-card.card--hero.r-violet::before{
-    background:linear-gradient(180deg,rgba(157,123,255,.22) 0%,rgba(100,50,200,.06) 100%)}
-  .draft-card.card--hero.r-violet::after{color:rgba(200,160,255,.8);text-shadow:0 0 6px rgba(180,140,255,.9)}
-  .draft-card.card--hero .card-icon-wrap{margin-top:44px}
+    background:linear-gradient(180deg,rgba(157,123,255,.18) 0%,transparent 100%)}
+  .draft-card.card--hero.r-violet::after{color:rgba(200,160,255,.7);text-shadow:0 0 6px rgba(180,140,255,.9)}
+  .draft-card.card--hero .card-icon-wrap{margin-top:32px}
   .draft-card.r-teal .rarity-tag{color:#06131f;background:linear-gradient(90deg,rgba(38,255,233,.85),rgba(38,255,233,.95),rgba(38,255,233,.85))}
   .draft-card.r-amber .rarity-tag{color:#06131f;background:linear-gradient(90deg,rgba(255,184,48,.85),rgba(255,184,48,.95),rgba(255,184,48,.85))}
   .draft-card.r-violet .rarity-tag{color:#fff;background:linear-gradient(90deg,rgba(157,123,255,.8),rgba(157,123,255,.95),rgba(157,123,255,.8))}
@@ -817,11 +826,12 @@
     border-color:rgba(0,200,220,.25);
     background:radial-gradient(circle,rgba(0,200,220,.08),rgba(0,200,220,.01));
     box-shadow:0 4px 20px rgba(0,180,200,.12);overflow:visible}
-  /* 시설 카드 이미지 — 건물 스프라이트 크게 표시 */
+  /* 시설 카드 이미지 — 건물 스프라이트 크게 표시 (그림자 보정: 약간 왼쪽으로) */
   .draft-card.card--facility .card-icon-img{
     width:100px;height:100px;object-fit:contain;border-radius:0;
     filter:drop-shadow(0 4px 12px rgba(0,180,200,.4)) drop-shadow(0 2px 4px rgba(0,0,0,.6));
-    margin-top:-12px}
+    margin-top:-12px;
+    transform:translateX(-6%);}
   .draft-card.card--facility .card-icon-wrap .card-icon{
     filter:drop-shadow(0 0 14px rgba(0,200,220,.4)) drop-shadow(0 4px 8px rgba(0,120,160,.3))}
   /* 시설 카드 좌상단 타입 마크 */
@@ -837,6 +847,12 @@
   .draft-card.card--facility.r-violet{border-color:rgba(157,123,255,.6)}
   .draft-card.card--facility.r-violet:hover{border-color:var(--purple);box-shadow:0 18px 48px rgba(157,123,255,.55),0 0 20px rgba(0,180,200,.2)}
   .draft-card.card--facility .card-name{color:#b0e8ff}
+  /* 시설 카드 등급별 이름 색상 */
+  .draft-card.card--facility.r-gray .card-name{color:#bdbdbd}
+  .draft-card.card--facility.r-green .card-name{color:#81c784}
+  .draft-card.card--facility.r-blue .card-name{color:#64b5f6}
+  .draft-card.card--facility.r-violet .card-name{color:#c8a0ff}
+  .draft-card.card--facility.r-orange .card-name{color:#ffb74d;text-shadow:0 0 8px rgba(255,150,0,.5)}
   .draft-card.card--facility .card-desc{color:rgba(160,220,240,.78)}
 
   /* --- 발키리 카드 (금빛/마법적 톤) --- */
@@ -2259,7 +2275,7 @@ function showFacilityTooltip(slot, el){
   }
   const costTxt=slot.unlocked ? '' : `<div class="ft-row"><span class="lbl">건설 비용</span><span class="val">${slot.cost} 자원</span></div>`;
   const depositTxt=(!slot.unlocked && slot.cost>0) ? `<div class="ft-row"><span class="lbl">예치된 자원</span><span class="val">${Math.round(slot.deposited)}/${slot.cost}</span></div>` : '';
-  tt.innerHTML=`<div class="ft-name">${label}</div>${rarityTxt}${descTxt}${statsTxt}${costTxt}${depositTxt}`;
+  tt.innerHTML=`<div class="ft-name" style="color:${rarityColor}">${label}</div>${rarityTxt}${descTxt}${statsTxt}${costTxt}${depositTxt}`;
   const rect=el.getBoundingClientRect();
   const stageRect=stage.getBoundingClientRect();
   const sc=parseFloat(stage.style.transform.replace(/[^0-9.]/g,''))||1;
@@ -3118,6 +3134,7 @@ function openFacilityDraft(slotIdx){
       <div class="card-stack"></div>
       <div class="card-stats">${fStatsHtml}</div>`;
     el.addEventListener('click',()=>selectFacility(f,el));
+    if(f.rarity==='전설') spawnLegendaryParticles(el);
     wrap.appendChild(el);
     const keycap=document.createElement('div');
     keycap.className='card-keycap';
@@ -3141,10 +3158,17 @@ function selectFacility(f, el){
   const _uTag=s.el.querySelector('.unlock-tag');
   if(_uTag) _uTag.parentNode.removeChild(_uTag);
   s.el.classList.remove('unlockable');
+  // 등급 색상 매핑
+  const RARITY_HEX={'일반':'#bdbdbd','고급':'#81c784','희귀':'#64b5f6','고유':'#c8a0ff','전설':'#ffb74d'};
+  const RARITY_GLOW={'일반':'rgba(158,158,158,.45)','고급':'rgba(76,175,80,.45)','희귀':'rgba(33,150,243,.45)',
+                     '고유':'rgba(157,123,255,.55)','전설':'rgba(255,152,0,.7)'};
+  const rCol=RARITY_HEX[f.rarity]||'var(--cyan)';
+  const rGlow=RARITY_GLOW[f.rarity]||'rgba(0,229,255,.45)';
+  const iconGlow=f.rarity==='전설'?'drop-shadow(0 0 8px #ff9800)':'drop-shadow(0 0 8px var(--cyan))';
   s.el.innerHTML=`
-    <div class="slot-label">${f.name}</div>
-    <div class="slot-ring"><span class="facility-icon">${(f.icon&&(f.icon.startsWith('AS_')||f.icon.includes('/')))?`<img src="${f.icon}" style="width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 0 8px var(--cyan))">`:f.svgIcon||f.icon}</span></div>
-    <div class="deposit-ring"><svg viewBox="0 0 92 92"><circle class="dr-track" cx="46" cy="46" r="42.5"/><circle class="dr-fill" cx="46" cy="46" r="42.5" style="stroke-dasharray:267;stroke-dashoffset:0"/></svg></div>`;
+    <div class="slot-label" style="color:${rCol}">${f.name}</div>
+    <div class="slot-ring" style="border-color:${rGlow};box-shadow:0 0 14px ${rGlow},inset 0 0 10px ${rGlow}"><span class="facility-icon">${(f.icon&&(f.icon.startsWith('AS_')||f.icon.includes('/')))?`<img src="${f.icon}" style="width:48px;height:48px;object-fit:contain;filter:${iconGlow}">`:f.svgIcon||f.icon}</span></div>
+    <div class="deposit-ring"><svg viewBox="0 0 92 92"><circle class="dr-track" cx="46" cy="46" r="42.5"/><circle class="dr-fill" cx="46" cy="46" r="42.5" style="stroke-dasharray:267;stroke-dashoffset:0;stroke:${rCol};filter:drop-shadow(0 0 5px ${rGlow})"/></svg></div>`;
   s.el.classList.add('built'); s.el.classList.remove('ready','depositing','insufficient');
   if(f.type==='aoe'||f.type==='mortar'||f.type==='siege') s.el.classList.add('aoe-facility');
   applyBuffFacilities();
@@ -4501,25 +4525,56 @@ function updateHudProximityFade(){
   if(hw) hw.style.opacity=calcFade(px,py,480,0,800,90,0.32).toFixed(2);
 }
 
-// 전설 카드 파티클 스파크 생성 (카드 테두리 근처에서 출발, 과도한 확산 방지)
+// 전설 카드 테두리 orbit 파티클 (border-path 방식)
 function spawnLegendaryParticles(cardEl){
-  const COUNT=14;
+  // offset-path 지원 체크
+  const supportsOffsetPath = CSS.supports('offset-path','path("M 0 0")') ||
+                             CSS.supports('motion-path','path("M 0 0")');
+  const COUNT=8; // 테두리에 8개 orb
+  const wrap=document.createElement('div');
+  wrap.className='legend-orb-wrap';
+  cardEl.appendChild(wrap);
+
   for(let i=0;i<COUNT;i++){
-    const spark=document.createElement('div');
-    spark.className='legend-spark';
-    const angle=(i/COUNT)*Math.PI*2+Math.random()*0.4;
-    // 카드 반너비~80px, 반높이~110px 기준으로 테두리 근처에서 출발
-    const rX=80+Math.random()*20; // 카드 X 테두리 근처
-    const rY=110+Math.random()*20; // 카드 Y 테두리 근처
-    const sx=(Math.cos(angle)*rX)+'px';
-    const sy=(Math.sin(angle)*rY*0.7)+'px';
-    // 바깥으로 살짝만 이동 (30px 이내)
-    const vx=(Math.cos(angle)*(20+Math.random()*25))+'px';
-    const vy=(Math.sin(angle)*(20+Math.random()*25))+'px';
-    const dur=(1.0+Math.random()*0.8).toFixed(2)+'s';
-    const delay=(Math.random()*1.5).toFixed(2)+'s';
-    spark.style.cssText=`--sx:${sx};--sy:${sy};--vx:${vx};--vy:${vy};--dur:${dur};--delay:${delay};left:calc(50% + ${sx});top:calc(50% + ${sy});`;
-    cardEl.appendChild(spark);
+    const orb=document.createElement('div');
+    orb.className='legend-orb';
+    const baseDur=2.8+Math.random()*1.4;
+    const delay=-(i/COUNT)*baseDur; // 균등 분산 (음수 delay로 즉시 시작)
+    const size=3+Math.random()*3;
+    orb.style.cssText=`
+      --od:${baseDur.toFixed(2)}s;
+      --odel:${delay.toFixed(2)}s;
+      width:${size}px;height:${size}px;
+      margin:${-size/2}px 0 0 ${-size/2}px;`;
+    wrap.appendChild(orb);
+  }
+
+  // fallback: offset-path 미지원 시 기존 스타일 회전 파티클
+  if(!supportsOffsetPath){
+    wrap.style.display='none';
+    const FCOUNT=12;
+    for(let i=0;i<FCOUNT;i++){
+      const spark=document.createElement('div');
+      spark.className='legend-spark-fb';
+      const angle=(i/FCOUNT)*Math.PI*2;
+      const rx=108, ry=153;
+      const sx=(Math.cos(angle)*rx).toFixed(1)+'px';
+      const sy=(Math.sin(angle)*ry).toFixed(1)+'px';
+      spark.style.cssText=`position:absolute;width:5px;height:5px;border-radius:50%;
+        background:radial-gradient(circle,#fff,#ffcc00);
+        box-shadow:0 0 6px 2px rgba(255,200,60,.8);
+        pointer-events:none;z-index:15;
+        left:calc(50% + ${sx});top:calc(50% + ${sy});
+        animation:sparkTwinkle ${(0.8+Math.random()*0.6).toFixed(2)}s ease-in-out infinite;
+        animation-delay:${(Math.random()*1.5).toFixed(2)}s`;
+      cardEl.appendChild(spark);
+    }
+    if(!document.getElementById('sparkTwinkleStyle')){
+      const st=document.createElement('style');
+      st.id='sparkTwinkleStyle';
+      st.textContent='@keyframes sparkTwinkle{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(2);opacity:.3}}';
+      document.head.appendChild(st);
+    }
   }
 }
 
