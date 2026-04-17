@@ -1260,7 +1260,6 @@
   <div class="ow-text">화면을 가로로 돌려주세요</div>
   <div class="ow-sub">이 게임은 가로 모드에서 최적화되어 있습니다</div>
   <div class="ow-sub" style="margin-top:16px;color:var(--cyan);font-weight:700;font-size:14px;">터치하면 자동 전환</div>
-  <div class="ow-skip" id="orientSkip" style="margin-top:12px;font-size:12px;color:rgba(255,255,255,.4);cursor:pointer;text-decoration:underline;">세로 모드로 플레이</div>
 </div>
 <div id="stage">
   <!-- 모바일 모드 토글 -->
@@ -4654,20 +4653,6 @@ if(AUTOPLAY){
   // orientWarn 닫기 버튼 — 터치 시 가로 전환 재시도
   document.getElementById('orientWarn').addEventListener('click', tryLockLandscape);
 
-  // 세로 모드로 플레이 버튼
-  const orientSkipBtn = document.getElementById('orientSkip');
-  if(orientSkipBtn){
-    orientSkipBtn.addEventListener('click', function(e){
-      e.stopPropagation(); // orientWarn 클릭 이벤트 전파 방지
-      const ow = document.getElementById('orientWarn');
-      ow.style.display = 'none';
-      // CSS 미디어 쿼리 무력화: orientWarn에 강제 숨김 클래스
-      ow.classList.add('ow-dismissed');
-      // 모바일 모드 자동 활성화
-      if(!mobileMode) enableMobile();
-      fitStage();
-    });
-  }
 
   toggle.addEventListener('click', ()=>{
     if(mobileMode) disableMobile(); else enableMobile();
