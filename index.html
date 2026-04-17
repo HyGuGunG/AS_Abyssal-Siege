@@ -31,19 +31,24 @@
     --ok:#26ffa8; --warn:#ffb830; --danger:#ff4d6d;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{width:100%;height:100%;height:100dvh;background:linear-gradient(180deg,#060c18 0%,#0a1526 30%,#0d1b2a 60%,#081420 100%);overflow:hidden;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:#e6f3ff;user-select:none;-webkit-user-select:none;touch-action:manipulation;
-    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
-  body{display:flex;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;bottom:0;}
+  html,body{width:100%;height:100%;height:100dvh;background:linear-gradient(180deg,#060c18 0%,#0a1526 30%,#0d1b2a 60%,#081420 100%);overflow:hidden;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:#e6f3ff;user-select:none;-webkit-user-select:none;touch-action:manipulation;}
+  body{display:flex;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;bottom:0;
+    /* safe-area는 body padding이 아닌 fitStage에서 처리 — flex centering 오류 방지 */
+  }
   body::before{content:'';position:fixed;inset:0;background:url('AS_Assets/bg/castle_gate.png') center/cover no-repeat;
     filter:blur(28px) brightness(0.2) saturate(0.7);z-index:-1;pointer-events:none}
   body.wide-mode{align-items:flex-end}
 
-  #stage{position:relative;width:1280px;height:720px;
+  #stage{position:relative;width:1280px;height:720px;flex-shrink:0;min-width:1280px;
     background:
-      radial-gradient(ellipse at 30% 10%, rgba(0,180,200,.07), transparent 50%),
-      radial-gradient(ellipse at 70% 5%, rgba(0,160,220,.06), transparent 45%),
-      radial-gradient(ellipse at 50% 25%, rgba(0,140,180,.04), transparent 55%),
-      linear-gradient(to bottom, rgba(10,14,26,.75) 0%, rgba(13,27,42,.7) 30%, rgba(27,40,56,.65) 60%, rgba(10,22,40,.8) 100%),
+      radial-gradient(ellipse at 30% 10%, rgba(0,180,200,.10), transparent 50%),
+      radial-gradient(ellipse at 70% 5%, rgba(0,160,220,.10), transparent 45%),
+      radial-gradient(ellipse at 50% 22%, rgba(0,140,180,.07), transparent 55%),
+      radial-gradient(ellipse at 90% 30%, rgba(0,130,190,.09), transparent 45%),
+      radial-gradient(ellipse at 10% 30%, rgba(0,130,190,.09), transparent 45%),
+      radial-gradient(ellipse at 85% 55%, rgba(0,100,160,.06), transparent 40%),
+      radial-gradient(ellipse at 15% 55%, rgba(0,100,160,.06), transparent 40%),
+      linear-gradient(to bottom, rgba(10,14,26,.58) 0%, rgba(13,27,42,.52) 30%, rgba(27,40,56,.48) 60%, rgba(10,22,40,.62) 100%),
       url('AS_Assets/bg/castle_gate.png') center/cover no-repeat;
     box-shadow:0 0 60px rgba(0,229,255,.3),0 0 120px 40px rgba(10,20,40,.8);overflow:hidden;cursor:crosshair;
     transform-origin:center}
@@ -128,11 +133,38 @@
   /* 보스 투사체 */
   .boss-proj{position:absolute;width:14px;height:14px;transform:translate(-50%,-50%);pointer-events:none;z-index:6;
     border-radius:50%;background:radial-gradient(circle,rgba(200,160,255,.9),rgba(120,0,180,.6));
-    box-shadow:0 0 8px rgba(157,123,255,.8),0 0 16px rgba(120,0,180,.4);
+    box-shadow:0 0 12px rgba(157,123,255,.9),0 0 24px rgba(120,0,180,.5);
     animation:bpGlow .6s ease-in-out infinite alternate}
   .boss-proj.big{width:22px;height:22px;background:radial-gradient(circle,rgba(255,100,130,.95),rgba(180,0,60,.6));
-    box-shadow:0 0 10px rgba(255,77,109,.8),0 0 20px rgba(180,0,60,.4)}
-  @keyframes bpGlow{0%{opacity:.8;transform:translate(-50%,-50%) scale(.9)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}}
+    box-shadow:0 0 14px rgba(255,77,109,.9),0 0 28px rgba(180,0,60,.5)}
+  @keyframes bpGlow{0%{opacity:.8;transform:translate(-50%,-50%) scale(.88)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}}
+
+  /* ═══ 보스 페이즈 비주얼 ═══ */
+  .enemy.boss.boss-p2{filter:drop-shadow(0 0 20px rgba(255,140,0,.85)) drop-shadow(0 0 40px rgba(200,80,0,.4));}
+  .enemy.boss.boss-p2 .hpbar .fill{background:linear-gradient(90deg,#ff8c00,#ffb347);}
+  .enemy.boss.boss-p3{filter:drop-shadow(0 0 26px rgba(255,30,30,.95)) drop-shadow(0 0 52px rgba(180,0,0,.5));}
+  .enemy.boss.boss-p3 .hpbar .fill{background:linear-gradient(90deg,#c0392b,#ff4d6d);}
+  @keyframes bossRage{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% + 2.5px),calc(-50% - 2px))}75%{transform:translate(calc(-50% - 2.5px),calc(-50% + 2px))}}
+  .enemy.boss.boss-p3{animation:bossRage .12s ease-in-out infinite;}
+  #bossHpBar.phase-2 .boss-hp-fill{background:linear-gradient(90deg,#cc6600,#ff9d00);}
+  #bossHpBar.phase-2 .boss-hp-label{color:#ffb347;text-shadow:0 0 8px rgba(255,140,0,.6);}
+  #bossHpBar.phase-3 .boss-hp-fill{background:linear-gradient(90deg,#8b0000,#ff4d4d);animation:blinkBar .35s infinite;}
+  #bossHpBar.phase-3 .boss-hp-label{color:#ff4d6d;text-shadow:0 0 8px rgba(255,30,30,.8);animation:blinkTxt .5s infinite;}
+  /* 보스 페이즈 전환 화면 플래시 */
+  #bossPhaseFlash{position:absolute;inset:0;pointer-events:none;z-index:50;opacity:0;border-radius:4px;}
+  @keyframes phaseFlash{0%{opacity:.6}100%{opacity:0}}
+  .boss-slam-warn.p2{border-color:rgba(255,140,0,.8);background:radial-gradient(circle,rgba(255,140,0,.18),rgba(255,80,0,.07));}
+  .boss-slam-warn.p3{border-color:rgba(255,30,30,.9);background:radial-gradient(circle,rgba(255,30,30,.2),rgba(200,0,0,.08));}
+  .boss-ink-zone{background:radial-gradient(circle,rgba(80,0,120,.6) 0%,rgba(50,0,90,.4) 40%,transparent 70%);
+    filter:blur(1px);}
+  /* 보스 촉수 경고 전용 크로스 */
+  .boss-cross-warn{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:5;
+    width:120px;height:120px;}
+  .boss-cross-warn::before,.boss-cross-warn::after{content:'';position:absolute;background:rgba(255,50,50,.6);
+    border-radius:3px;animation:crossWarn .8s ease-out forwards;}
+  .boss-cross-warn::before{width:4px;height:100%;left:calc(50% - 2px);top:0;}
+  .boss-cross-warn::after{width:100%;height:4px;top:calc(50% - 2px);left:0;}
+  @keyframes crossWarn{0%{opacity:0;transform:scaleY(0)}50%{opacity:.9}100%{opacity:0;}}
   /* 보스 HUD HP 바 */
   #bossHpBar{position:absolute;top:var(--crop-top,10px);right:14px;width:240px;z-index:10;text-align:center;
     background:rgba(5,18,34,.88);border:1px solid rgba(157,123,255,.5);border-radius:8px;padding:5px 10px;
@@ -1072,6 +1104,73 @@
   #tsQ{background:rgba(0,229,255,.15);border-color:rgba(0,229,255,.5);}
   #tsE{background:rgba(123,111,240,.15);border-color:rgba(123,111,240,.5);}
 
+  /* ═══ 모바일 스킬 패널 (wide-mode 전용 — 2025 트렌드 디자인) ═══ */
+  #mobileSkillPanel{
+    position:absolute;right:14px;bottom:14px;
+    display:none;flex-direction:row;gap:14px;align-items:flex-end;
+    pointer-events:auto;touch-action:none;z-index:10000;
+  }
+  body.wide-mode.game-playing #mobileSkillPanel{display:flex;}
+  /* wide-mode에서 PC용 skillBar 완전 숨김 */
+  body.wide-mode #skillBar{display:none!important;}
+  /* wide-mode에서 기존 touchSkills 숨김 (새 패널로 대체) */
+  body.wide-mode #touchSkills{display:none!important;}
+
+  .ms-btn{
+    position:relative;width:110px;height:110px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    background:rgba(4,14,28,.88);
+    border:3px solid rgba(0,229,255,.45);
+    box-shadow:0 0 18px rgba(0,229,255,.22),0 6px 18px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08);
+    cursor:pointer;user-select:none;-webkit-user-select:none;
+    touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+    transition:transform .12s ease,box-shadow .12s ease;
+    overflow:visible;
+  }
+  .ms-btn#msPanelE{
+    border-color:rgba(123,111,240,.5);
+    box-shadow:0 0 18px rgba(123,111,240,.22),0 6px 18px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  .ms-btn:active{transform:scale(.86)!important;}
+  /* SVG 쿨다운 링 (원형 스윕 — 업계 표준) */
+  .ms-cd-svg{position:absolute;inset:-3px;width:calc(100% + 6px);height:calc(100% + 6px);transform:rotate(-90deg);pointer-events:none;}
+  .ms-cd-track{fill:none;stroke:rgba(255,255,255,.07);stroke-width:5;}
+  .ms-cd-fill{fill:none;stroke:rgba(0,229,255,.8);stroke-width:5;stroke-linecap:round;
+    stroke-dasharray:363;stroke-dashoffset:0;/* 0=ready, 363=empty */}
+  .ms-btn#msPanelE .ms-cd-fill{stroke:rgba(140,120,255,.9);}
+  /* 아이콘 */
+  .ms-icon{width:62px;height:62px;object-fit:contain;border-radius:50%;z-index:1;
+    transition:opacity .2s,filter .2s;filter:drop-shadow(0 0 6px rgba(0,229,255,.4));}
+  .ms-btn#msPanelE .ms-icon{filter:drop-shadow(0 0 6px rgba(123,111,240,.4));}
+  .ms-btn.on-cd .ms-icon{opacity:.28;filter:none;}
+  /* 쿨다운 숫자 */
+  .ms-cd-num{
+    position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    font-family:'Outfit',sans-serif;font-size:30px;font-weight:900;color:#fff;
+    text-shadow:0 2px 10px rgba(0,0,0,.95),0 0 20px rgba(0,0,0,.7);z-index:2;
+  }
+  .ms-btn.on-cd .ms-cd-num{display:flex;}
+  /* 스킬 이름 */
+  .ms-name{
+    position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+    font-size:11px;color:rgba(255,255,255,.8);white-space:nowrap;
+    font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.9);letter-spacing:.05em;
+  }
+  /* READY 발광 펄스 */
+  .ms-btn:not(.on-cd){animation:msBtnPulse 2.8s ease-in-out infinite;}
+  @keyframes msBtnPulse{
+    0%,100%{box-shadow:0 0 14px rgba(0,229,255,.2),0 6px 18px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08)}
+    50%{box-shadow:0 0 32px rgba(0,229,255,.55),0 6px 18px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08)}
+  }
+  .ms-btn#msPanelE:not(.on-cd){animation:msBtnPulseE 2.8s ease-in-out infinite;}
+  @keyframes msBtnPulseE{
+    0%,100%{box-shadow:0 0 14px rgba(123,111,240,.2),0 6px 18px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08)}
+    50%{box-shadow:0 0 32px rgba(123,111,240,.55),0 6px 18px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08)}
+  }
+  /* CD 완료 플래시 */
+  @keyframes msReadyFlash{0%{transform:scale(1)}30%{transform:scale(1.14)}70%{transform:scale(.97)}100%{transform:scale(1)}}
+  .ms-btn.just-ready{animation:msReadyFlash .35s ease-out forwards!important;}
+
   /* 모바일 모드 토글 — stage 내부 */
   #mobileToggle{position:absolute;z-index:10000;top:var(--crop-top,10px);left:10px;
     padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;
@@ -1117,28 +1216,15 @@
   body.portrait-mode #hudWaveInfo{min-width:100px;font-size:9px;padding:4px 6px}
 
   /* === 모바일 가로 (wide-mode) UI 최적화 === */
-  body.wide-mode #skillBar{
-    bottom:8px;right:8px;left:auto;gap:6px;padding:5px 8px;border-radius:10px;
-  }
-  body.wide-mode #skillBar .sb-slot{width:48px;gap:1px}
-  body.wide-mode #skillBar .sb-atk{width:42px;height:42px;border-radius:10px;font-size:20px}
-  body.wide-mode #skillBar .sb-label{font-size:7px}
-  body.wide-mode .skill-keycap{display:none}
-  body.wide-mode .skill-slot{width:48px}
-  body.wide-mode .skill-btn{width:42px;height:42px}
-  body.wide-mode .skill-btn .skill-img{width:36px;height:36px;inset:3px}
-  body.wide-mode .sb-atk-gauge{width:40px;height:5px}
-
-  body.wide-mode #hudRightStack{bottom:85px;right:8px;gap:4px}
+  /* skillBar는 #mobileSkillPanel이 대체 → 새 CSS 블록에서 display:none 처리됨 */
+  body.wide-mode #hudRightStack{bottom:158px;right:8px;gap:4px}
   body.wide-mode #hudPlayer{bottom:8px;left:8px;min-width:120px;font-size:8px;padding:4px 6px}
   body.wide-mode #hudPlayer .p-label{font-size:8px;margin-bottom:2px}
   body.wide-mode #hudPlayer .prow .v{font-size:9px}
   body.wide-mode .skill-info{display:none}
-  body.wide-mode #touchSkills{display:none!important}
   body.wide-mode #hudCards{max-width:150px;font-size:10px}
   body.wide-mode #hudCards .c-ico{font-size:12px}
   body.wide-mode #hudCards .c-nm{font-size:9px}
-
   body.wide-mode #hudWave{padding:4px 16px;min-width:130px}
   body.wide-mode #hudWave .wv-tag{font-size:9px}
   body.wide-mode #hudWave .wv-num{font-size:18px}
@@ -1178,6 +1264,29 @@
       <div class="touch-skill" id="tsE">E<span class="ts-label">충격파</span><span class="ts-cd" id="tsCdE"></span></div>
     </div>
   </div>
+  <!-- ═══ 모바일 전용 스킬 패널 (wide-mode, 2025 디자인) ═══ -->
+  <div id="mobileSkillPanel">
+    <div class="ms-btn" id="msPanelQ">
+      <svg class="ms-cd-svg" viewBox="0 0 110 110">
+        <circle class="ms-cd-track" cx="55" cy="55" r="52"/>
+        <circle class="ms-cd-fill" id="msCdSvgQ" cx="55" cy="55" r="52"/>
+      </svg>
+      <img class="ms-icon" src="AS_Assets/skills/wind_dash.png" alt="질주">
+      <div class="ms-cd-num" id="msCdNumQ"></div>
+      <div class="ms-name">질주</div>
+    </div>
+    <div class="ms-btn" id="msPanelE">
+      <svg class="ms-cd-svg" viewBox="0 0 110 110">
+        <circle class="ms-cd-track" cx="55" cy="55" r="52"/>
+        <circle class="ms-cd-fill" id="msCdSvgE" cx="55" cy="55" r="52"/>
+      </svg>
+      <img class="ms-icon" src="AS_Assets/skills/holy_shock.png" alt="충격파">
+      <div class="ms-cd-num" id="msCdNumE"></div>
+      <div class="ms-name">충격파</div>
+    </div>
+  </div>
+  <!-- 보스 페이즈 플래시 -->
+  <div id="bossPhaseFlash"></div>
   <div id="bgFx"></div>
   <canvas id="bgParticleCanvas" width="1280" height="720"></canvas>
   <div id="world"></div>
@@ -1893,6 +2002,9 @@ function startGame(){
   if(_gEl){_gEl.classList.remove('dmg-1','dmg-2','dmg-3');}
   const _gImg=document.getElementById('gateImg');
   if(_gImg){_gImg.src=GATE_IMAGES[0];}
+  // 보스 HP바 페이즈 클래스 초기화
+  const _bHpBar=document.getElementById('bossHpBar');
+  if(_bHpBar){_bHpBar.classList.remove('phase-2','phase-3');}
   state.battleLog.forEach(l=>{if(l.el.parentNode)l.el.parentNode.removeChild(l.el)});
   state.battleLog.length=0;
   // v1.0.2: 잔존 플로팅 DOM 전부 제거 (데미지 넘버, 파티클 DOM 등)
@@ -2987,6 +3099,9 @@ function killEnemy(e){
   if(e.boss){
     state.bossDefeated=true;
     showBanner('크라켄 처치!','보스를 쓰러뜨렸습니다!');
+    // 보스 페이즈 클래스 초기화
+    const bossHpBarEl=document.getElementById('bossHpBar');
+    if(bossHpBarEl){ bossHpBarEl.classList.remove('phase-2','phase-3'); bossHpBarEl.classList.add('hidden'); }
     for(let i=0;i<40;i++) particles.push({x:e.x,y:e.y,vx:(Math.random()-.5)*400,vy:(Math.random()-.5)*400,life:1,size:6+Math.random()*6,color:'rgba(157,123,255,'});
     // 보스 투사체 + 잉크존 제거
     state.bossProjectiles.forEach(bp=>{if(bp.el&&bp.el.parentNode)bp.el.parentNode.removeChild(bp.el)});
@@ -3633,10 +3748,32 @@ function update(dt){
       // ── 페이즈 전환 배너 ──
       if(phase>e._bossPhase){
         e._bossPhase=phase;
-        // 페이즈 전환 시 잠시 정지 (위압감)
         e._bossPauseT=1.2;
-        if(phase===2){ showBanner('⚠ 크라켄 분노!','새로운 공격 패턴 해금'); pushBattleLog('Phase 2 — 촉수 강타·나선탄 해금'); }
-        if(phase===3){ showBanner('🔥 크라켄 광폭화!','필살기 준비 중...'); pushBattleLog('Phase 3 — 잉크포·필살기 해금'); }
+        // 페이즈별 비주얼 업데이트
+        const bossHpBar=document.getElementById('bossHpBar');
+        if(phase===2){
+          showBanner('⚠ 크라켄 분노!','새로운 공격 패턴 해금');
+          pushBattleLog('Phase 2 — 촉수 강타·나선탄 해금');
+          if(e.el){ e.el.classList.remove('boss-p3'); e.el.classList.add('boss-p2'); }
+          if(bossHpBar){ bossHpBar.classList.remove('phase-3'); bossHpBar.classList.add('phase-2'); }
+          // 오렌지 플래시
+          const fl=document.getElementById('bossPhaseFlash');
+          if(fl){ fl.style.background='rgba(255,100,0,.35)'; fl.style.animation='none'; void fl.offsetWidth;
+            fl.style.animation='phaseFlash .6s ease-out forwards'; }
+        }
+        if(phase===3){
+          showBanner('🔥 크라켄 광폭화!','필살기 준비 중...');
+          pushBattleLog('Phase 3 — 잉크포·필살기 해금');
+          if(e.el){ e.el.classList.remove('boss-p2'); e.el.classList.add('boss-p3'); }
+          if(bossHpBar){ bossHpBar.classList.remove('phase-2'); bossHpBar.classList.add('phase-3'); }
+          // 레드 플래시
+          const fl=document.getElementById('bossPhaseFlash');
+          if(fl){ fl.style.background='rgba(220,20,20,.45)'; fl.style.animation='none'; void fl.offsetWidth;
+            fl.style.animation='phaseFlash .7s ease-out forwards'; }
+          // 화면 흔들기 강화
+          stage.classList.add('shake');
+          setTimeout(()=>stage.classList.remove('shake'),400);
+        }
       }
 
       // ── v1.9 이동: 웨이포인트 + lerp 보간 (무게감 있는 이동) ──
@@ -4587,11 +4724,11 @@ if(AUTOPLAY){
     keys['d'] = dx > deadzone;
   }
 
-  // --- 스킬 버튼 ---
+  // --- 기존 touchSkills 버튼 (non-wide-mode 모바일) ---
   tsQ.addEventListener('touchstart', e=>{ e.preventDefault(); useSkill('Q'); }, {passive:false});
   tsE.addEventListener('touchstart', e=>{ e.preventDefault(); useSkill('E'); }, {passive:false});
 
-  // --- 스킬 쿨다운 표시 업데이트 ---
+  // --- 기존 스킬 쿨다운 표시 업데이트 ---
   function updateTouchCd(){
     if(!mobileMode) { requestAnimationFrame(updateTouchCd); return; }
     const qCd = skills['Q'].cd;
@@ -4603,6 +4740,70 @@ if(AUTOPLAY){
     requestAnimationFrame(updateTouchCd);
   }
   updateTouchCd();
+
+  // ═══ 모바일 스킬 패널 (wide-mode 전용) ═══
+  const msPanelQ = document.getElementById('msPanelQ');
+  const msPanelE = document.getElementById('msPanelE');
+  const msCdSvgQ = document.getElementById('msCdSvgQ');
+  const msCdSvgE = document.getElementById('msCdSvgE');
+  const msCdNumQ = document.getElementById('msCdNumQ');
+  const msCdNumE = document.getElementById('msCdNumE');
+  const MS_C = 2 * Math.PI * 52; // ≈ 326.7 (r=52)
+
+  function msBtnActivate(skillKey, el){
+    useSkill(skillKey);
+    // 터치 피드백 — 즉각적 스케일 다운 후 복원
+    el.style.transition = 'transform .05s ease';
+    el.style.transform = 'scale(0.86)';
+    setTimeout(() => { el.style.transform = ''; el.style.transition = ''; }, 140);
+  }
+
+  // touchstart: 즉각 반응 (300ms 딜레이 없음)
+  msPanelQ.addEventListener('touchstart', e => {
+    e.preventDefault(); e.stopPropagation();
+    msBtnActivate('Q', msPanelQ);
+  }, {passive: false});
+  msPanelE.addEventListener('touchstart', e => {
+    e.preventDefault(); e.stopPropagation();
+    msBtnActivate('E', msPanelE);
+  }, {passive: false});
+  // PC 마우스 클릭 fallback
+  msPanelQ.addEventListener('click', () => useSkill('Q'));
+  msPanelE.addEventListener('click', () => useSkill('E'));
+
+  // 원형 스윕 CD 업데이트 루프
+  function updateMobileSkillPanel(){
+    if(!document.body.classList.contains('wide-mode')){
+      requestAnimationFrame(updateMobileSkillPanel); return;
+    }
+    const qCd = skills['Q'].cd, qMax = skills['Q'].max;
+    const eCd = skills['E'].cd, eMax = skills['E'].max;
+
+    // Q
+    const qPct = qCd > 0 ? qCd / qMax : 0;
+    msCdSvgQ.style.strokeDashoffset = (MS_C * qPct).toFixed(2);
+    msCdNumQ.textContent = qCd > 0 ? Math.ceil(qCd) : '';
+    const qWas = msPanelQ.classList.contains('on-cd');
+    msPanelQ.classList.toggle('on-cd', qCd > 0);
+    if(qWas && qCd <= 0){ // 쿨다운 완료 → 플래시
+      msPanelQ.classList.add('just-ready');
+      setTimeout(() => msPanelQ.classList.remove('just-ready'), 380);
+    }
+
+    // E
+    const ePct = eCd > 0 ? eCd / eMax : 0;
+    msCdSvgE.style.strokeDashoffset = (MS_C * ePct).toFixed(2);
+    msCdNumE.textContent = eCd > 0 ? Math.ceil(eCd) : '';
+    const eWas = msPanelE.classList.contains('on-cd');
+    msPanelE.classList.toggle('on-cd', eCd > 0);
+    if(eWas && eCd <= 0){
+      msPanelE.classList.add('just-ready');
+      setTimeout(() => msPanelE.classList.remove('just-ready'), 380);
+    }
+
+    requestAnimationFrame(updateMobileSkillPanel);
+  }
+  updateMobileSkillPanel();
 
   // 카드 선택 터치 지원 강화 — 카드 요소에 터치 이벤트 전파
   document.addEventListener('touchstart', function(e){
