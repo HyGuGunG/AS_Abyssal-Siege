@@ -202,6 +202,20 @@
   .boss-slam-warn.p3{border-color:rgba(255,30,30,.9);background:radial-gradient(circle,rgba(255,30,30,.2),rgba(200,0,0,.08));}
   .boss-ink-zone{background:radial-gradient(circle,rgba(80,0,120,.6) 0%,rgba(50,0,90,.4) 40%,transparent 70%);
     filter:blur(1px);}
+  /* 보스 이동 목표 마커 (다이아몬드) */
+  .boss-move-target{position:absolute;width:24px;height:24px;
+    transform:translate(-50%,-50%) rotate(45deg);
+    border:2px solid rgba(0,220,255,.55);
+    pointer-events:none;z-index:4;
+    animation:bossMoveFade var(--mdur,2s) ease-out forwards}
+  @keyframes bossMoveFade{
+    0%{opacity:.7;transform:translate(-50%,-50%) rotate(45deg) scale(.4)}
+    15%{opacity:.55;transform:translate(-50%,-50%) rotate(45deg) scale(1)}
+    80%{opacity:.2}
+    100%{opacity:0;transform:translate(-50%,-50%) rotate(45deg) scale(1.6)}}
+  /* 보스 나선탄 텔레그래프 — 더 뚜렷한 색상 */
+  .boss-slam-warn{border-color:rgba(255,77,109,.85)!important;
+    box-shadow:0 0 0 2px rgba(255,77,109,.3) inset}
   /* 보스 촉수 경고 전용 크로스 */
   .boss-cross-warn{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:5;
     width:120px;height:120px;}
@@ -2471,7 +2485,7 @@ document.addEventListener('keydown',e=>{
     stage.querySelectorAll('.mortar-shell,.mortar-warn').forEach(el=>el.remove());
     stage.querySelectorAll('.ray-spine').forEach(el=>el.remove());
     state.enemiesToSpawn.length=0;
-    stage.querySelectorAll('.boss-slam-warn,.boss-ink-zone,.boss-proj').forEach(el=>el.remove());
+    stage.querySelectorAll('.boss-slam-warn,.boss-ink-zone,.boss-proj,.boss-move-target').forEach(el=>el.remove());
     state._inkZones=[];
     if(state.wave>=state.waveMax){
       state.bossDefeated=true;
@@ -2693,7 +2707,8 @@ function startGame(){
   state.battleLog.forEach(l=>{if(l.el.parentNode)l.el.parentNode.removeChild(l.el)});
   state.battleLog.length=0;
   // v1.0.2: 잔존 플로팅 DOM 전부 제거 (데미지 넘버, 파티클 DOM 등)
-  stage.querySelectorAll('.dmg,.fly-rsc,.fly-rsc-flash,.crit-starburst,.boss-slam-warn,.boss-ink-zone,.boss-proj,.mortar-shell,.mortar-warn').forEach(el=>el.remove());
+  stage.querySelectorAll('.dmg,.fly-rsc,.fly-rsc-flash,.crit-starburst,.boss-slam-warn,.boss-ink-zone,.boss-proj,.boss-move-target,.mortar-shell,.mortar-warn').forEach(el=>el.remove());
+  _bossAimBeam=null;
   state._inkZones=[];  // v1.6: 확실한 초기화
   state.bossSpawned=false; state.bossDefeated=false;
   state.bossProjectiles=[];
@@ -5036,6 +5051,12 @@ function update(dt){
           // 화면 밖 방지
           e._bossWpX=Math.max(60,Math.min(W-60,e._bossWpX));
           e._bossWpY=Math.max(100,Math.min(320,e._bossWpY));
+          // 이동 목표 마커 표시
+          const mtEl=document.createElement('div');
+          mtEl.className='boss-move-target';
+          mtEl.style.cssText=`left:${e._bossWpX}px;top:${e._bossWpY}px;--mdur:${e._bossWpDur.toFixed(1)}s`;
+          stage.appendChild(mtEl);
+          setTimeout(()=>{ if(mtEl.parentNode)mtEl.parentNode.removeChild(mtEl); },e._bossWpDur*1000+200);
         }
         // lerp 보간 (ease-in-out 느낌의 무게감)
         e._bossMoveT=Math.min(1, e._bossMoveT + dt/e._bossWpDur);
@@ -5064,6 +5085,10 @@ function update(dt){
 
       // ═══ 패턴1: 조준 연사 (P1~) — 발키리에게 2~3발 순차 발사 ═══
       const shotCD=phase===1?2.8:phase===2?2.2:1.8;
+      // 발사 0.65s 전: 조준선 텔레그래프
+      if(e._bossShot>=shotCD-0.65 && e._bossShot<shotCD-0.55){
+        _bossAimBeam={x1:bx,y1:by,x2:player.x,y2:player.y,life:0.6,maxLife:0.6};
+      }
       if(e._bossShot>=shotCD){
         e._bossShot=0;
         const burstCount=phase>=3?3:2;
@@ -5532,8 +5557,36 @@ const _gcGlowFxs=[];
 function spawnGCGlowFx(x,y,sz,alpha){
   _gcGlowFxs.push({x,y,sz:sz||60,life:1,alpha:alpha||0.7});
 }
+// ── 보스 조준선 텔레그래프 ──
+let _bossAimBeam=null; // {x1,y1,x2,y2,life,maxLife}
 function renderFx(dt){
   ctx.clearRect(0,0,W,H);
+  // ── 보스 조준선 (발사 전 텔레그래프) ──
+  if(_bossAimBeam && _bossAimBeam.life>0){
+    _bossAimBeam.life-=dt;
+    const prog=Math.max(0,_bossAimBeam.life/_bossAimBeam.maxLife);
+    const alpha=Math.min(1,prog*2)*0.75+(1-prog)*0.25;
+    ctx.save();
+    ctx.globalAlpha=alpha;
+    const dashOff=-(performance.now()*0.12)%20;
+    ctx.setLineDash([10,6]); ctx.lineDashOffset=dashOff;
+    ctx.strokeStyle='rgba(80,220,255,0.9)';
+    ctx.shadowColor='rgba(0,200,255,1)'; ctx.shadowBlur=18;
+    ctx.lineWidth=2.5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(_bossAimBeam.x1,_bossAimBeam.y1);
+    ctx.lineTo(_bossAimBeam.x2,_bossAimBeam.y2); ctx.stroke();
+    ctx.setLineDash([]);
+    // 조준 십자 (목표)
+    ctx.strokeStyle='rgba(255,80,80,0.9)'; ctx.shadowColor='rgba(255,60,60,1)';
+    ctx.lineWidth=2;
+    const tx=_bossAimBeam.x2, ty=_bossAimBeam.y2, cs=12;
+    ctx.beginPath();
+    ctx.moveTo(tx-cs,ty); ctx.lineTo(tx+cs,ty);
+    ctx.moveTo(tx,ty-cs); ctx.lineTo(tx,ty+cs);
+    ctx.stroke();
+    ctx.restore();
+    if(_bossAimBeam.life<=0) _bossAimBeam=null;
+  }
   // ── 뇌격 마법진 번개 렌더링 (clearRect 직후, 동일 프레임 내에서 그려야 보임) ──
   const now=performance.now();
   for(let i=_lightningSegs.length-1;i>=0;i--){
