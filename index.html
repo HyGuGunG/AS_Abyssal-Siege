@@ -146,6 +146,16 @@
   .enemy.boss.boss-p3 .hpbar .fill{background:linear-gradient(90deg,#c0392b,#ff4d6d);}
   @keyframes bossRage{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% + 2.5px),calc(-50% - 2px))}75%{transform:translate(calc(-50% - 2.5px),calc(-50% + 2px))}}
   .enemy.boss.boss-p3{animation:bossRage .12s ease-in-out infinite;}
+  /* 투척 가오리 독침 투사체 */
+  .ray-spine{position:absolute;width:16px;height:6px;border-radius:1px 50% 50% 1px;
+    background:linear-gradient(90deg,#00ffaa,#00cc77);
+    box-shadow:0 0 8px rgba(0,255,150,.8),0 0 16px rgba(0,200,100,.3);
+    pointer-events:none;z-index:6;transform-origin:center center;}
+  /* 투척 가오리 발사 게이지 */
+  .enemy .shootbar{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+    width:44px;height:3px;background:rgba(0,0,0,.55);border-radius:2px;overflow:hidden;}
+  .enemy .shootbar .sfill{height:100%;width:0%;border-radius:2px;
+    background:linear-gradient(90deg,#00ffaa,#ffe040);transition:width .05s linear;}
   #bossHpBar.phase-2 .boss-hp-fill{background:linear-gradient(90deg,#cc6600,#ff9d00);}
   #bossHpBar.phase-2 .boss-hp-label{color:#ffb347;text-shadow:0 0 8px rgba(255,140,0,.6);}
   #bossHpBar.phase-3 .boss-hp-fill{background:linear-gradient(90deg,#8b0000,#ff4d4d);animation:blinkBar .35s infinite;}
@@ -496,6 +506,8 @@
   .fslot.built .slot-cost{display:none}
   .fslot.built .slot-label{top:-16px;color:var(--cyan);border-color:rgba(0,229,255,.5);background:rgba(5,18,34,.85)}
   .fslot.built .facility-icon{font-size:32px;filter:drop-shadow(0 0 6px var(--cyan))}
+  .fslot.built .facility-icon svg{width:36px;height:36px;display:block;
+    filter:drop-shadow(0 0 5px currentColor)}
   .fslot.firing .slot-ring{animation:slotFire .2s}
   @keyframes slotFire{0%{transform:scale(1)}50%{transform:scale(1.12);box-shadow:0 0 24px var(--cyan)}100%{transform:scale(1)}}
 
@@ -1836,6 +1848,9 @@ document.addEventListener('keydown',e=>{
     enemies.length=0;
     state.bossProjectiles.forEach(bp=>{if(bp.el&&bp.el.parentNode)bp.el.parentNode.removeChild(bp.el)});
     state.bossProjectiles=[];
+    state.rayProjectiles.forEach(rp=>{if(rp.el&&rp.el.parentNode)rp.el.parentNode.removeChild(rp.el)});
+    state.rayProjectiles=[];
+    stage.querySelectorAll('.ray-spine').forEach(el=>el.remove());
     state.enemiesToSpawn.length=0;
     stage.querySelectorAll('.boss-slam-warn,.boss-ink-zone,.boss-proj').forEach(el=>el.remove());
     state._inkZones=[];
@@ -1902,7 +1917,8 @@ const ENEMY_DEFS={
           drops:[{tier:'normal',w:75},{tier:'rare',w:22},{tier:'epic',w:3}]},
   bangeo:{name:'어인 기사',     hp:80, speed:90,  r:40, img:'enemies/bangeo.png', ai:'straight', touchDmg:70, orbRate:0.22, size:80,
           drops:[{tier:'normal',w:40},{tier:'rare',w:45},{tier:'epic',w:15}]},
-  gaori: {name:'그림자 가오리', hp:60, speed:110, r:38, img:'enemies/gaori.png',  ai:'zigzag',   touchDmg:55, orbRate:0.30, size:76,
+  gaori: {name:'투척 가오리', hp:45, speed:140, r:38, img:'enemies/gaori.png', ai:'hover_shoot', touchDmg:0, orbRate:0.30, size:76,
+          hoverY:130, shootInterval:3.0, projDmg:18, projSpeed:320,
           drops:[{tier:'normal',w:55},{tier:'rare',w:37},{tier:'epic',w:8}]},
   agwi:  {name:'심해 오우거',  hp:180, speed:55,  r:48, img:'enemies/agwi.png',   ai:'straight', touchDmg:120, orbRate:0.18, size:96,
           drops:[{tier:'normal',w:20},{tier:'rare',w:50},{tier:'epic',w:30}]},
@@ -1917,26 +1933,78 @@ const ENEMY_DEFS={
 // 방어 시설 풀
 const FACILITY_POOL=[
   {id:'crossbow', name:'석궁 포탑',    rarity:'일반', kind:'facility', icon:'🏹',
+    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+<rect x="12" y="20" width="12" height="12" rx="1.5" fill="#7a5520" stroke="#c8902a" stroke-width="1.5"/>
+<rect x="14" y="11" width="8" height="11" fill="#5a3a10" stroke="#a07030" stroke-width="1.5"/>
+<rect x="11" y="7" width="5" height="6" rx="1" fill="#5a3a10" stroke="#a07030" stroke-width="1.5"/>
+<rect x="20" y="7" width="5" height="6" rx="1" fill="#5a3a10" stroke="#a07030" stroke-width="1.5"/>
+<line x1="7" y1="15" x2="29" y2="15" stroke="#ffd86b" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="18" y1="7" x2="18" y2="17" stroke="#ff9d2a" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="18,3 15,8 21,8" fill="#ffd86b"/>
+</svg>`,
     desc:'근거리 단일 대상 연사',
     stats:[{icon:'\u2694',label:'공격력',val:'30'},{icon:'\u23F1',label:'공속',val:'0.6s'},{icon:'\uD83D\uDCD0',label:'사거리',val:'280'}],
     range:280, cooldown:0.6, dmg:30, type:'single', projSpeed:900, projColor:'#ffd86b'},
   {id:'ballista', name:'마법 발리스타', rarity:'희귀', kind:'facility', icon:'⚔️',
+    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+<rect x="9" y="24" width="18" height="7" rx="2" fill="#2a1840" stroke="#9d7bff" stroke-width="1.5"/>
+<circle cx="12" cy="28" r="3.5" fill="#1a0e30" stroke="#9d7bff" stroke-width="1.5"/>
+<circle cx="24" cy="28" r="3.5" fill="#1a0e30" stroke="#9d7bff" stroke-width="1.5"/>
+<rect x="15" y="10" width="6" height="16" rx="1" fill="#3a2060" stroke="#c8a0ff" stroke-width="1.5"/>
+<line x1="5" y1="14" x2="31" y2="14" stroke="#c8a0ff" stroke-width="2" stroke-linecap="round"/>
+<line x1="18" y1="5" x2="18" y2="15" stroke="#9d7bff" stroke-width="2" stroke-linecap="round"/>
+<polygon points="18,2 15,7 21,7" fill="#c8a0ff"/>
+</svg>`,
     desc:'원거리 고위력 관통탄',
     stats:[{icon:'\u2694',label:'공격력',val:'110'},{icon:'\u23F1',label:'공속',val:'2.0s'},{icon:'\uD83D\uDCD0',label:'사거리',val:'420'}],
     range:420, cooldown:2.0, dmg:110, type:'pierce', projSpeed:780, projColor:'#9d7bff'},
   {id:'rune',     name:'번개 마법진',  rarity:'희귀', kind:'facility', icon:'⚡',
+    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+<circle cx="18" cy="18" r="14" fill="rgba(0,229,255,.07)" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="5,3"/>
+<circle cx="18" cy="18" r="8" fill="rgba(0,229,255,.12)" stroke="#00e5ff" stroke-width="1"/>
+<polygon points="18,7 20.4,13.8 27.5,13.8 21.9,17.8 24.3,24.5 18,20.5 11.7,24.5 14.1,17.8 8.5,13.8 15.6,13.8" fill="rgba(0,229,255,.15)" stroke="#00e5ff" stroke-width="1"/>
+<line x1="18" y1="5" x2="18" y2="31" stroke="#7ff0ff" stroke-width="1" opacity=".35"/>
+<line x1="5" y1="18" x2="31" y2="18" stroke="#7ff0ff" stroke-width="1" opacity=".35"/>
+<circle cx="18" cy="18" r="3" fill="#00e5ff" opacity=".8"/>
+</svg>`,
     desc:'범위 내 모든 적에게 전기 피해',
     stats:[{icon:'\u26A1',label:'초당 피해',val:'40'},{icon:'\uD83D\uDCD0',label:'범위',val:'320'},{icon:'\uD83C\uDFAF',label:'다중 타격',val:''}],
     range:320, cooldown:1.8, dmg:72, type:'aoe', projSpeed:0, projColor:'#00e5ff'},
   {id:'holy_well', name:'성수 제단',  rarity:'일반', kind:'facility', icon:'⛲',
+    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+<rect x="8" y="28" width="20" height="5" rx="2" fill="#0e2040" stroke="#7cc4ff" stroke-width="1.5"/>
+<rect x="11" y="16" width="4" height="14" rx="1" fill="#0a1830" stroke="#5aa0d8" stroke-width="1"/>
+<rect x="21" y="16" width="4" height="14" rx="1" fill="#0a1830" stroke="#5aa0d8" stroke-width="1"/>
+<ellipse cx="18" cy="18" rx="8" ry="5" fill="rgba(124,196,255,.15)" stroke="#7cc4ff" stroke-width="1.5"/>
+<ellipse cx="18" cy="18" rx="5" ry="3" fill="rgba(124,196,255,.3)"/>
+<line x1="18" y1="14" x2="18" y2="6" stroke="#b0d8ff" stroke-width="1.5" opacity=".7"/>
+<circle cx="18" cy="5" r="3" fill="rgba(200,230,255,.4)" stroke="#c8e8ff" stroke-width="1"/>
+</svg>`,
     desc:'주기적으로 가호 회복',
     stats:[{icon:'\u2728',label:'가호 회복',val:'+8'},{icon:'\u23F1',label:'주기',val:'3.0s'},{icon:'\uD83D\uDCD0',label:'범위',val:'전체'}],
     range:9999, cooldown:3.0, dmg:0, type:'heal', healAmount:8, projSpeed:0, projColor:'#7cc4ff'},
   {id:'barrier',   name:'수호 결계',  rarity:'영웅', kind:'facility', icon:'🛡️',
+    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="18" width="4" height="14" rx="2" fill="#062030" stroke="#26ffe9" stroke-width="1.5"/>
+<rect x="27" y="18" width="4" height="14" rx="2" fill="#062030" stroke="#26ffe9" stroke-width="1.5"/>
+<ellipse cx="7" cy="17" rx="5" ry="5" fill="rgba(38,255,233,.12)" stroke="#26ffe9" stroke-width="1.5"/>
+<ellipse cx="29" cy="17" rx="5" ry="5" fill="rgba(38,255,233,.12)" stroke="#26ffe9" stroke-width="1.5"/>
+<path d="M9,13 Q18,5 27,13 Q27,24 18,31 Q9,24 9,13 Z" fill="rgba(38,255,233,.07)" stroke="#26ffe9" stroke-width="1.5"/>
+<path d="M13,16 Q18,11 23,16 Q23,22 18,26 Q13,22 13,16 Z" fill="rgba(38,255,233,.1)" stroke="rgba(38,255,233,.5)" stroke-width="1"/>
+</svg>`,
     desc:'수문 HP를 주기적 회복',
     stats:[{icon:'\uD83D\uDEE1',label:'수문 회복',val:'+15'},{icon:'\u23F1',label:'주기',val:'4.0s'},{icon:'\uD83C\uDFAF',label:'대상',val:'수문'}],
     range:9999, cooldown:4.0, dmg:0, type:'gate_heal', healAmount:15, projSpeed:0, projColor:'#26ffe9'},
   {id:'repair_spirit', name:'서리 정령', rarity:'영웅', kind:'facility', icon:'🧚',
+    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+<line x1="18" y1="4" x2="18" y2="32" stroke="#c8a0ff" stroke-width="1.5" opacity=".5"/>
+<line x1="4" y1="18" x2="32" y2="18" stroke="#c8a0ff" stroke-width="1.5" opacity=".5"/>
+<line x1="8" y1="8" x2="28" y2="28" stroke="#c8a0ff" stroke-width="1" opacity=".35"/>
+<line x1="28" y1="8" x2="8" y2="28" stroke="#c8a0ff" stroke-width="1" opacity=".35"/>
+<polygon points="18,4 20,14 28,14 21,20 24,30 18,24 12,30 15,20 8,14 16,14" fill="rgba(200,160,255,.18)" stroke="#c8a0ff" stroke-width="1.5"/>
+<circle cx="18" cy="16" r="5" fill="rgba(200,160,255,.3)" stroke="#e0c8ff" stroke-width="1.5"/>
+<circle cx="18" cy="16" r="2" fill="#e0c8ff" opacity=".9"/>
+</svg>`,
     desc:'적 감속 + 아군 시설 강화',
     stats:[{icon:'\u2744',label:'감속',val:'-25%'},{icon:'\u23F1',label:'주기',val:'5.0s'},{icon:'\uD83D\uDCD0',label:'범위',val:'300'}],
     range:300, cooldown:5.0, dmg:0, type:'debuff', slowPct:0.25, slowDur:3.0, projSpeed:0, projColor:'#c8a0ff'},
@@ -2021,6 +2089,7 @@ function startGame(){
   state._inkZones=[];  // v1.6: 확실한 초기화
   state.bossSpawned=false; state.bossDefeated=false;
   state.bossProjectiles=[];
+  state.rayProjectiles=[];
   startBGM();  // v1.6: BGM 시작
   state.gateHp=state.gateHpMax;
   state.gaugeMax=100; state.gauge=state.gaugeMax;
@@ -2462,7 +2531,7 @@ function selectFacility(f, el){
   s.facility={...f, attackCD:0};
   s.el.innerHTML=`
     <div class="slot-label">${f.name}</div>
-    <div class="slot-ring"><span class="facility-icon">${f.icon}</span></div>
+    <div class="slot-ring"><span class="facility-icon">${f.svgIcon||f.icon}</span></div>
     <div class="deposit-ring"><svg viewBox="0 0 92 92"><circle class="dr-track" cx="46" cy="46" r="42.5"/><circle class="dr-fill" cx="46" cy="46" r="42.5" style="stroke-dasharray:267;stroke-dashoffset:0"/></svg></div>`;
   s.el.classList.add('built'); s.el.classList.remove('ready','depositing','insufficient');
   if(f.type==='aoe') s.el.classList.add('aoe-facility');
@@ -2857,6 +2926,17 @@ function showResult(win){
   }, 600);
 }
 
+function spawnRayProj(e){
+  const dx=player.x-e.x, dy=player.y-e.y, d=Math.hypot(dx,dy)||1;
+  const angle=Math.atan2(dy,dx);
+  const el=document.createElement('div');
+  el.className='ray-spine';
+  el.style.cssText=`left:${e.x}px;top:${e.y}px;transform:translate(-50%,-50%) rotate(${angle}rad)`;
+  stage.appendChild(el);
+  state.rayProjectiles.push({x:e.x,y:e.y,vx:dx/d*e.projSpeed,vy:dy/d*e.projSpeed,
+    dmg:e.projDmg,r:8,life:5,el,angle});
+}
+
 function spawnEnemy(type){
   const def=ENEMY_DEFS[type];
   let x,y;
@@ -2888,9 +2968,11 @@ function spawnEnemy(type){
     :`<img src="${ASSET+def.img}" alt="">`;
   const nameHtml=def.boss?`<div class="boss-name">${def.name}</div>`:'';
   const hpbarHtml=def.boss?'':`<div class="hpbar"><div class="fill" style="width:100%"></div></div>`;
-  el.innerHTML=`${imgHtml}${hpbarHtml}${nameHtml}`;
+  const shootbarHtml=(def.ai==='hover_shoot')?`<div class="shootbar"><div class="sfill"></div></div>`:'';
+  el.innerHTML=`${imgHtml}${hpbarHtml}${shootbarHtml}${nameHtml}`;
   world.appendChild(el);
-  e.el=el; e._hpFill=el.querySelector('.fill');
+  e.el=el; e._hpFill=el.querySelector('.fill'); e._sfill=el.querySelector('.sfill');
+  e._shootT=0; e._hovering=false;
   enemies.push(e);
 }
 
@@ -3115,6 +3197,9 @@ function killEnemy(e){
     // 보스 투사체 + 잉크존 제거
     state.bossProjectiles.forEach(bp=>{if(bp.el&&bp.el.parentNode)bp.el.parentNode.removeChild(bp.el)});
     state.bossProjectiles=[];
+    state.rayProjectiles.forEach(rp=>{if(rp.el&&rp.el.parentNode)rp.el.parentNode.removeChild(rp.el)});
+    state.rayProjectiles=[];
+    stage.querySelectorAll('.ray-spine').forEach(el=>el.remove());
     stage.querySelectorAll('.boss-ink-zone,.boss-slam-warn').forEach(el=>el.remove());
     state._inkZones=[];
     // 소환된 잡몹 전부 처치 (보스 처치=승리이므로 잔몹 정리)
@@ -3734,6 +3819,25 @@ function update(dt){
       e._zigT+=dt*3;
       const offX=Math.sin(e._zigT)*70;
       moveTowards(e,tgtX+offX,tgtY,dt,spdMul);
+    } else if(e.ai==='hover_shoot'){
+      if(!e._hovering){
+        // 목표 Y까지 내려옴
+        e.y+=e.speed*dt*spdMul;
+        const dx=tgtX-e.x;
+        e.x+=Math.sign(dx)*Math.min(Math.abs(dx),80*dt);
+        if(e.y>=e.hoverY){ e.y=e.hoverY; e._hovering=true; }
+      } else {
+        // 호버링: X만 플레이어 따라감 (부드럽게)
+        const dx=tgtX-e.x;
+        e.x+=dx*1.5*dt;
+        // 발사 타이머
+        e._shootT+=dt;
+        if(e._sfill) e._sfill.style.width=Math.min(e._shootT/e.shootInterval*100,100)+'%';
+        if(e._shootT>=e.shootInterval){
+          e._shootT=0;
+          spawnRayProj(e);
+        }
+      }
     } else if(e.ai==='boss'){
       // ═══ v1.8 보스 AI 리워크 — 5패턴 + 필살기, HP 페이즈별 해금 ═══
       // 타이머 초기화
@@ -4137,6 +4241,22 @@ function update(dt){
 
   facilityAttack(dt);
   updateBossProjectiles(dt);
+  // 가오리 독침 투사체
+  for(let i=state.rayProjectiles.length-1;i>=0;i--){
+    const rp=state.rayProjectiles[i];
+    rp.x+=rp.vx*dt; rp.y+=rp.vy*dt; rp.life-=dt;
+    if(rp.el){ rp.el.style.left=rp.x+'px'; rp.el.style.top=rp.y+'px'; }
+    const pdx=rp.x-player.x, pdy=rp.y-player.y;
+    if(Math.hypot(pdx,pdy)<22+rp.r){
+      damagePlayer(rp.dmg);
+      if(rp.el&&rp.el.parentNode)rp.el.parentNode.removeChild(rp.el);
+      state.rayProjectiles.splice(i,1); continue;
+    }
+    if(rp.life<=0||rp.x<-80||rp.x>W+80||rp.y<-80||rp.y>H+80){
+      if(rp.el&&rp.el.parentNode)rp.el.parentNode.removeChild(rp.el);
+      state.rayProjectiles.splice(i,1);
+    }
+  }
   handleDeposit(dt);
 
   // 아이템(보주/자원) 처리
