@@ -1956,11 +1956,11 @@ const FACILITY_SLOT_DEFS=[
 
 // 카드 풀
 const CARD_POOL=[
-  {id:'sword_mastery',  name:'검의 숙련',      rarity:'일반', kind:'hero', icon:'⚔️', desc:'기본 공격 강화',
+  {id:'sword_mastery',  name:'투검 숙련',      rarity:'일반', kind:'hero', icon:'⚔️', desc:'기본 공격 강화',
     stats:[{icon:'\u2694',label:'공격력',val:'+15%'}],                    maxStack:5, apply:()=>{ player.swordDmg*=1.15 }},
   {id:'swift_throw',    name:'신속한 투척',    rarity:'일반', kind:'hero', icon:'💨', desc:'검 투척 속도 증가',
     stats:[{icon:'\u23F1',label:'공속',val:'+20%'}],                  maxStack:5, apply:()=>{ player.attackInterval*=0.833 }},
-  {id:'long_shot',      name:'장거리 사격',    rarity:'일반', kind:'hero', icon:'🏹', desc:'사거리 확장',
+  {id:'long_shot',      name:'장거리 투척',    rarity:'일반', kind:'hero', icon:'🏹', desc:'사거리 확장',
     stats:[{icon:'\uD83D\uDCD0',label:'사거리',val:'+25%'}],                     maxStack:3, apply:()=>{ player.attackRange*=1.25 }},
   {id:'light_armor',    name:'경량 갑주',      rarity:'일반', kind:'hero', icon:'👢', desc:'이동속도 증가',
     stats:[{icon:'\uD83C\uDFC3',label:'이동속도',val:'+15%'}],                  maxStack:4, apply:()=>{ player.speed*=1.15 }},
