@@ -1095,7 +1095,8 @@
   #joystickZone{position:absolute;left:0;bottom:0;width:500px;height:400px;pointer-events:auto;touch-action:none;}
   #joystickBase{position:absolute;width:140px;height:140px;border-radius:50%;
     background:rgba(0,229,255,.08);border:2px solid rgba(0,229,255,.25);
-    left:50px;bottom:50px;display:flex;align-items:center;justify-content:center;}
+    left:50px;bottom:50px;display:flex;align-items:center;justify-content:center;
+    opacity:0.35;transition:opacity .15s ease;}
   #joystickThumb{width:56px;height:56px;border-radius:50%;
     background:radial-gradient(circle,rgba(0,229,255,.5),rgba(0,229,255,.2));
     border:2px solid rgba(0,229,255,.6);box-shadow:0 0 12px rgba(0,229,255,.4);
@@ -1282,8 +1283,8 @@
       <div id="joystickBase"><div id="joystickThumb"></div></div>
     </div>
     <div id="touchSkills">
-      <div class="touch-skill" id="tsQ">⇧<span class="ts-label">질주</span><span class="ts-cd" id="tsCdQ"></span></div>
-      <div class="touch-skill" id="tsE">E<span class="ts-label">충격파</span><span class="ts-cd" id="tsCdE"></span></div>
+      <div class="touch-skill" id="tsQ">⇧<span class="ts-label">성창 질주</span><span class="ts-cd" id="tsCdQ"></span></div>
+      <div class="touch-skill" id="tsE">E<span class="ts-label">성검 폭풍</span><span class="ts-cd" id="tsCdE"></span></div>
     </div>
   </div>
   <!-- ═══ 모바일 전용 스킬 패널 (wide-mode, 2025 디자인) ═══ -->
@@ -1293,9 +1294,9 @@
         <circle class="ms-cd-track" cx="55" cy="55" r="52"/>
         <circle class="ms-cd-fill" id="msCdSvgQ" cx="55" cy="55" r="52"/>
       </svg>
-      <img class="ms-icon" src="AS_Assets/skills/wind_dash.png" alt="질주">
+      <img class="ms-icon" src="AS_Assets/skills/valk_dash.png" alt="성창 질주">
       <div class="ms-cd-num" id="msCdNumQ"></div>
-      <div class="ms-name">질주</div>
+      <div class="ms-name">성창 질주</div>
       <div class="ms-move-badge">이동 필요</div>
     </div>
     <div class="ms-btn" id="msPanelE">
@@ -1303,9 +1304,9 @@
         <circle class="ms-cd-track" cx="55" cy="55" r="52"/>
         <circle class="ms-cd-fill" id="msCdSvgE" cx="55" cy="55" r="52"/>
       </svg>
-      <img class="ms-icon" src="AS_Assets/skills/holy_shock.png" alt="충격파">
+      <img class="ms-icon" src="AS_Assets/skills/valk_shockwave.png" alt="성검 폭풍">
       <div class="ms-cd-num" id="msCdNumE"></div>
-      <div class="ms-name">충격파</div>
+      <div class="ms-name">성검 폭풍</div>
     </div>
   </div>
   <!-- 보스 페이즈 플래시 -->
@@ -1389,7 +1390,7 @@
     <div class="panel" id="hudControls">
       <div class="p-label">🎮 조작</div>
       <div><span class="k">W</span><span class="k">A</span><span class="k">S</span><span class="k">D</span> 이동 · 자동 공격</div>
-      <div><span class="k">Shift</span> 질주 <span style="color:#9cd8ff">(이동 중)</span> · <span class="k">E</span> 충격파</div>
+      <div><span class="k">Shift</span> 성창 질주 <span style="color:#9cd8ff">(이동 중)</span> · <span class="k">E</span> 성검 폭풍</div>
       <div>💎 보주·📦 자원 접근 시 자동 수집</div>
       <div>🏗 슬롯 접근 시 자원 자동 투입</div>
       <div style="margin-top:2px;color:#9d7bff"><span class="k">K</span> 적 전멸 · <span class="k">L</span> 웨이브 스킵 · <span class="k">O</span> 강제 패배</div>
@@ -1431,28 +1432,28 @@
       <div class="skill-slot">
         <span class="skill-keycap">⇧ Shift</span>
         <div class="skill-btn" id="skillQ">
-          <img class="skill-img" src="AS_Assets/skills/wind_dash.png" alt="">
+          <img class="skill-img" src="AS_Assets/skills/valk_dash.png" alt="">
           <div class="cd-ring"><svg viewBox="0 0 58 58"><circle class="cd-track" cx="29" cy="29" r="26"/><circle class="cd-fill" id="cdRingQ" cx="29" cy="29" r="26"/></svg></div>
           <div class="cd hidden" id="cdQ">3</div>
         </div>
         <div class="skill-info">
-          <div class="name">질주</div>
+          <div class="name">성창 질주</div>
           <div class="status ready" id="statQ">● 준비</div>
         </div>
-        <div class="skill-tooltip"><div class="stt-name">질주</div><div class="stt-desc">이동 중 순간이동 (무적 포함)</div><div class="stt-stats"><span>쿨타임 3s</span><span>사거리 160</span></div></div>
+        <div class="skill-tooltip"><div class="stt-name">성창 질주</div><div class="stt-desc">이동 중 창 속도로 돌진 (무적 포함)</div><div class="stt-stats"><span>쿨타임 3s</span><span>사거리 160</span></div></div>
       </div>
       <div class="skill-slot">
         <span class="skill-keycap">E</span>
         <div class="skill-btn" id="skillE">
-          <img class="skill-img" src="AS_Assets/skills/holy_shock.png" alt="">
+          <img class="skill-img" src="AS_Assets/skills/valk_shockwave.png" alt="">
           <div class="cd-ring"><svg viewBox="0 0 58 58"><circle class="cd-track" cx="29" cy="29" r="26"/><circle class="cd-fill" id="cdRingE" cx="29" cy="29" r="26"/></svg></div>
           <div class="cd hidden" id="cdE">18</div>
         </div>
         <div class="skill-info">
-          <div class="name">충격파</div>
+          <div class="name">성검 폭풍</div>
           <div class="status ready" id="statE">● 준비</div>
         </div>
-        <div class="skill-tooltip"><div class="stt-name">충격파</div><div class="stt-desc">주변 광역 피해 + 넉백</div><div class="stt-stats"><span>피해 <span id="sttShockDmg">90</span></span><span>쿨타임 18s</span><span>범위 220</span></div></div>
+        <div class="skill-tooltip"><div class="stt-name">성검 폭풍</div><div class="stt-desc">주변 광역 피해 + 넉백</div><div class="stt-stats"><span>피해 <span id="sttShockDmg">90</span></span><span>쿨타임 18s</span><span>범위 220</span></div></div>
       </div>
     </div>
     </div><!-- /skillBar -->
@@ -1517,15 +1518,15 @@
       </div>
       <div class="it">
         <div class="k">Shift</div>
-        <div class="ctrl-ico"><img src="AS_Assets/skills/wind_dash.png" alt=""></div>
-        <div class="n">질주</div>
-        <div class="ctrl-tooltip"><div class="ctt-name">질주</div><div class="ctt-desc">이동 중 순간이동 (무적) · 쿨타임 3s</div></div>
+        <div class="ctrl-ico"><img src="AS_Assets/skills/valk_dash.png" alt=""></div>
+        <div class="n">성창 질주</div>
+        <div class="ctrl-tooltip"><div class="ctt-name">성창 질주</div><div class="ctt-desc">이동 중 창 속도로 돌진 (무적) · 쿨타임 3s</div></div>
       </div>
       <div class="it">
         <div class="k">E</div>
-        <div class="ctrl-ico"><img src="AS_Assets/skills/holy_shock.png" alt=""></div>
-        <div class="n">충격파</div>
-        <div class="ctrl-tooltip"><div class="ctt-name">충격파</div><div class="ctt-desc">주변 광역 피해 + 넉백 · 쿨타임 18s</div></div>
+        <div class="ctrl-ico"><img src="AS_Assets/skills/valk_shockwave.png" alt=""></div>
+        <div class="n">성검 폭풍</div>
+        <div class="ctrl-tooltip"><div class="ctt-name">성검 폭풍</div><div class="ctt-desc">주변 광역 피해 + 넉백 · 쿨타임 18s</div></div>
       </div>
     </div>
     <button class="btn title-anim" id="btnStart" style="animation-delay:.85s">전투 개시</button>
@@ -1807,6 +1808,8 @@ const enemies=[];
 const projectiles=[];
 const items=[];
 const particles=[];
+// 조이스틱 벡터 입력 (mobile)
+const joystick={active:false,input:{x:0,y:0}};
 
 const player={
   x:W/2, y:H-180, r:35,
@@ -1827,8 +1830,8 @@ const player={
 };
 
 const skills={
-  Q:{cd:0, max:3, key:'Shift', name:'질주'},
-  E:{cd:0, max:18, key:'E', name:'충격파'},
+  Q:{cd:0, max:3, key:'Shift', name:'성창 질주'},
+  E:{cd:0, max:18, key:'E', name:'성검 폭풍'},
 };
 
 const keys={};
@@ -3745,12 +3748,19 @@ function update(dt){
   if(keys['s']||keys['arrowdown']) dy+=1;
   if(keys['a']||keys['arrowleft']){dx-=1; player.facing=-1}
   if(keys['d']||keys['arrowright']){dx+=1; player.facing=1}
-  player.moving=(dx!==0 || dy!==0);
+  // 조이스틱 벡터 오버라이드 (모바일 — 정규화된 연속 입력)
+  let speedMul=1.0;
+  if(joystick.active){
+    dx=joystick.input.x; dy=joystick.input.y;
+    speedMul=Math.min(Math.hypot(dx,dy),1.0);
+    if(dx>0.1) player.facing=1; else if(dx<-0.1) player.facing=-1;
+  }
+  player.moving=(Math.abs(dx)>0.05||Math.abs(dy)>0.05);
   if(player.moving){
-    const l=Math.hypot(dx,dy);
+    const l=Math.hypot(dx,dy)||1;
     player.vx=dx/l; player.vy=dy/l;
-    player.x+=player.vx*player.speed*dt;
-    player.y+=player.vy*player.speed*dt;
+    player.x+=player.vx*player.speed*speedMul*dt;
+    player.y+=player.vy*player.speed*speedMul*dt;
   }
   player.x=Math.max(40,Math.min(W-40,player.x));
   player.y=Math.max(40,Math.min(H-80,player.y));
@@ -4803,8 +4813,16 @@ if(AUTOPLAY){
     const t = e.changedTouches[0];
     joyId = t.identifier;
     joyActive = true;
-    const rect = jBase.getBoundingClientRect();
-    joyCenter = {x: rect.left + rect.width/2, y: rect.top + rect.height/2};
+    // 플로팅: 터치 시작점으로 base 이동
+    const sc = getStageScale();
+    const stRect = document.getElementById('stage').getBoundingClientRect();
+    const lx = (t.clientX - stRect.left) / sc;
+    const ly = (t.clientY - stRect.top) / sc;
+    jBase.style.left = (lx - 70) + 'px';
+    jBase.style.top  = (ly - 70) + 'px';
+    jBase.style.bottom = 'auto';
+    jBase.style.opacity = '1';
+    joyCenter = {x: t.clientX, y: t.clientY};
     updateJoy(t.clientX, t.clientY);
   }
   function onJoyMove(e){
@@ -4818,6 +4836,10 @@ if(AUTOPLAY){
       if(t.identifier === joyId){
         joyActive = false; joyId = null;
         jThumb.style.transform = 'translate(0,0)';
+        // base 원위치
+        jBase.style.left = '50px'; jBase.style.top = 'auto'; jBase.style.bottom = '50px';
+        jBase.style.opacity = '0.35';
+        joystick.active = false; joystick.input.x = 0; joystick.input.y = 0;
         keys['w']=false; keys['a']=false; keys['s']=false; keys['d']=false;
         break;
       }
@@ -4825,18 +4847,31 @@ if(AUTOPLAY){
   }
   function updateJoy(cx, cy){
     const sc = getStageScale();
-    // 화면 좌표 차이를 stage 내부 좌표로 변환
     let dx = (cx - joyCenter.x) / sc;
     let dy = (cy - joyCenter.y) / sc;
     const dist = Math.hypot(dx, dy);
-    if(dist > JOY_R){ dx = dx/dist*JOY_R; dy = dy/dist*JOY_R; }
-    jThumb.style.transform = `translate(${dx}px,${dy}px)`;
-    // 데드존
-    const deadzone = 12;
-    keys['w'] = dy < -deadzone;
-    keys['s'] = dy > deadzone;
-    keys['a'] = dx < -deadzone;
-    keys['d'] = dx > deadzone;
+    // 썸 클램프
+    const clamp = Math.min(dist, JOY_R);
+    jThumb.style.transform = dist > 0
+      ? `translate(${dx/dist*clamp}px,${dy/dist*clamp}px)`
+      : 'translate(0,0)';
+    // 비율 데드존 (JOY_R의 15%)
+    const dz = JOY_R * 0.15;
+    if(dist < dz){
+      joystick.active = false; joystick.input.x = 0; joystick.input.y = 0;
+    } else {
+      // 데드존 밖 → 0~1 정규화
+      const norm = Math.min((dist - dz) / (JOY_R - dz), 1.0);
+      const angle = Math.atan2(dy, dx);
+      joystick.active = true;
+      joystick.input.x = Math.cos(angle) * norm;
+      joystick.input.y = Math.sin(angle) * norm;
+    }
+    // 레거시 키 호환 (질주 이동 체크용)
+    keys['w'] = joystick.input.y < -0.3;
+    keys['s'] = joystick.input.y >  0.3;
+    keys['a'] = joystick.input.x < -0.3;
+    keys['d'] = joystick.input.x >  0.3;
   }
 
   // --- 기존 touchSkills 버튼 (non-wide-mode 모바일) ---
