@@ -218,11 +218,27 @@
   .boss-hp-text{font-family:'Outfit',sans-serif;font-size:11px;font-weight:900;color:#e0d0ff;margin-top:2px;
     text-shadow:0 1px 2px #000}
 
-  /* 수문 */
-  #gate{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);width:252px;height:147px;
-    pointer-events:none;z-index:2;filter:drop-shadow(0 0 16px rgba(0,229,255,.4));transition:filter .6s}
-  #gate .gate-img{width:100%;height:100%;object-fit:contain;display:block;position:absolute;inset:0;
-    mix-blend-mode:lighten;transition:opacity .5s}
+  /* 수문 — GC 관문(bg_castle_gate) 정면 뷰 교체 */
+  #gate{position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);width:310px;height:220px;
+    pointer-events:none;z-index:2;transition:filter .6s;overflow:hidden}
+  #gate .gate-img{
+    width:460px;height:460px;
+    object-fit:cover;object-position:50% 54%;
+    display:block;position:absolute;left:-75px;top:-60px;
+    /* 어두운 분위기 보정 + 채도 낮춤 + 시안 틴트 */
+    filter:brightness(0.55) saturate(0.65) hue-rotate(185deg) contrast(1.1);
+    /* 방사형 마스크로 게이트 아치 부분만 표시 */
+    mask-image:radial-gradient(ellipse 52% 60% at 50% 52%, black 40%, rgba(0,0,0,0.7) 65%, transparent 85%);
+    -webkit-mask-image:radial-gradient(ellipse 52% 60% at 50% 52%, black 40%, rgba(0,0,0,0.7) 65%, transparent 85%);
+    transition:filter .5s}
+  /* glow drop-shadow는 #gate에서 분리하여 .gate-glow로 처리 */
+  #gate::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+    box-shadow:inset 0 -20px 40px rgba(0,180,255,.35), inset 0 20px 40px rgba(0,0,30,.5)}
+  /* 수문 균열 오버레이 */
+  #gate .gate-crack-overlay{position:absolute;inset:-4px;pointer-events:none;opacity:0;transition:opacity .6s;
+    background:repeating-linear-gradient(47deg,transparent 0px,transparent 18px,rgba(255,60,20,.08) 18px,rgba(255,60,20,.08) 19px),
+               repeating-linear-gradient(-38deg,transparent 0px,transparent 24px,rgba(255,100,30,.06) 24px,rgba(255,100,30,.06) 25px);
+    border-radius:6px}
   #gate.hit{animation:gateShake .35s ease-out}
   @keyframes gateShake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 10px))}75%{transform:translateX(calc(-50% + 10px))}}
   #gate .barrier{position:absolute;inset:0;pointer-events:none;opacity:.6;
@@ -236,21 +252,27 @@
   @keyframes smokeRise{0%,100%{transform:translateY(0) scaleX(1)}50%{transform:translateY(-8px) scaleX(1.05)}}
   #gate .gate-embers-fx{position:absolute;inset:-30px;pointer-events:none;opacity:0;transition:opacity .8s;overflow:visible}
   /* 단계 1: 75% — 균열 시작 */
-  #gate.dmg-1{filter:drop-shadow(0 0 18px rgba(0,160,255,.3)) drop-shadow(0 0 6px rgba(255,200,100,.15))}
-  #gate.dmg-1 .barrier{opacity:.35;animation:barrierFlicker 3s ease-in-out infinite}
-  @keyframes barrierFlicker{0%,100%{opacity:.35}30%{opacity:.25}50%{opacity:.4}80%{opacity:.2}}
+  #gate.dmg-1{box-shadow:0 0 30px rgba(255,200,80,.4)}
+  #gate.dmg-1 .barrier{opacity:.3;animation:barrierFlicker 3s ease-in-out infinite}
+  #gate.dmg-1 .gate-crack-overlay{opacity:.4}
+  @keyframes barrierFlicker{0%,100%{opacity:.3}30%{opacity:.15}50%{opacity:.35}80%{opacity:.1}}
   /* 단계 2: 50% — 심각 손상 */
-  #gate.dmg-2{filter:drop-shadow(0 0 22px rgba(255,140,30,.6)) drop-shadow(0 0 40px rgba(255,100,0,.2))}
-  #gate.dmg-2 .barrier{opacity:.08}
+  #gate.dmg-2{box-shadow:0 0 40px rgba(255,120,20,.6)}
+  #gate.dmg-2 .barrier{opacity:.05}
   #gate.dmg-2 .gate-smoke{opacity:1}
-  #gate.dmg-2 .gate-img{filter:brightness(.9) saturate(.85)}
+  #gate.dmg-2 .gate-img{filter:brightness(0.45) saturate(0.55) hue-rotate(200deg) contrast(1.1)}
+  #gate.dmg-2 .gate-crack-overlay{opacity:.75}
   /* 단계 3: 25% — 붕괴 직전 */
-  #gate.dmg-3{filter:drop-shadow(0 0 30px rgba(255,50,50,.8)) drop-shadow(0 0 60px rgba(255,20,0,.35))}
+  #gate.dmg-3{box-shadow:0 0 60px rgba(255,40,40,.8);animation:gateDangerPulse 1.2s ease-in-out infinite}
+  @keyframes gateDangerPulse{
+    0%,100%{box-shadow:0 0 60px rgba(255,40,40,.8)}
+    50%{box-shadow:0 0 90px rgba(255,80,0,.95)}}
   #gate.dmg-3 .barrier{opacity:0}
-  #gate.dmg-3 .gate-smoke{opacity:1;
-    background:radial-gradient(ellipse at center bottom,rgba(120,20,0,.5) 0%,rgba(80,10,0,.3) 40%,transparent 65%)}
+  #gate.dmg-3 .gate-smoke{opacity:1;background:radial-gradient(ellipse at center bottom,rgba(140,30,0,.6) 0%,rgba(90,10,0,.35) 40%,transparent 65%)}
   #gate.dmg-3 .gate-embers-fx{opacity:1}
-  #gate.dmg-3 .gate-img{filter:brightness(.8) saturate(.7) sepia(.15)}
+  #gate.dmg-3 .gate-img{filter:brightness(0.38) saturate(0.4) hue-rotate(220deg) sepia(0.15) contrast(1.15)}
+  #gate.dmg-3 .gate-crack-overlay{opacity:1;animation:crackFlicker 2s ease-in-out infinite}
+  @keyframes crackFlicker{0%,100%{opacity:1}50%{opacity:.7}}
 
   .item{filter:drop-shadow(0 0 10px var(--cyan));animation:bob 1.2s ease-in-out infinite}
   .item.normal{width:40px;height:40px;filter:drop-shadow(0 0 8px #b4c4d8)}
@@ -464,10 +486,10 @@
     url('AS_Assets/bg/castle_gate.png') center/cover no-repeat;
     overflow:hidden;justify-content:center;padding-bottom:30px}
   /* 발키리 실루엣 */
-  .title-valk{position:absolute;right:60px;bottom:-20px;height:92%;z-index:1;opacity:.35;
-    filter:drop-shadow(0 0 30px rgba(0,229,255,.3));pointer-events:none;
-    mask-image:linear-gradient(to top,rgba(0,0,0,1) 50%,rgba(0,0,0,.6) 80%,transparent 100%);
-    -webkit-mask-image:linear-gradient(to top,rgba(0,0,0,1) 50%,rgba(0,0,0,.6) 80%,transparent 100%)}
+  .title-valk{position:absolute;right:40px;bottom:-10px;height:88%;z-index:1;opacity:.72;
+    filter:drop-shadow(0 0 40px rgba(0,229,255,.5)) drop-shadow(0 0 80px rgba(0,160,255,.25));pointer-events:none;
+    mask-image:linear-gradient(to top,rgba(0,0,0,1) 60%,rgba(0,0,0,.8) 85%,transparent 100%);
+    -webkit-mask-image:linear-gradient(to top,rgba(0,0,0,1) 60%,rgba(0,0,0,.8) 85%,transparent 100%)}
   /* 파티클 오버레이 */
   .title-particles{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
   .title-particle{position:absolute;border-radius:50%;
@@ -1065,7 +1087,7 @@
   @keyframes btnShine{0%{transform:translateX(-100%)}30%{transform:translateX(100%)}100%{transform:translateX(100%)}}
 
   /* ═══ v1.0.2: 인월드 수문 HP 바 ═══ */
-  #gateHpBar{position:absolute;left:50%;transform:translateX(-50%);bottom:120px;width:120px;z-index:6;pointer-events:none;text-align:center}
+  #gateHpBar{position:absolute;left:50%;transform:translateX(-50%);bottom:148px;width:130px;z-index:6;pointer-events:none;text-align:center}
   #gateHpBar .ghp-val{font-family:'Outfit',sans-serif;font-size:9px;color:#fff;font-weight:900;text-shadow:0 1px 2px #000;margin-bottom:1px}
   #gateHpBar .ghp-track{width:100%;height:6px;background:rgba(0,0,0,.6);border:1px solid rgba(0,229,255,.4);border-radius:4px;overflow:hidden;position:relative}
   #gateHpBar .ghp-fill{height:100%;transition:width .2s,background .2s;box-shadow:inset 0 2px 4px rgba(255,255,255,.25)}
@@ -1630,13 +1652,14 @@
   <!-- 수문 -->
   <div id="gate">
     <div class="barrier"></div>
-    <img class="gate-img" id="gateImg" src="AS_Assets/gate/gate_100.png" alt="">
+    <img class="gate-img" id="gateImg" src="AS_Assets/gate/gate_front.png" alt="">
+    <div class="gate-crack-overlay"></div>
     <div class="gate-smoke"></div>
     <div class="gate-embers-fx" id="gateEmbersFx"></div>
   </div>
   <div id="gateEmbers"></div>
   <!-- Wave 진행 링 (v0.9.7: 제거 — 상단 HUD 타이머로 일원화) -->
-  <div id="gateLabel">수문</div>
+  <div id="gateLabel">성문</div>
   <!-- v1.0.2: 인월드 수문 HP 바 -->
   <div id="gateHpBar">
     <div class="ghp-val"><span class="ghp-icons" style="font-size:12px;margin-right:2px"><span class="ghp-fixed-ico">🏰</span></span><span id="gateHpText">1,500</span>/<span id="gateHpMaxText">1,500</span></div>
@@ -1808,7 +1831,7 @@
     <!-- 배경 파티클 -->
     <div class="title-particles" id="titleParticles"></div>
     <!-- 발키리 실루엣 -->
-    <img class="title-valk" src="AS_Assets/characters/valkyrie.png" alt="">
+    <img class="title-valk" src="AS_Assets/characters/valkyrie_illust.png" alt="">
     <!-- 컨텐츠 -->
     <div class="title-en title-anim" style="animation-delay:.1s">ABYSSAL SIEGE</div>
     <h1 class="title-anim" style="animation-delay:.25s;font-size:64px;margin-top:-4px">심해 습격</h1>
@@ -1919,6 +1942,22 @@ const ASSET='AS_Assets/';
   }
 })();
 const GC_VALKYRIE='AS_Assets/characters/valkyrie.png';
+
+// === GC 리소스 프리로드 ===
+const GC_FX={};
+[
+  ['spear',  'AS_Assets/skills/gc_valk_spear.png'],
+  ['shield', 'AS_Assets/skills/gc_valk_shield.png'],
+  ['wings',  'AS_Assets/skills/gc_valk_wings.png'],
+  ['spirit', 'AS_Assets/skills/gc_valk_spirit.png'],
+  ['swords', 'AS_Assets/skills/gc_valk_swords.png'],
+  ['lightning','AS_Assets/effects/fx_lightning.png'],
+  ['shine',   'AS_Assets/effects/fx_shine_splash.png'],
+  ['glow',    'AS_Assets/effects/fx_glow.png'],
+  ['shine2',  'AS_Assets/effects/fx_shine.png'],
+  ['shine3',  'AS_Assets/effects/fx_shine2.png'],
+  ['circle',  'AS_Assets/effects/fx_circle.png'],
+].forEach(([k,src])=>{ const img=new Image(); img.src=src; GC_FX[k]=img; });
 
 // === 사운드 시스템 (Web Audio API 합성) ===
 let _audioCtx=null;
@@ -2555,11 +2594,11 @@ const CARD_POOL=[
   /* ── 일반 (회색, 4종) ── */
   {id:'sword_mastery',  name:'투검 숙련',      rarity:'일반', kind:'hero', icon:'AS_Assets/skills/card_sword_mastery.png', desc:'기본 공격 강화',
     stats:[{icon:'⚔',label:'공격력',val:'+15%'}], maxStack:5, apply:()=>{ player.swordDmg*=1.15 }},
-  {id:'swift_throw',    name:'질풍 투척',       rarity:'일반', kind:'hero', icon:'AS_Assets/skills/card_swift_throw.png', desc:'검 투척 속도 증가',
+  {id:'swift_throw',    name:'질풍 투척',       rarity:'일반', kind:'hero', icon:'AS_Assets/skills/gc_valk_spear.png', desc:'검 투척 속도 증가',
     stats:[{icon:'⏱',label:'공속',val:'+20%'}], maxStack:5, apply:()=>{ player.attackInterval*=0.833 }},
   {id:'light_armor',    name:'경량 갑주',       rarity:'일반', kind:'hero', icon:'AS_Assets/skills/card_light_armor.png', desc:'이동속도 증가',
     stats:[{icon:'🏃',label:'이동속도',val:'+15%'}], maxStack:4, apply:()=>{ player.speed*=1.15 }},
-  {id:'valkyrie_heart', name:'발키리의 심장',   rarity:'일반', kind:'hero', icon:'AS_Assets/skills/card_valkyrie_heart.png', desc:'가호 게이지 최대치 증가',
+  {id:'valkyrie_heart', name:'발키리의 심장',   rarity:'일반', kind:'hero', icon:'AS_Assets/skills/gc_valk_spirit.png', desc:'가호 게이지 최대치 증가',
     stats:[{icon:'✨',label:'가호 최대치',val:'+20'},{icon:'✨',label:'즉시 회복',val:'+20'}], maxStack:3, apply:()=>{ state.gaugeMax+=20; state.gauge=Math.min(state.gaugeMax,state.gauge+20) }},
 
   /* ── 고급 (녹색, 3종) ── */
@@ -2579,13 +2618,13 @@ const CARD_POOL=[
     stats:[{icon:'💎',label:'회복량',val:'+50%'}], maxStack:3, apply:()=>{ player.orbMultiplier=(player.orbMultiplier||1)*1.5 }},
 
   /* ── 고유 (보라, 2종) ── */
-  {id:'double_throw',   name:'이중 투척',       rarity:'고유', kind:'hero', icon:'AS_Assets/skills/card_double_throw.png', desc:'동시 2연발 투척',
+  {id:'double_throw',   name:'이중 투척',       rarity:'고유', kind:'hero', icon:'AS_Assets/skills/gc_valk_swords.png', desc:'동시 2연발 투척',
     stats:[{icon:'⚡',label:'투사체',val:'2개'}], maxStack:1, apply:()=>{ player.projectileCount=2 }},
-  {id:'holy_aegis',     name:'가호의 각인',     rarity:'고유', kind:'hero', icon:'AS_Assets/skills/card_holy_aegis.png', desc:'피격 시 20% 확률로 가호를 소모하지 않음',
+  {id:'holy_aegis',     name:'가호의 각인',     rarity:'고유', kind:'hero', icon:'AS_Assets/skills/gc_valk_shield.png', desc:'피격 시 20% 확률로 가호를 소모하지 않음',
     stats:[{icon:'🛡',label:'방어 확률',val:'20%'}], maxStack:1, apply:()=>{ player.aegisChance=(player.aegisChance||0)+0.20 }},
 
   /* ── 전설 (주황, 1종) ── */
-  {id:'valk_awakening', name:'발키리의 각성',   rarity:'전설', kind:'hero', icon:'AS_Assets/skills/card_valk_awakening.png', desc:'검 투척이 적을 관통하며 사거리와 위력이 극대화된다.',
+  {id:'valk_awakening', name:'발키리의 각성',   rarity:'전설', kind:'hero', icon:'AS_Assets/skills/gc_valk_wings.png', desc:'검 투척이 적을 관통하며 사거리와 위력이 극대화된다.',
     stats:[{icon:'⚔',label:'피해',val:'+50%'},{icon:'📐',label:'사거리',val:'최대화'},{icon:'↗',label:'관통',val:'활성화'}], maxStack:1, apply:()=>{ player.projectilePierce=true; player.swordDmg*=1.50; player.attackRange=Math.max(player.attackRange,600) }},
 ];
 const RARITY_WEIGHTS={ '일반':50, '고급':28, '희귀':15, '고유':6, '전설':1 };
@@ -3379,8 +3418,10 @@ function chainLightningFX(x1,y1,x2,y2,isSrc=false){
     });
   }
   _lightningSegs.push({pts, start:performance.now(), dur:220, isSrc, tx:x2, ty:y2});
-  // 번개 타격 임팩트 플래시 (타겟 위치)
+  // 번개 타격 임팩트 — 기존 플래시 + GC lightning 텍스처
   spawnHitFlash(x2,y2,'rgba(224,64,251,');
+  spawnGCLightFx(x2, y2, 88);
+  if(isSrc) spawnGCGlowFx(x1, y1, 50, 0.5);
 }
 
 function mortarExplosion(x,y,R,color='#ffb347'){
@@ -3410,6 +3451,9 @@ function mortarExplosion(x,y,R,color='#ffb347'){
   // 폭발 파티클
   const pColor=isSiege?'rgba(255,130,20,':'rgba(255,160,40,';
   for(let i=0;i<(isSiege?30:20);i++) particles.push({x,y,vx:(Math.random()-.5)*320,vy:-80-Math.random()*200,life:.6,size:3+Math.random()*5,color:pColor});
+  // GC shine 이펙트 (폭발 중심)
+  spawnGCShineFx(x, y, isSiege?110:80, isSiege?'#ff9800':'#ffb060');
+  spawnGCGlowFx(x, y, isSiege?100:70, 0.65);
 }
 
 function renderHudCards(){
@@ -3891,6 +3935,13 @@ function dealDamage(e,dmg,crit=false){
   e.hp-=dmg;
   if(e._hpFill) e._hpFill.style.width=Math.max(0,(e.hp/e.hpMax)*100)+'%';
   spawnDamageNumber(e.x,e.y-e.r,dmg,crit);
+  // GC 피격 이펙트 — shine_splash 스프라이트
+  if(crit){
+    spawnGCShineFx(e.x, e.y, 90);          // 치명타: 큰 shine
+    spawnGCGlowFx(e.x, e.y, 70, 0.6);      // glow 오버레이
+  } else {
+    spawnGCShineFx(e.x, e.y, 52);          // 일반: 작은 shine
+  }
   // 피격 연출: 백색 플래시 + 미세 흔들림
   if(e.el){
     e.el.classList.remove('e-hit'); void e.el.offsetWidth; e.el.classList.add('e-hit');
@@ -4218,9 +4269,9 @@ function spawnDamageNumber(x,y,amount,crit){
   setTimeout(()=>{if(el.parentNode)el.parentNode.removeChild(el)}, crit?1000:900);
 }
 
-// 수문 이미지 맵 (HP 단계별) + 프리로드
-const GATE_IMAGES=['AS_Assets/gate/gate_100.png','AS_Assets/gate/gate_60.png','AS_Assets/gate/gate_30.png','AS_Assets/gate/gate_danger.png'];
-GATE_IMAGES.forEach(src=>{const img=new Image();img.src=src;});
+// 수문 단일 GC 이미지 (CSS/이펙트로 HP단계 표현)
+const GATE_IMAGES=['AS_Assets/gate/gate_front.png'];
+{const img=new Image();img.src=GATE_IMAGES[0];}
 let _prevGateImgStage=-1;
 
 function updateGateDamage(){
@@ -4234,12 +4285,12 @@ function updateGateDamage(){
   const gateEl=document.getElementById('gate');
   const gateImg=document.getElementById('gateImg');
   if(gateEl && newStage!==_prevGateImgStage){
-    // CSS 단계 클래스 교체
+    // CSS 단계 클래스 교체 (이미지는 단일 GC 에셋 유지)
     gateEl.classList.remove('dmg-1','dmg-2','dmg-3');
     if(newStage>0) gateEl.classList.add('dmg-'+newStage);
-    // 이미지 교체 (페이드 효과는 CSS transition으로)
-    if(gateImg && GATE_IMAGES[newStage]){
-      gateImg.src=GATE_IMAGES[newStage];
+    // 단계 전환 시 균열 플래시 이펙트
+    if(newStage>_prevGateImgStage && newStage>0){
+      spawnGCShineFx(W/2, H-110, newStage===3?120:80, newStage===3?'#ff6040':'#ffb060');
     }
     _prevGateImgStage=newStage;
   }
@@ -4257,8 +4308,8 @@ function updateGateDamage(){
       });
     }
     state.gateDamageStage=newStage;
-    const msgs=['','수문에 균열 발생!','수문 심각하게 손상!','수문 붕괴 직전!'];
-    pushBattleLog(msgs[newStage]||`수문 손상도 ${[0,25,50,75][newStage]}% 도달!`);
+    const msgs=['','성문에 균열 발생!','성문 심각하게 손상!','성문 붕괴 직전!'];
+    pushBattleLog(msgs[newStage]||`성문 손상도 ${[0,25,50,75][newStage]}% 도달!`);
   }
 }
 
@@ -5370,6 +5421,23 @@ const _hitFlashes=[];
 function spawnHitFlash(x,y,color){
   _hitFlashes.push({x,y,color,life:1});
 }
+
+// === GC 이펙트 텍스처 렌더링 시스템 ===
+// shine_splash: 4열×2행 스프라이트시트 (256×128 or similar)
+const _gcShineFxs=[];
+function spawnGCShineFx(x,y,sz,tint){
+  _gcShineFxs.push({x,y,sz:sz||64,life:1,tint:tint||null,col:Math.floor(Math.random()*4)});
+}
+// lightning: 4열×2행 스프라이트시트
+const _gcLightFxs=[];
+function spawnGCLightFx(x,y,sz){
+  _gcLightFxs.push({x,y,sz:sz||80,life:1,col:Math.floor(Math.random()*4)});
+}
+// glow 오버레이 이펙트
+const _gcGlowFxs=[];
+function spawnGCGlowFx(x,y,sz,alpha){
+  _gcGlowFxs.push({x,y,sz:sz||60,life:1,alpha:alpha||0.7});
+}
 function renderFx(dt){
   ctx.clearRect(0,0,W,H);
   // ── 뇌격 마법진 번개 렌더링 (clearRect 직후, 동일 프레임 내에서 그려야 보임) ──
@@ -5417,6 +5485,54 @@ function renderFx(dt){
     ctx.beginPath(); ctx.arc(f.x,f.y,24,0,Math.PI*2); ctx.fill();
     ctx.restore();
   }
+  // ── GC 이펙트: shine_splash (4×2 스프라이트시트) ──
+  if(GC_FX.shine?.complete && GC_FX.shine.naturalWidth>0){
+    const sw4=GC_FX.shine.naturalWidth/4, sh2=GC_FX.shine.naturalHeight/2;
+    for(let i=_gcShineFxs.length-1;i>=0;i--){
+      const f=_gcShineFxs[i];
+      f.life-=dt*5;
+      if(f.life<=0){_gcShineFxs.splice(i,1);continue;}
+      const frame=Math.min(7,Math.floor((1-f.life)*8)+f.col)%8;
+      const sc=frame%4, sr=Math.floor(frame/4);
+      ctx.save();
+      ctx.globalAlpha=f.life*0.88;
+      ctx.globalCompositeOperation='screen';
+      ctx.drawImage(GC_FX.shine,sc*sw4,sr*sh2,sw4,sh2,f.x-f.sz/2,f.y-f.sz/2,f.sz,f.sz);
+      ctx.globalCompositeOperation='source-over';
+      ctx.restore();
+    }
+  }
+  // ── GC 이펙트: lightning (4×2 스프라이트시트) ──
+  if(GC_FX.lightning?.complete && GC_FX.lightning.naturalWidth>0){
+    const lw4=GC_FX.lightning.naturalWidth/4, lh2=GC_FX.lightning.naturalHeight/2;
+    for(let i=_gcLightFxs.length-1;i>=0;i--){
+      const f=_gcLightFxs[i];
+      f.life-=dt*6;
+      if(f.life<=0){_gcLightFxs.splice(i,1);continue;}
+      const frame=(f.col+Math.floor((1-f.life)*5))%8;
+      const lc=frame%4, lr=Math.floor(frame/4);
+      ctx.save();
+      ctx.globalAlpha=f.life*0.85;
+      ctx.globalCompositeOperation='screen';
+      ctx.drawImage(GC_FX.lightning,lc*lw4,lr*lh2,lw4,lh2,f.x-f.sz/2,f.y-f.sz*0.75,f.sz,f.sz*1.5);
+      ctx.globalCompositeOperation='source-over';
+      ctx.restore();
+    }
+  }
+  // ── GC 이펙트: glow 오버레이 ──
+  if(GC_FX.glow?.complete && GC_FX.glow.naturalWidth>0){
+    for(let i=_gcGlowFxs.length-1;i>=0;i--){
+      const f=_gcGlowFxs[i];
+      f.life-=dt*4;
+      if(f.life<=0){_gcGlowFxs.splice(i,1);continue;}
+      ctx.save();
+      ctx.globalAlpha=f.life*f.alpha;
+      ctx.globalCompositeOperation='screen';
+      ctx.drawImage(GC_FX.glow,f.x-f.sz/2,f.y-f.sz/2,f.sz,f.sz);
+      ctx.globalCompositeOperation='source-over';
+      ctx.restore();
+    }
+  }
   for(const p of projectiles){
     ctx.save();
     ctx.translate(p.x,p.y); ctx.rotate(p.angle);
@@ -5432,6 +5548,14 @@ function renderFx(dt){
     ctx.beginPath();ctx.moveTo(-len-4,0);ctx.lineTo(len-2,0);ctx.stroke();
     ctx.fillStyle=col;
     ctx.beginPath();ctx.arc(len-2,0,p.pierce?6:(p.crit?5:3),0,Math.PI*2);ctx.fill();
+    // GC glow 텍스처 — 투사체 선단에 오버레이
+    if(GC_FX.glow?.complete && GC_FX.glow.naturalWidth>0){
+      const gsz=p.pierce?36:(p.crit?28:20);
+      ctx.globalAlpha=0.5;
+      ctx.globalCompositeOperation='screen';
+      ctx.drawImage(GC_FX.glow, len-gsz/2-4, -gsz/2, gsz, gsz);
+      ctx.globalCompositeOperation='source-over';
+    }
     ctx.restore();
   }
   for(const p of particles){
