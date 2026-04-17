@@ -149,12 +149,14 @@
     border:2px solid rgba(157,123,255,.3);animation:inkPulse 1.5s ease-in-out infinite}
   @keyframes inkPulse{0%,100%{box-shadow:0 0 12px rgba(80,0,120,.3)}50%{box-shadow:0 0 24px rgba(120,0,180,.5)}}
   /* 보스 투사체 */
-  .boss-proj{position:absolute;width:14px;height:14px;transform:translate(-50%,-50%);pointer-events:none;z-index:6;
-    border-radius:50%;background:radial-gradient(circle,rgba(200,160,255,.9),rgba(120,0,180,.6));
-    box-shadow:0 0 12px rgba(157,123,255,.9),0 0 24px rgba(120,0,180,.5);
-    animation:bpGlow .6s ease-in-out infinite alternate}
-  .boss-proj.big{width:22px;height:22px;background:radial-gradient(circle,rgba(255,100,130,.95),rgba(180,0,60,.6));
-    box-shadow:0 0 14px rgba(255,77,109,.9),0 0 28px rgba(180,0,60,.5)}
+  .boss-proj{position:absolute;width:18px;height:18px;transform:translate(-50%,-50%);pointer-events:none;z-index:6;
+    border-radius:50%;
+    background:radial-gradient(circle,#fff 18%,rgba(80,220,255,.95) 45%,rgba(0,160,230,.6) 100%);
+    box-shadow:0 0 10px 4px rgba(0,200,255,.9),0 0 22px 6px rgba(0,120,255,.6),0 0 36px 8px rgba(80,200,255,.3);
+    animation:bpGlow .45s ease-in-out infinite alternate}
+  .boss-proj.big{width:28px;height:28px;
+    background:radial-gradient(circle,#fff 15%,rgba(255,180,80,.98) 40%,rgba(220,60,0,.7) 100%);
+    box-shadow:0 0 12px 5px rgba(255,150,0,.95),0 0 28px 8px rgba(220,80,0,.6),0 0 44px 10px rgba(255,100,0,.3)}
   @keyframes bpGlow{0%{opacity:.8;transform:translate(-50%,-50%) scale(.88)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}}
   /* 마법 박격포 포탄 */
   .mortar-shell{position:absolute;width:14px;height:14px;border-radius:50%;
@@ -222,7 +224,7 @@
     text-shadow:0 1px 2px #000}
 
   /* 수문 — GC 관문 (AI 배경 제거 완료, 투명 PNG) */
-  #gate{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);width:340px;height:230px;
+  #gate{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);width:310px;height:210px;
     pointer-events:none;z-index:2;transition:box-shadow .6s;overflow:visible}
   #gate .gate-img{
     width:100%;height:100%;
@@ -900,10 +902,18 @@
   #hudCards .c-row.r-violet{border-left:2px solid var(--purple)}
   #hudCards .c-ico{font-size:14px}
   #hudCards .c-nm{flex:1;font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #hudCards .c-row.r-gray .c-nm{color:#bdbdbd}
+  #hudCards .c-row.r-green .c-nm{color:#81c784}
+  #hudCards .c-row.r-blue .c-nm{color:#64b5f6}
+  #hudCards .c-row.r-orange .c-nm{color:#ffb74d}
   #hudCards .c-row.r-teal .c-nm{color:#26ffe9}
   #hudCards .c-row.r-amber .c-nm{color:#ffb830}
   #hudCards .c-row.r-violet .c-nm{color:#9d7bff}
   #hudCards .c-stk{font-family:'Outfit',sans-serif;font-size:10px;font-weight:900}
+  #hudCards .c-row.r-gray .c-stk{color:#bdbdbd}
+  #hudCards .c-row.r-green .c-stk{color:#81c784}
+  #hudCards .c-row.r-blue .c-stk{color:#64b5f6}
+  #hudCards .c-row.r-orange .c-stk{color:#ffb74d}
   #hudCards .c-row.r-teal .c-stk{color:#26ffe9}
   #hudCards .c-row.r-amber .c-stk{color:#ffb830}
   #hudCards .c-row.r-violet .c-stk{color:#9d7bff}
@@ -1025,76 +1035,65 @@
 
   .panel,.btn,.draft-card,.skill-btn,.fslot .slot-ring,.dmg,.fly-rsc{transition-timing-function:cubic-bezier(.2,.8,.2,1)}
 
-  /* ═══ 결과 화면 — v1.7 전면 리디자인 ═══ */
-  #resultScreen{flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;
-    position:relative;overflow-y:auto;overflow-x:hidden;padding:20px 0 30px;scrollbar-width:none}
-  #resultScreen::-webkit-scrollbar{display:none}
+  /* ═══ 결과 화면 — v2.4 컴팩트 리디자인 (스크롤 없이 720px 내 전체 표시) ═══ */
+  #resultScreen{flex-direction:column!important;align-items:center!important;justify-content:center!important;
+    position:relative;overflow:hidden;padding:14px 12px;gap:0}
   #resultScreen::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0}
-  #resultScreen.defeat::before{background:radial-gradient(ellipse at center,transparent 30%,rgba(180,20,40,.25) 100%)}
-  #resultScreen.victory::before{background:radial-gradient(ellipse at center,rgba(255,216,107,.06) 0%,transparent 60%)}
+  #resultScreen.defeat::before{background:radial-gradient(ellipse at center,transparent 25%,rgba(180,20,40,.28) 100%)}
+  #resultScreen.victory::before{background:radial-gradient(ellipse at center,rgba(255,216,107,.08) 0%,transparent 60%)}
   #resultScreen>*{position:relative;z-index:1}
-  /* 타이틀 */
-  #resultScreen h1{font-family:'Outfit',sans-serif;font-size:42px;font-weight:900;letter-spacing:.12em;
-    margin-bottom:2px;text-shadow:0 0 40px currentColor,0 4px 20px rgba(0,0,0,.8)}
-  #resultScreen .sub{font-size:13px;color:#9cd8ff;margin-bottom:8px;opacity:.8}
-  /* 등급 — 대형 중앙 focal point */
-  .result-grade{font-family:'Outfit',sans-serif;font-size:120px;font-weight:900;letter-spacing:.06em;line-height:1;
-    text-shadow:0 0 60px currentColor,0 0 120px currentColor,0 6px 24px rgba(0,0,0,.7);
-    opacity:0;transform:scale(.3);transition:none;margin:4px 0}
-  .result-grade.reveal{opacity:1;transform:scale(1);animation:gradeReveal .6s cubic-bezier(.2,.8,.2,1) forwards}
+  /* ── 타이틀 + 서브 ── */
+  #resultScreen h1{font-family:'Outfit',sans-serif;font-size:34px;font-weight:900;letter-spacing:.14em;
+    margin:0 0 2px;text-shadow:0 0 36px currentColor,0 3px 16px rgba(0,0,0,.8);line-height:1}
+  #resultScreen .sub{font-size:11px;color:#9cd8ff;margin:0 0 6px;opacity:.8}
+  /* ── 등급 + 점수 가로 배치 ── */
+  .result-top-row{display:flex;align-items:center;justify-content:center;gap:20px;width:100%;max-width:540px;margin:0 0 6px}
+  .result-grade{font-family:'Outfit',sans-serif;font-size:86px;font-weight:900;letter-spacing:.04em;line-height:1;
+    text-shadow:0 0 50px currentColor,0 0 100px currentColor,0 4px 20px rgba(0,0,0,.7);
+    opacity:0;transform:scale(.3);transition:none;flex-shrink:0}
+  .result-grade.reveal{opacity:1;transform:scale(1);animation:gradeReveal .5s cubic-bezier(.2,.8,.2,1) forwards}
   @keyframes gradeReveal{
-    0%{opacity:0;transform:scale(.3);filter:blur(12px)}
-    50%{opacity:1;transform:scale(1.15);filter:blur(0)}
+    0%{opacity:0;transform:scale(.3);filter:blur(10px)}
+    50%{opacity:1;transform:scale(1.12);filter:blur(0)}
     100%{opacity:1;transform:scale(1);filter:blur(0)}
   }
   .grade-S{color:#ffd86b;animation:gradeGlow 2s ease-in-out infinite alternate}
   .grade-A{color:#9d7bff} .grade-B{color:#26ffe9} .grade-C{color:#ffb830} .grade-D{color:#ff4d6d}
-  @keyframes gradeGlow{0%{text-shadow:0 0 60px #ffd86b,0 0 120px #ffd86b}100%{text-shadow:0 0 80px #ffe88c,0 0 160px #ffd86b,0 0 240px rgba(255,216,107,.3)}}
-  /* 점수 */
-  .result-score{font-family:'Outfit',sans-serif;font-size:36px;font-weight:900;color:#fff;
-    text-shadow:0 0 16px rgba(255,255,255,.3);letter-spacing:.08em;margin-bottom:16px}
-  .result-score .label{font-size:10px;color:rgba(156,216,255,.6);letter-spacing:.2em;display:block;margin-bottom:2px;font-weight:700}
-  /* 스탯 — 주요 2개 대형 + 보조 4개 소형 */
-  .result-stats{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:520px}
-  .result-stats-primary{display:flex;gap:12px;width:100%;justify-content:center}
-  .result-stats-primary .it{flex:1;max-width:200px;background:rgba(5,18,34,.6);
-    border:1px solid rgba(0,229,255,.25);border-radius:12px;padding:14px 12px;text-align:center;
-    backdrop-filter:blur(4px);position:relative;overflow:hidden}
-  .result-stats-primary .it::before{content:'';position:absolute;inset:0;
-    background:linear-gradient(135deg,rgba(0,229,255,.04),transparent);pointer-events:none}
-  .result-stats-primary .it .v{font-family:'Outfit',sans-serif;font-size:32px;color:#fff;font-weight:900;
-    text-shadow:0 0 10px rgba(0,229,255,.4)}
-  .result-stats-primary .it .l{font-size:10px;color:#7cb8d8;margin-top:4px;letter-spacing:.08em;font-weight:500}
-  .result-stats-secondary{display:flex;gap:8px;width:100%;justify-content:center}
-  .result-stats-secondary .it{flex:1;max-width:120px;background:rgba(5,18,34,.4);
-    border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 6px;text-align:center}
-  .result-stats-secondary .it .v{font-family:'Outfit',sans-serif;font-size:16px;color:rgba(255,255,255,.85);font-weight:700}
-  .result-stats-secondary .it .l{font-size:9px;color:rgba(156,216,255,.5);margin-top:2px;letter-spacing:.06em}
-  /* 최고 기록 표시 */
-  .result-best{font-family:'Outfit',sans-serif;font-size:11px;color:var(--gold);font-weight:700;
-    letter-spacing:.1em;margin-top:4px;opacity:0;animation:fadeSlideUp .4s .9s forwards}
+  @keyframes gradeGlow{0%{text-shadow:0 0 50px #ffd86b,0 0 100px #ffd86b}100%{text-shadow:0 0 70px #ffe88c,0 0 140px #ffd86b,0 0 200px rgba(255,216,107,.3)}}
+  .result-score-block{display:flex;flex-direction:column;align-items:flex-start}
+  .result-score{font-family:'Outfit',sans-serif;font-size:32px;font-weight:900;color:#fff;
+    text-shadow:0 0 14px rgba(255,255,255,.3);letter-spacing:.06em;line-height:1;margin:0}
+  .result-score .label{font-size:9px;color:rgba(156,216,255,.6);letter-spacing:.2em;display:block;margin-bottom:2px;font-weight:700}
+  .result-best{font-family:'Outfit',sans-serif;font-size:10px;color:var(--gold);font-weight:700;
+    letter-spacing:.08em;margin-top:3px;opacity:0;animation:fadeSlideUp .4s .9s forwards}
   .result-best.new-record{color:#ffd86b;animation:fadeSlideUp .4s .9s forwards,pulseGold 1.5s 1.3s ease-in-out infinite}
-  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
   @keyframes pulseGold{0%,100%{opacity:1}50%{opacity:.6}}
-  /* ═══ 보상 섹션 ═══ */
-  .result-reward{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max-width:520px;margin-top:10px;
+  /* ── 스탯 — 가로 6칸 한 줄 ── */
+  .result-stats{display:flex;gap:6px;width:100%;max-width:560px;margin:0 0 8px;justify-content:center}
+  .result-stats .it{flex:1;background:rgba(5,18,34,.55);border:1px solid rgba(0,229,255,.18);
+    border-radius:8px;padding:7px 4px;text-align:center;min-width:0}
+  .result-stats .it .v{font-family:'Outfit',sans-serif;font-size:16px;color:#fff;font-weight:900;
+    text-shadow:0 0 8px rgba(0,229,255,.35);line-height:1}
+  .result-stats .it .l{font-size:8px;color:#7cb8d8;margin-top:3px;letter-spacing:.05em;white-space:nowrap}
+  /* ── 보상 ── */
+  .result-reward{display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;max-width:540px;margin:0 0 10px;
     opacity:0;animation:fadeSlideUp .4s 1.1s forwards}
-  .result-reward-label{font-size:10px;color:rgba(156,216,255,.5);letter-spacing:.2em;font-weight:700;margin-bottom:2px}
-  .result-reward-items{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-  .result-reward-item{display:flex;flex-direction:column;align-items:center;gap:4px;
-    background:rgba(5,18,34,.6);border:1px solid rgba(255,216,107,.25);border-radius:10px;
-    padding:10px 14px;min-width:80px;position:relative}
-  .result-reward-item.soulstone{border-color:rgba(0,229,255,.35);
-    box-shadow:0 0 12px rgba(0,229,255,.15) inset}
-  .result-reward-item img{width:40px;height:40px;object-fit:contain}
-  .result-reward-item .ri-name{font-size:10px;color:rgba(156,216,255,.7);letter-spacing:.05em;white-space:nowrap}
-  .result-reward-item .ri-qty{font-family:'Outfit',sans-serif;font-size:18px;font-weight:900;color:#ffd86b;
-    text-shadow:0 0 8px rgba(255,216,107,.5)}
-  .result-reward-item.soulstone .ri-qty{color:#00e5ff;text-shadow:0 0 8px rgba(0,229,255,.5)}
-  .result-reward-note{font-size:10px;color:rgba(255,255,255,.35);text-align:center}
-  /* 재도전 버튼 — 강렬한 CTA */
-  #resultScreen .btn{margin-top:20px;padding:14px 48px;font-size:16px;font-weight:900;letter-spacing:.08em;
-    border-radius:12px;border:none;cursor:pointer;position:relative;overflow:hidden;
+  .result-reward-label{font-size:9px;color:rgba(156,216,255,.45);letter-spacing:.2em;font-weight:700}
+  .result-reward-items{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .result-reward-item{display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:rgba(5,18,34,.6);border:1px solid rgba(255,216,107,.22);border-radius:8px;
+    padding:7px 12px;min-width:72px}
+  .result-reward-item.soulstone{border-color:rgba(0,229,255,.32);box-shadow:0 0 10px rgba(0,229,255,.12) inset}
+  .result-reward-item img{width:32px;height:32px;object-fit:contain}
+  .result-reward-item .ri-name{font-size:9px;color:rgba(156,216,255,.7);letter-spacing:.04em;white-space:nowrap}
+  .result-reward-item .ri-qty{font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:#ffd86b;
+    text-shadow:0 0 7px rgba(255,216,107,.5)}
+  .result-reward-item.soulstone .ri-qty{color:#00e5ff;text-shadow:0 0 7px rgba(0,229,255,.5)}
+  .result-reward-note{font-size:9px;color:rgba(255,255,255,.3);text-align:center}
+  /* ── 재도전 버튼 ── */
+  #resultScreen .btn{margin:0;padding:11px 44px;font-size:15px;font-weight:900;letter-spacing:.08em;
+    border-radius:10px;border:none;cursor:pointer;position:relative;overflow:hidden;
     background:linear-gradient(135deg,#f5b942,#e8960a);color:#1a1410;
     box-shadow:0 6px 24px rgba(245,185,66,.4),0 2px 8px rgba(0,0,0,.5);
     transition:transform .15s,box-shadow .15s}
@@ -1678,7 +1677,7 @@
   </div>
   <div id="gateEmbers"></div>
   <!-- Wave 진행 링 (v0.9.7: 제거 — 상단 HUD 타이머로 일원화) -->
-  <div id="gateLabel">성문</div>
+  <div id="gateLabel">수문</div>
   <!-- v1.0.2: 인월드 수문 HP 바 -->
   <div id="gateHpBar">
     <div class="ghp-val"><span class="ghp-icons" style="font-size:12px;margin-right:2px"><span class="ghp-fixed-ico">🏰</span></span><span id="gateHpText">1,500</span>/<span id="gateHpMaxText">1,500</span></div>
@@ -1854,9 +1853,9 @@
     <!-- 컨텐츠 -->
     <div class="title-en title-anim" style="animation-delay:.1s">ABYSSAL SIEGE</div>
     <h1 class="title-anim" style="animation-delay:.25s;font-size:64px;margin-top:-4px">심해 습격</h1>
-    <h2 class="title-anim" style="animation-delay:.4s;font-size:22px;margin-top:4px">발키리, 성 수문을 사수하라</h2>
+    <h2 class="title-anim" style="animation-delay:.4s;font-size:22px;margin-top:4px">발키리, 수문을 사수하라</h2>
     <div class="sub title-anim" style="animation-delay:.55s;font-size:14px;margin-top:8px;opacity:.75">
-      왕국의 <strong>성 수문</strong>이 심해 생물의 습격을 받고 있다.<br>
+      왕국의 <strong>수문</strong>이 심해 생물의 습격을 받고 있다.<br>
       <strong>발키리</strong>가 되어 수문 앞을 지켜내라.
     </div>
     <div class="ctrl-card title-anim" style="animation-delay:.7s">
@@ -1893,22 +1892,24 @@
   <div class="screen hidden" id="resultScreen">
     <h1 id="resultTitle">VICTORY</h1>
     <div class="sub" id="resultSub"></div>
-    <div class="result-grade" id="rsGrade">S</div>
-    <div class="result-score"><span class="label">SCORE</span><span id="rsScore">0</span></div>
-    <div class="result-best" id="rsBest"></div>
-    <div class="result-stats">
-      <div class="result-stats-primary">
-        <div class="it"><div class="v" id="rsKill">0</div><div class="l">처치</div></div>
-        <div class="it"><div class="v" id="rsWave">0</div><div class="l">도달 웨이브</div></div>
-      </div>
-      <div class="result-stats-secondary">
-        <div class="it"><div class="v" id="rsOrb">0</div><div class="l">보주</div></div>
-        <div class="it"><div class="v" id="rsHp">0%</div><div class="l">수문</div></div>
-        <div class="it"><div class="v" id="rsTime">00:00</div><div class="l">시간</div></div>
-        <div class="it"><div class="v" id="rsCrit">0</div><div class="l">크리티컬</div></div>
+    <!-- 등급 + 점수 가로 배치 -->
+    <div class="result-top-row">
+      <div class="result-grade" id="rsGrade">S</div>
+      <div class="result-score-block">
+        <div class="result-score"><span class="label">SCORE</span><span id="rsScore">0</span></div>
+        <div class="result-best" id="rsBest"></div>
       </div>
     </div>
-    <!-- 보상 섹션 -->
+    <!-- 스탯 6칸 한 줄 -->
+    <div class="result-stats">
+      <div class="it"><div class="v" id="rsKill">0</div><div class="l">처치</div></div>
+      <div class="it"><div class="v" id="rsWave">0/7</div><div class="l">웨이브</div></div>
+      <div class="it"><div class="v" id="rsOrb">0</div><div class="l">보주</div></div>
+      <div class="it"><div class="v" id="rsHp">0%</div><div class="l">수문</div></div>
+      <div class="it"><div class="v" id="rsTime">00:00</div><div class="l">시간</div></div>
+      <div class="it"><div class="v" id="rsCrit">0</div><div class="l">크리티컬</div></div>
+    </div>
+    <!-- 보상 -->
     <div class="result-reward" id="resultReward">
       <div class="result-reward-label">REWARD</div>
       <div class="result-reward-items" id="rewardItems"></div>
@@ -2413,7 +2414,7 @@ const particles=[];
 const joystick={active:false,input:{x:0,y:0}};
 
 const player={
-  x:W/2, y:H-180, r:35,
+  x:W/2, y:H-180, r:24,
   vx:0, vy:0,           // 현재 입력 속도(정규화 방향)
   moving:false,
   speed:220,
@@ -2486,6 +2487,13 @@ document.addEventListener('keydown',e=>{
     state.gateHp=0;
     gameOver();
     showToast('⚡ 치트: 강제 패배');
+  }
+  // 치트키: G = 자원 +100
+  if((e.key==='g'||e.key==='G') && (state.phase==='playing'||state.phase==='wavebreak'||state.phase==='carddraft'||state.phase==='facilitydraft')){
+    state.resources=Math.min(state.resources+100, 9999);
+    updateResourceHud();
+    spawnPickupFloat('💰','+100','#ffd86b',W/2,H/2-80);
+    showToast('💰 치트: 자원 +100');
   }
   if((state.phase==='carddraft'||state.phase==='facilitydraft') && (e.key==='1'||e.key==='2'||e.key==='3')){
     const idx=parseInt(e.key)-1;
@@ -3651,8 +3659,8 @@ function showResult(win){
   document.getElementById('resultTitle').textContent=win?'VICTORY':'DEFEAT';
   document.getElementById('resultTitle').style.color=win?'#ffd86b':'#ff4d6d';
   document.getElementById('resultSub').innerHTML=win
-    ? `성 수문이 무사히 지켜졌다.`
-    : `성 수문이 무너졌다.`;
+    ? `수문이 무사히 지켜졌다.`
+    : `수문이 무너졌다.`;
   // 통계 (초기값 0으로 세팅, 카운트업용)
   const mm=Math.floor(state.playElapsed/60).toString().padStart(2,'0');
   const ss=Math.floor(state.playElapsed%60).toString().padStart(2,'0');
@@ -4346,8 +4354,8 @@ function updateGateDamage(){
       });
     }
     state.gateDamageStage=newStage;
-    const msgs=['','성문에 균열 발생!','성문 심각하게 손상!','성문 붕괴 직전!'];
-    pushBattleLog(msgs[newStage]||`성문 손상도 ${[0,25,50,75][newStage]}% 도달!`);
+    const msgs=['','수문에 균열 발생!','수문 심각하게 손상!','수문 붕괴 직전!'];
+    pushBattleLog(msgs[newStage]||`수문 손상도 ${[0,25,50,75][newStage]}% 도달!`);
   }
 }
 
@@ -5055,12 +5063,13 @@ function update(dt){
       }
 
       // ═══ 패턴1: 조준 연사 (P1~) — 발키리에게 2~3발 순차 발사 ═══
-      const shotCD=phase===1?2.2:phase===2?1.8:1.4;
+      const shotCD=phase===1?2.8:phase===2?2.2:1.8;
       if(e._bossShot>=shotCD){
         e._bossShot=0;
         const burstCount=phase>=3?3:2;
+        const snapX=player.x, snapY=player.y;
         for(let b=0;b<burstCount;b++){
-          setTimeout(()=>fireBossProjectile(bx,by,player.x,player.y,190,6,false),b*200);
+          setTimeout(()=>fireBossProjectile(bx,by,snapX,snapY,160,5,false),b*280);
         }
       }
 
