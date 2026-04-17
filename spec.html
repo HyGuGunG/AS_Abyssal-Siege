@@ -617,9 +617,9 @@ footer{
 /* ═══════════════════════════════════════
    SCREENSHOT CAROUSEL
 ═══════════════════════════════════════ */
-.carousel-wrap{position:relative;width:100%;overflow:hidden;border-radius:12px;border:1px solid rgba(0,229,255,.25);background:#000;}
-.carousel-track{display:flex;transition:transform .4s cubic-bezier(.25,.8,.25,1);will-change:transform;touch-action:pan-y pinch-zoom;}
-.carousel-track img{width:100%;height:auto;flex-shrink:0;display:block;object-fit:contain;cursor:grab;}
+.carousel-wrap{position:relative;width:100%;overflow:hidden;border-radius:12px;border:1px solid rgba(0,229,255,.25);background:#000;min-height:340px;}
+.carousel-track{display:flex;height:100%;transition:transform .4s cubic-bezier(.25,.8,.25,1);will-change:transform;touch-action:pan-y pinch-zoom;}
+.carousel-track img{width:100%;min-height:340px;flex-shrink:0;display:block;object-fit:contain;cursor:pointer;}
 .carousel-track img:active{cursor:grabbing;}
 .carousel-btn{
   position:absolute;top:50%;transform:translateY(-50%);z-index:5;
@@ -773,6 +773,34 @@ footer{
   .enemy-grid{grid-template-columns:1fr;}
   .nav-logo-name{font-size:10px;}
 }
+
+/* ═══════════════════════════════════════
+   LIGHTBOX
+═══════════════════════════════════════ */
+#lightbox{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.88);
+  align-items:center;justify-content:center;
+  cursor:pointer;
+  backdrop-filter:blur(6px);
+}
+#lightbox.open{display:flex;}
+#lightbox img{
+  max-width:92vw;max-height:88vh;
+  object-fit:contain;border-radius:12px;
+  box-shadow:0 0 40px rgba(0,229,255,.25);
+  cursor:default;
+}
+#lightbox-close{
+  position:fixed;top:16px;right:22px;
+  font-size:32px;color:#fff;cursor:pointer;
+  line-height:1;opacity:.75;transition:opacity .15s;
+  font-family:sans-serif;user-select:none;
+}
+#lightbox-close:hover{opacity:1;}
+
+/* CONTROLS 표 wrapper */
+.controls-wrap{overflow-x:auto;}
 </style>
 </head>
 <body>
@@ -786,6 +814,12 @@ footer{
     <span class="dl-icon">🎮</span>
     <span>웹에서 바로 플레이</span>
   </a>
+</div>
+
+<!-- 라이트박스 -->
+<div id="lightbox" onclick="closeLightbox()">
+  <span id="lightbox-close" onclick="closeLightbox()">&#x2715;</span>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
 </div>
 
 <!-- 배경 -->
@@ -1119,56 +1153,66 @@ footer{
   <p class="sec-desc"><strong>수문이 화면 하단 중앙에 고정</strong>, 위 · 옆 사방에서 물고기가 수문을 향해 쏟아진다.<br>
   플레이어는 그 사이를 뛰어다니며 막는다.</p>
 
-  <div class="g12r mb12">
-    <!-- 게임 스크린샷 캐러셀 -->
-    <div class="gs6 glass accent-top accent-cyan" style="padding:28px;">
-      <div class="card-label mb12" style="color:var(--cyan)">SCREEN LAYOUT — 실제 게임 화면</div>
-      <div class="carousel-wrap" id="gameCarousel">
-        <div class="carousel-track" id="carouselTrack">
-          <img src="AS_Assets/screenshots/ss_title.png" alt="타이틀 화면" draggable="false">
-          <img src="AS_Assets/screenshots/ss_gameplay.png" alt="게임플레이" draggable="false">
-          <img src="AS_Assets/screenshots/ss_carddraft.png" alt="카드 드래프트" draggable="false">
-          <img src="AS_Assets/screenshots/ss_boss.png" alt="보스전" draggable="false">
-          <img src="AS_Assets/screenshots/ss_result.png" alt="결과 화면" draggable="false">
-        </div>
-        <button class="carousel-btn prev" onclick="moveCarousel(-1)">&#8249;</button>
-        <button class="carousel-btn next" onclick="moveCarousel(1)">&#8250;</button>
+  <!-- SCREEN LAYOUT — 전체 너비 단독 섹션 -->
+  <div class="glass accent-top accent-cyan mb12" style="padding:28px;">
+    <div class="card-label mb12" style="color:var(--cyan)">SCREEN LAYOUT — 실제 게임 화면 <span style="font-size:10px;color:var(--muted);font-weight:400;">(이미지 클릭 시 크게 보기)</span></div>
+    <div class="carousel-wrap" id="gameCarousel">
+      <div class="carousel-track" id="carouselTrack">
+        <img src="AS_Assets/screenshots/ss_title.png" alt="타이틀 화면" draggable="false" onclick="openLightbox(this)">
+        <img src="AS_Assets/screenshots/ss_gameplay.png" alt="게임플레이" draggable="false" onclick="openLightbox(this)">
+        <img src="AS_Assets/screenshots/ss_carddraft.png" alt="카드 드래프트" draggable="false" onclick="openLightbox(this)">
+        <img src="AS_Assets/screenshots/ss_boss.png" alt="보스전" draggable="false" onclick="openLightbox(this)">
+        <img src="AS_Assets/screenshots/ss_result.png" alt="결과 화면" draggable="false" onclick="openLightbox(this)">
       </div>
-      <div class="carousel-dots" id="carouselDots"></div>
-      <div class="carousel-label" id="carouselLabel">타이틀 화면</div>
+      <button class="carousel-btn prev" onclick="moveCarousel(-1)">&#8249;</button>
+      <button class="carousel-btn next" onclick="moveCarousel(1)">&#8250;</button>
     </div>
+    <div class="carousel-dots" id="carouselDots"></div>
+    <div class="carousel-label" id="carouselLabel">타이틀 화면</div>
+  </div>
 
-    <div class="gs6 glass accent-top accent-amber" style="padding:28px;">
-      <div class="card-label mb12" style="color:var(--amber)">CONTROLS</div>
-      <div class="card-label mb8" style="color:var(--muted);font-size:10px;">⌨ PC</div>
+  <!-- CONTROLS — 통합 표 -->
+  <div class="glass accent-top accent-amber mb12" style="padding:28px;">
+    <div class="card-label mb12" style="color:var(--amber)">CONTROLS</div>
+    <div class="controls-wrap">
       <table class="tbl mb12">
-        <thead><tr><th style="width:36%">조작</th><th>설명</th></tr></thead>
+        <thead>
+          <tr>
+            <th style="width:28%">조작</th>
+            <th>⌨ PC</th>
+            <th>📱 모바일</th>
+          </tr>
+        </thead>
         <tbody>
-          <tr><td><strong>WASD 키</strong></td><td>발키리 상하좌우 이동<br><span style="font-size:12px;opacity:.6">아이템 근접 시 자동 수집</span></td></tr>
-          <tr><td><strong>자동 검 투척</strong></td><td>사거리 내 최근접 적 자동 조준 · 발사<br><span style="font-size:12px;opacity:.6">유저 입력 불필요 — 위치 선택이 전략</span></td></tr>
-          <tr><td><strong>Shift — 질주</strong></td><td>방향 대시 + 0.2초 무적<br><span style="font-size:12px;opacity:.6">쿨타임 3초 (독립 쿨다운)</span></td></tr>
-          <tr><td><strong>E — 충격파</strong></td><td>360° 충격파 — 주변 적 전체 밀어냄 + 90 피해<br><span style="font-size:12px;opacity:.6">쿨타임 18초 (독립 쿨다운)</span></td></tr>
+          <tr>
+            <td><strong>이동</strong></td>
+            <td>WASD 키<br><span style="font-size:12px;opacity:.6">아이템 근접 시 자동 수집</span></td>
+            <td>가상 조이스틱 (좌하단 드래그)<br><span style="font-size:12px;opacity:.6">WASD와 동일 동작</span></td>
+          </tr>
+          <tr>
+            <td><strong>자동 공격</strong></td>
+            <td colspan="2" style="text-align:center;">자동 검 투척 — 사거리 내 최근접 적 자동 조준·발사 (별도 조작 불필요)</td>
+          </tr>
+          <tr>
+            <td><strong>⇧ Shift — 질주</strong></td>
+            <td>⇧ Shift 키</td>
+            <td>우하단 질주 버튼 터치</td>
+          </tr>
+          <tr>
+            <td><strong>E — 충격파</strong></td>
+            <td>E 키</td>
+            <td>우하단 충격파 버튼 터치</td>
+          </tr>
         </tbody>
       </table>
-      <div class="card-label mb8" style="color:var(--muted);font-size:10px;">📱 모바일 (가로 모드)</div>
-      <table class="tbl mb12">
-        <thead><tr><th style="width:36%">조작</th><th>설명</th></tr></thead>
-        <tbody>
-          <tr><td><strong>가상 조이스틱</strong></td><td>화면 좌측 하단 드래그로 상하좌우 이동<br><span style="font-size:12px;opacity:.6">WASD와 동일 — 아이템 자동 수집</span></td></tr>
-          <tr><td><strong>자동 검 투척</strong></td><td>PC와 동일 — 별도 조작 없이 자동 발사</td></tr>
-          <tr><td><strong>질주</strong></td><td>화면 우측 하단 스킬 버튼 터치<br><span style="font-size:12px;opacity:.6">쿨타임 3초 (독립 쿨다운)</span></td></tr>
-          <tr><td><strong>충격파</strong></td><td>화면 우측 하단 스킬 버튼 터치<br><span style="font-size:12px;opacity:.6">쿨타임 18초 (독립 쿨다운)</span></td></tr>
-          <tr><td><strong>모드 전환</strong></td><td>좌측 상단 토글 버튼으로 PC ↔ 터치 모드 전환</td></tr>
-        </tbody>
-      </table>
-      <div class="callout">
-        <div class="callout-l">검 투척 메커닉</div>
-        <div class="callout-b">검은 공격 범위 내 가장 가까운 적에게 <strong>자동 발사</strong>. 플레이어는 <strong>위치 선정</strong>으로 검 투척 효율을 결정한다. 서있는 위치가 곧 전략.</div>
-      </div>
-      <div class="callout warn mt8">
-        <div class="callout-l">독립 쿨타임</div>
-        <div class="callout-b">질주와 충격파는 <strong>각자 독립된 쿨타임</strong>을 가진다. 두 스킬을 연속 사용하여 콤보 플레이가 가능.</div>
-      </div>
+    </div>
+    <div class="callout">
+      <div class="callout-l">검 투척 메커닉</div>
+      <div class="callout-b">검은 공격 범위 내 가장 가까운 적에게 <strong>자동 발사</strong>. 플레이어는 <strong>위치 선정</strong>으로 검 투척 효율을 결정한다. 서있는 위치가 곧 전략.</div>
+    </div>
+    <div class="callout warn mt8">
+      <div class="callout-l">독립 쿨타임</div>
+      <div class="callout-b">질주와 충격파는 <strong>각자 독립된 쿨타임</strong>을 가진다. 두 스킬을 연속 사용하여 콤보 플레이가 가능.</div>
     </div>
   </div>
 </div>
@@ -1210,10 +1254,10 @@ footer{
     </div>
     <div class="ec">
       <div class="ec-glow"></div>
-      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/gaori.png" alt="그림자 가오리" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,143,200,.55));"></span>
-      <div class="ec-name">그림자 가오리</div>
-      <div class="ec-trait">지그재그 이동 · 경로 예측 어려움<br>이동 경로 막고 검으로 요격</div>
-      <div class="ec-warn">⚠ 발키리 위치로 검 투척 각도 조절</div>
+      <span class="ec-icon" style="display:inline-block;"><img src="AS_Assets/enemies/gaori.png" alt="투척 가오리" style="width:72px;height:72px;object-fit:contain;border-radius:10px;filter:drop-shadow(0 0 10px rgba(255,143,200,.55));"></span>
+      <div class="ec-name">투척 가오리</div>
+      <div class="ec-trait">호버형 원거리 · 상단에 머물며 독침 투척<br>날아오는 독침을 이동으로 회피</div>
+      <div class="ec-warn">⚠ 독침 경로 예측 후 측면 이동 회피</div>
     </div>
     <div class="ec">
       <div class="ec-glow"></div>
@@ -1231,7 +1275,7 @@ footer{
       <tbody>
         <tr><td><strong>피라냐 고블린</strong></td><td>35</td><td>빠름</td><td style="color:var(--teal);">40</td><td>좁음</td><td>직선 돌진</td></tr>
         <tr><td><strong>어인 기사</strong></td><td>80</td><td>보통</td><td style="color:var(--amber);">70</td><td>보통</td><td>직선 이동</td></tr>
-        <tr><td><strong>그림자 가오리</strong></td><td>60</td><td>빠름</td><td style="color:var(--amber);">55</td><td>보통</td><td>지그재그 이동</td></tr>
+        <tr><td><strong>투척 가오리</strong></td><td>45</td><td>보통</td><td style="color:var(--teal);">0</td><td>보통</td><td>호버링 + 독침 투척 (18 피해)</td></tr>
         <tr><td><strong>심해 오우거</strong></td><td>180</td><td>느림</td><td style="color:var(--coral);">120</td><td>넓음</td><td>직선 이동 · 고HP 탱커</td></tr>
         <tr><td><strong>폭발 복어</strong></td><td>45</td><td>보통</td><td style="color:var(--coral);">최대 95<br><span style="font-size:11px;opacity:.6;">접촉35 + 폭발60</span></td><td>좁음</td><td>사망 시 1초 후 광역 폭발</td></tr>
       </tbody>
@@ -1429,64 +1473,75 @@ footer{
     <div class="card-title mb4">가호 게이지 — 발키리의 생명선</div>
     <div class="card-sub mb16">가호가 0이 되면 발키리가 무력화 → <strong>수문이 무방비 상태</strong>가 되어 수문 HP 초당 자동 감소. 가호의 보주(orb) 수집으로 즉시 회복.</div>
 
-    <div class="g12r mb16">
-      <div class="gs6">
-        <div class="card-label mb10" style="color:var(--muted);font-size:10px;">GAUGE VISUAL — 3단계 자동 시연</div>
-        <div class="oxy-bar" style="margin-bottom:10px;">
-          <span style="font-size:18px;">✨</span>
-          <div class="oxy-bar-fill" id="gaugeDemoFill">
-            <div class="oxy-bar-inner" id="gaugeDemoInner" style="width:82%;transition:width 1.2s ease,background .8s ease,box-shadow .8s ease;"></div>
-          </div>
-          <span id="gaugeDemoPct" style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;min-width:36px;text-align:right;transition:color .4s;">82%</span>
+    <!-- 가호 게이지 데모 (전체 너비) -->
+    <div class="mb16">
+      <div class="card-label mb10" style="color:var(--muted);font-size:10px;">GAUGE VISUAL — 3단계 자동 시연</div>
+      <div class="oxy-bar" style="margin-bottom:10px;">
+        <span style="font-size:18px;">✨</span>
+        <div class="oxy-bar-fill" id="gaugeDemoFill">
+          <div class="oxy-bar-inner" id="gaugeDemoInner" style="width:82%;transition:width 1.2s ease,background .8s ease,box-shadow .8s ease;"></div>
         </div>
-        <div style="font-size:11.5px;line-height:1.7;transition:color .4s;">
-          <span id="gaugeDemoDot" style="transition:color .4s;">●</span>
-          <span id="gaugeDemoText" style="color:var(--muted);"></span>
-        </div>
-        <script>
-        (function(){
-          var stages = [
-            { pct:82, color:'#00e5ff', dotColor:'#00c9a7', label:'안전 — 게이지가 천천히 줄어드는 정상 상태', bg:'linear-gradient(90deg,#00c9a7,#00e5ff)', shadow:'0 0 8px rgba(0,229,255,.5)', hold:2400 },
-            { pct:26, color:'#ffb830', dotColor:'#ffb830', label:'경고 — 화면이 빨갛게 깜빡이며 위험 신호', bg:'linear-gradient(90deg,#ff8c00,#ffb830)', shadow:'0 0 8px rgba(255,184,48,.6)', hold:2400 },
-            { pct:2,  color:'#ff5e5b', dotColor:'#ff5e5b', label:'위험 — 수문 HP가 초당 자동으로 깎임', bg:'linear-gradient(90deg,#c0392b,#ff5e5b)', shadow:'0 0 10px rgba(255,94,91,.7)', hold:2400 }
-          ];
-          var i = 0;
-          var inner = document.getElementById('gaugeDemoInner');
-          var pctEl = document.getElementById('gaugeDemoPct');
-          var dotEl = document.getElementById('gaugeDemoDot');
-          var txtEl = document.getElementById('gaugeDemoText');
-          function tick(){
-            var s = stages[i];
-            inner.style.width = s.pct + '%';
-            inner.style.background = s.bg;
-            inner.style.boxShadow = s.shadow;
-            pctEl.style.color = s.color;
-            pctEl.textContent = s.pct + '%';
-            dotEl.style.color = s.dotColor;
-            txtEl.textContent = s.label;
-            i = (i + 1) % stages.length;
-            setTimeout(tick, s.hold + 1200);
-          }
-          tick();
-        })();
-        </script>
+        <span id="gaugeDemoPct" style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;min-width:36px;text-align:right;transition:color .4s;">82%</span>
       </div>
-      <div class="gs6">
-        <div class="card-label mb10" style="color:var(--muted);font-size:10px;">가호 게이지 수치</div>
-        <table class="tbl">
-          <tbody>
-            <tr><td><strong>기본 최대치</strong></td><td>100 (스킬로 증가 가능)</td></tr>
-            <tr><td><strong>기본 감소 속도</strong></td><td>-1.5% / 초 (게임 내내 지속)</td></tr>
-            <tr><td><strong>가호의 보주 회복</strong></td><td>적 처치 시 28% 확률 드랍</td></tr>
-            <tr><td><strong>경고 구간</strong></td><td>30% 이하 — 화면 테두리가 빨갛게 깜빡임</td></tr>
-            <tr><td><strong>0% 도달 시</strong></td><td>수문 HP -2%/초 (보주 수집 시 즉시 중단)</td></tr>
-          </tbody>
-        </table>
-        <div class="callout mt12">
-          <div class="callout-l">전략적 긴장감</div>
-          <div class="callout-b">이동 = <strong>아이템 수집 + 적 요격</strong>. 가만히 서서 싸우면 가호가 바닥난다. 발키리가 항상 움직여야 하는 이유.</div>
-        </div>
+      <div style="font-size:11.5px;line-height:1.7;transition:color .4s;">
+        <span id="gaugeDemoDot" style="transition:color .4s;">●</span>
+        <span id="gaugeDemoText" style="color:var(--muted);"></span>
       </div>
+      <script>
+      (function(){
+        var stages = [
+          { pct:82, color:'#00e5ff', dotColor:'#00c9a7', label:'안전 — 게이지가 천천히 줄어드는 정상 상태', bg:'linear-gradient(90deg,#00c9a7,#00e5ff)', shadow:'0 0 8px rgba(0,229,255,.5)', hold:2400 },
+          { pct:26, color:'#ffb830', dotColor:'#ffb830', label:'경고 — 화면이 빨갛게 깜빡이며 위험 신호', bg:'linear-gradient(90deg,#ff8c00,#ffb830)', shadow:'0 0 8px rgba(255,184,48,.6)', hold:2400 },
+          { pct:2,  color:'#ff5e5b', dotColor:'#ff5e5b', label:'위험 — 수문 HP가 초당 자동으로 깎임', bg:'linear-gradient(90deg,#c0392b,#ff5e5b)', shadow:'0 0 10px rgba(255,94,91,.7)', hold:2400 }
+        ];
+        var i = 0;
+        var inner = document.getElementById('gaugeDemoInner');
+        var pctEl = document.getElementById('gaugeDemoPct');
+        var dotEl = document.getElementById('gaugeDemoDot');
+        var txtEl = document.getElementById('gaugeDemoText');
+        function tick(){
+          var s = stages[i];
+          inner.style.width = s.pct + '%';
+          inner.style.background = s.bg;
+          inner.style.boxShadow = s.shadow;
+          pctEl.style.color = s.color;
+          pctEl.textContent = s.pct + '%';
+          dotEl.style.color = s.dotColor;
+          txtEl.textContent = s.label;
+          i = (i + 1) % stages.length;
+          setTimeout(tick, s.hold + 1200);
+        }
+        tick();
+      })();
+      </script>
+    </div>
+
+    <!-- 가호의 보주 아이템 카드 -->
+    <div class="glass" style="padding:16px;display:flex;align-items:center;gap:16px;border:1px solid rgba(0,229,255,.18);margin-bottom:16px;">
+      <div style="flex-shrink:0;text-align:center;">
+        <img src="AS_Assets/items/orb_normal.png" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" style="width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(0,229,255,.7));display:block;" alt="가호의 보주"/>
+        <span style="display:none;font-size:40px;line-height:1.2;">✨</span>
+      </div>
+      <div>
+        <div style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:4px;">가호의 보주</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7;">가호 게이지 +25% 즉시 회복<br>적 처치 시 28% 확률 드랍 / 근접 시 자동 수집</div>
+      </div>
+    </div>
+
+    <!-- 가호 게이지 수치 표 (전체 너비) -->
+    <div class="card-label mb10" style="color:var(--muted);font-size:10px;">가호 게이지 수치</div>
+    <table class="tbl mb12">
+      <tbody>
+        <tr><td><strong>기본 최대치</strong></td><td>100 (스킬로 증가 가능)</td></tr>
+        <tr><td><strong>기본 감소 속도</strong></td><td>-1.5% / 초 (게임 내내 지속)</td></tr>
+        <tr><td><strong>가호의 보주 회복</strong></td><td>+25% 즉시 회복 (근접 자동 수집)</td></tr>
+        <tr><td><strong>경고 구간</strong></td><td>30% 이하 — 화면 테두리가 빨갛게 깜빡임</td></tr>
+        <tr><td><strong>0% 도달 시</strong></td><td>수문 HP -2%/초 (보주 수집 시 즉시 중단)</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <div class="callout-l">전략적 긴장감</div>
+      <div class="callout-b">이동 = <strong>아이템 수집 + 적 요격</strong>. 가만히 서서 싸우면 가호가 바닥난다. 발키리가 항상 움직여야 하는 이유.</div>
     </div>
   </div>
 
@@ -2001,6 +2056,23 @@ sections.forEach(s => observer.observe(s));
     });
   });
 })();
+
+// ═══════════════════════════════
+// Lightbox
+// ═══════════════════════════════
+function openLightbox(img){
+  var lb = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lightbox-img');
+  lbImg.src = img.src;
+  lbImg.alt = img.alt;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLightbox(); });
 
 // ═══════════════════════════════
 // Screenshot Carousel
