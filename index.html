@@ -790,8 +790,13 @@
     border-color:rgba(0,200,220,.4)}
   .draft-card.card--facility .card-icon-wrap{
     border-color:rgba(0,200,220,.25);
-    background:radial-gradient(circle,rgba(0,200,220,.1),rgba(0,200,220,.02));
-    box-shadow:0 4px 20px rgba(0,180,200,.15)}
+    background:radial-gradient(circle,rgba(0,200,220,.08),rgba(0,200,220,.01));
+    box-shadow:0 4px 20px rgba(0,180,200,.12);overflow:visible}
+  /* 시설 카드 이미지 — 건물 스프라이트 크게 표시 */
+  .draft-card.card--facility .card-icon-img{
+    width:100px;height:100px;object-fit:contain;border-radius:0;
+    filter:drop-shadow(0 4px 12px rgba(0,180,200,.4)) drop-shadow(0 2px 4px rgba(0,0,0,.6));
+    margin-top:-12px}
   .draft-card.card--facility .card-icon-wrap .card-icon{
     filter:drop-shadow(0 0 14px rgba(0,200,220,.4)) drop-shadow(0 4px 8px rgba(0,120,160,.3))}
   /* 시설 카드 좌상단 타입 마크 */
@@ -2488,107 +2493,48 @@ const ENEMY_DEFS={
 // 방어 시설 풀
 const FACILITY_POOL=[
   /* ── 일반 (회색) ── */
-  {id:'crossbow', name:'석궁 포탑', rarity:'일반', kind:'facility', icon:'🏹',
-    svgIcon:`<svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="4" y="15" width="28" height="6" rx="2" fill="#ccc"/>
-      <rect x="14" y="4" width="4" height="20" rx="1.5" fill="#aaa"/>
-      <path d="M8 18 L18 8 L28 18" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <circle cx="18" cy="10" r="3" fill="#64b5f6"/>
-    </svg>`,
-    desc:'가장 가까운 적에게 빠르게 화살을 연사한다.',
+  {id:'crossbow', name:'석궁 망루', rarity:'일반', kind:'facility', icon:'AS_Assets/facilities/facility_crossbow.png',
+    desc:'적에게 빠르게 화살을 연사하는 공격 망루.',
     stats:[{icon:'⚔',label:'피해',val:'30'},{icon:'⏱',label:'공속',val:'0.8초'},{icon:'📐',label:'사거리',val:'280'}],
     range:280, cooldown:0.8, dmg:30, type:'projectile', projSpeed:520, projColor:'#aef'},
-  {id:'holy_well', name:'성수 제단', rarity:'일반', kind:'facility', icon:'⛲',
-    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
-      <rect x="8" y="22" width="20" height="8" rx="3" fill="#4dd"/>
-      <rect x="13" y="12" width="10" height="12" rx="2" fill="#3cc"/>
-      <circle cx="18" cy="8" r="5" fill="#7ef"/>
-      <path d="M15 8 Q18 4 21 8" stroke="#fff" stroke-width="1.5" fill="none"/>
-    </svg>`,
-    desc:'주기적으로 발키리의 가호 게이지를 회복한다.',
-    stats:[{icon:'💙',label:'회복량',val:'가호 +10'},{icon:'⏱',label:'주기',val:'4.0초'}],
+  {id:'holy_well', name:'치유 야영지', rarity:'일반', kind:'facility', icon:'AS_Assets/facilities/facility_holywell.png',
+    desc:'주기적으로 발키리의 가호 게이지를 회복하는 야전 치유소.',
+    stats:[{icon:'✨',label:'회복량',val:'가호 +10'},{icon:'⏱',label:'주기',val:'4.0초'}],
     range:0, cooldown:4.0, healAmount:10, type:'heal', projColor:'#7cc4ff'},
 
   /* ── 고급 (녹색) ── */
-  {id:'ballista', name:'마법 발리스타', rarity:'고급', kind:'facility', icon:'⚔️',
-    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
-      <rect x="3" y="16" width="30" height="5" rx="1.5" fill="#81c784"/>
-      <rect x="16" y="6" width="4" height="18" rx="1" fill="#66bb6a"/>
-      <polygon points="18,4 24,16 12,16" fill="#a5d6a7"/>
-      <line x1="3" y1="18" x2="33" y2="18" stroke="#c8e6c9" stroke-width="1.5"/>
-    </svg>`,
-    desc:'강력한 마법 볼트를 발사해 경로상의 모든 적을 관통한다.',
+  {id:'ballista', name:'원거리 망루', rarity:'고급', kind:'facility', icon:'AS_Assets/facilities/facility_ballista.png',
+    desc:'마법 볼트를 발사해 경로상의 모든 적을 관통한다.',
     stats:[{icon:'⚔',label:'피해',val:'110'},{icon:'⏱',label:'공속',val:'2.2초'},{icon:'📐',label:'사거리',val:'420'}],
     range:420, cooldown:2.2, dmg:110, type:'pierce', projSpeed:580, projColor:'#81c784'},
-  {id:'frost_spirit', name:'서리 정령', rarity:'고급', kind:'facility', icon:'❄️',
-    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
-      <line x1="18" y1="4" x2="18" y2="32" stroke="#90caf9" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="4" y1="18" x2="32" y2="18" stroke="#90caf9" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="8" y1="8" x2="28" y2="28" stroke="#90caf9" stroke-width="2" stroke-linecap="round"/>
-      <line x1="28" y1="8" x2="8" y2="28" stroke="#90caf9" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="18" cy="18" r="4" fill="#bbdefb"/>
-      <circle cx="18" cy="6" r="2" fill="#e3f2fd"/>
-      <circle cx="18" cy="30" r="2" fill="#e3f2fd"/>
-      <circle cx="6" cy="18" r="2" fill="#e3f2fd"/>
-      <circle cx="30" cy="18" r="2" fill="#e3f2fd"/>
-    </svg>`,
-    desc:'범위 내의 적들의 이동속도를 지속적으로 감소시킨다.',
+  {id:'frost_spirit', name:'빙결 탑', rarity:'고급', kind:'facility', icon:'AS_Assets/facilities/facility_frost.png',
+    desc:'얼음 마법으로 범위 내 모든 적의 이동속도를 감소시킨다.',
     stats:[{icon:'❄',label:'감속',val:'-25%'},{icon:'⏱',label:'주기',val:'2.5초'},{icon:'📐',label:'사거리',val:'300'}],
     range:300, cooldown:2.5, slowDur:3.0, type:'debuff', projColor:'#90caf9'},
 
   /* ── 희귀 (파란) ── */
-  {id:'mortar', name:'마법 박격포', rarity:'희귀', kind:'facility', icon:'💥',
-    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
-      <ellipse cx="18" cy="28" rx="10" ry="4" fill="#444" opacity=".5"/>
-      <rect x="14" y="10" width="8" height="18" rx="3" fill="#64b5f6"/>
-      <rect x="12" y="22" width="12" height="6" rx="2" fill="#42a5f5"/>
-      <circle cx="18" cy="8" r="5" fill="#ffb74d"/>
-      <circle cx="18" cy="8" r="2.5" fill="#ff7043"/>
-    </svg>`,
-    desc:'적이 밀집한 지점에 마법 포탄을 발사해 착탄 시 광역 폭발을 일으킨다.',
+  {id:'mortar', name:'마법구 포탑', rarity:'희귀', kind:'facility', icon:'AS_Assets/facilities/facility_mortar.png',
+    desc:'마법 구체를 발사해 착탄 지점에 광역 폭발을 일으킨다.',
     stats:[{icon:'💥',label:'피해',val:'85 (광역)'},{icon:'⏱',label:'공속',val:'1.8초'},{icon:'📐',label:'사거리',val:'380'}],
     range:380, cooldown:1.8, dmg:85, type:'mortar', splashR:130, shellSpeed:320, projColor:'#ffb347'},
-  {id:'barrier', name:'수호 결계', rarity:'희귀', kind:'facility', icon:'🛡️',
-    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
-      <path d="M18 4 L30 9 L30 20 Q30 29 18 33 Q6 29 6 20 L6 9 Z" fill="rgba(33,150,243,.25)" stroke="#2196f3" stroke-width="2"/>
-      <path d="M18 10 L25 13 L25 20 Q25 26 18 29 Q11 26 11 20 L11 13 Z" fill="rgba(33,150,243,.2)" stroke="#64b5f6" stroke-width="1"/>
-      <circle cx="18" cy="19" r="4" fill="#90caf9"/>
-    </svg>`,
-    desc:'주기적으로 수문 HP를 회복하고 보호한다.',
+  {id:'barrier', name:'수호 요새', rarity:'희귀', kind:'facility', icon:'AS_Assets/facilities/facility_barrier.png',
+    desc:'방패 결계를 펼쳐 주기적으로 수문 HP를 회복하고 보호한다.',
     stats:[{icon:'🏰',label:'회복량',val:'수문 +15'},{icon:'⏱',label:'주기',val:'5.0초'}],
     range:0, cooldown:5.0, healAmount:15, type:'gate_heal', projColor:'#26ffe9'},
 
   /* ── 고유 (보라) ── */
-  {id:'lightning_orb', name:'뇌격 마법진', rarity:'고유', kind:'facility', icon:'⚡',
-    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
-      <circle cx="18" cy="18" r="13" stroke="#9c27b0" stroke-width="2" fill="rgba(156,39,176,.12)"/>
-      <circle cx="18" cy="18" r="8" stroke="#ce93d8" stroke-width="1.5" fill="rgba(206,147,216,.1)"/>
-      <path d="M18 8 L14 18 L20 18 L16 28" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="18" cy="18" r="3" fill="#e040fb"/>
-    </svg>`,
-    desc:'번개를 방출해 범위 내 최대 3명의 적에게 연쇄 공격한다.',
+  {id:'lightning_orb', name:'뇌전 요새', rarity:'고유', kind:'facility', icon:'AS_Assets/facilities/facility_lightning.png',
+    desc:'요새의 마법진에서 번개를 방출해 최대 3명의 적에게 연쇄 공격한다.',
     stats:[{icon:'⚡',label:'피해',val:'55 ×3연쇄'},{icon:'⏱',label:'공속',val:'2.0초'},{icon:'📐',label:'사거리',val:'340'}],
     range:340, cooldown:2.0, dmg:55, type:'chain', chainCount:3, projColor:'#e040fb'},
-  {id:'holy_amplifier', name:'성스러운 방벽', rarity:'고유', kind:'facility', icon:'✨',
-    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
-      <circle cx="18" cy="18" r="13" stroke="#9c27b0" stroke-width="1.5" fill="rgba(156,39,176,.08)" stroke-dasharray="4 2"/>
-      <rect x="13" y="13" width="10" height="10" rx="2" fill="rgba(206,147,216,.3)" stroke="#ce93d8" stroke-width="1.5"/>
-      <path d="M18 9 L18 13 M18 23 L18 27 M9 18 L13 18 M23 18 L27 18" stroke="#e040fb" stroke-width="1.5" stroke-linecap="round"/>
-      <circle cx="18" cy="18" r="3" fill="#f48fb1"/>
-    </svg>`,
-    desc:'인근 방어 시설의 공격력을 강화하는 마력 증폭 결계를 형성한다.',
+  {id:'holy_amplifier', name:'성광 첨탑', rarity:'고유', kind:'facility', icon:'AS_Assets/facilities/facility_amplifier.png',
+    desc:'황금 첨탑에서 성스러운 빛을 발산해 인근 방어 시설의 공격력을 강화한다.',
     stats:[{icon:'⬆',label:'강화',val:'인근 시설 공격력 +30%'},{icon:'📐',label:'반경',val:'200'}],
     range:200, cooldown:99999, type:'buff', buffAmount:0.30, projColor:'#e040fb'},
 
   /* ── 전설 (주황) ── */
-  {id:'valk_wrath', name:'발키리의 분노', rarity:'전설', kind:'facility', icon:'🔥',
-    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
-      <circle cx="18" cy="18" r="14" fill="rgba(255,152,0,.15)" stroke="#ff9800" stroke-width="2"/>
-      <circle cx="18" cy="18" r="9" fill="rgba(255,152,0,.2)" stroke="#ffb74d" stroke-width="1.5"/>
-      <path d="M18 6 L21 15 L30 12 L23 19 L28 27 L18 22 L8 27 L13 19 L6 12 L15 15 Z" fill="#ff9800" opacity=".9"/>
-      <circle cx="18" cy="18" r="4" fill="#fff3e0"/>
-    </svg>`,
-    desc:'발키리의 힘을 빌린 신성한 포격으로 전장의 가장 위험한 위치에 강력한 광역 폭발을 일으킨다.',
+  {id:'valk_wrath', name:'발키리 망루', rarity:'전설', kind:'facility', icon:'AS_Assets/facilities/facility_wrath.png',
+    desc:'발키리의 날개가 깃든 망루에서 신성한 포격으로 전장 전체에 강력한 광역 폭발을 일으킨다.',
     stats:[{icon:'💥',label:'피해',val:'180 (광역)'},{icon:'⏱',label:'공속',val:'3.5초'},{icon:'📐',label:'사거리',val:'전체'}],
     range:1280, cooldown:3.5, dmg:180, type:'siege', splashR:200, shellSpeed:280, projColor:'#ff9800'},
 ];
@@ -3155,7 +3101,7 @@ function selectFacility(f, el){
   s.el.classList.remove('unlockable');
   s.el.innerHTML=`
     <div class="slot-label">${f.name}</div>
-    <div class="slot-ring"><span class="facility-icon">${f.svgIcon||f.icon}</span></div>
+    <div class="slot-ring"><span class="facility-icon">${(f.icon&&(f.icon.startsWith('AS_')||f.icon.includes('/')))?`<img src="${f.icon}" style="width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 0 8px var(--cyan))">`:f.svgIcon||f.icon}</span></div>
     <div class="deposit-ring"><svg viewBox="0 0 92 92"><circle class="dr-track" cx="46" cy="46" r="42.5"/><circle class="dr-fill" cx="46" cy="46" r="42.5" style="stroke-dasharray:267;stroke-dashoffset:0"/></svg></div>`;
   s.el.classList.add('built'); s.el.classList.remove('ready','depositing','insufficient');
   if(f.type==='aoe'||f.type==='mortar'||f.type==='siege') s.el.classList.add('aoe-facility');
