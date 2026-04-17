@@ -545,6 +545,11 @@ body{
 .b-teal{background:rgba(0,201,167,.14);border:1px solid rgba(0,201,167,.4);color:var(--teal);}
 .b-violet{background:rgba(123,111,240,.14);border:1px solid rgba(123,111,240,.4);color:#b0a8ff;}
 .b-amber{background:rgba(255,184,48,.14);border:1px solid rgba(255,184,48,.4);color:var(--amber);}
+/* 5등급 컬러 시스템 (GC 기준) */
+.b-gray  {background:rgba(158,158,158,.15);border:1px solid rgba(158,158,158,.4);color:#bdbdbd;}
+.b-green {background:rgba(76,175,80,.14); border:1px solid rgba(76,175,80,.4); color:#81c784;}
+.b-blue  {background:rgba(33,150,243,.14);border:1px solid rgba(33,150,243,.4);color:#64b5f6;}
+.b-orange{background:rgba(255,152,0,.14); border:1px solid rgba(255,152,0,.4); color:#ffb74d;}
 .b-coral{background:rgba(255,94,91,.14);border:1px solid rgba(255,94,91,.4);color:#ff8a87;}
 
 /* ═══════════════════════════════════════
@@ -1703,17 +1708,20 @@ footer{
       </div>
     </div>
 
-    <!-- 시설 6종 -->
-    <div class="card-label mb12" style="color:var(--muted);font-size:10px;">시설 6종 (현재 구현)</div>
+    <!-- 시설 9종 (5등급) -->
+    <div class="card-label mb12" style="color:var(--muted);font-size:10px;">시설 9종 · 5등급 분류 (GC 등급 기준)</div>
     <table class="tbl mb16">
       <thead><tr><th>시설</th><th>등급</th><th>효과</th><th>공격력/효과</th><th>공속/주기</th><th>사거리</th><th>타입</th></tr></thead>
       <tbody>
-        <tr><td><strong>🏹 석궁 포탑</strong></td><td><span class="badge b-teal">일반</span></td><td>근거리 단일 대상 연사</td><td>30</td><td>보통</td><td>280</td><td style="color:var(--amber);">공격(단일)</td></tr>
-        <tr><td><strong>⛲ 성수 제단</strong></td><td><span class="badge b-teal">일반</span></td><td>주기적으로 가호 회복</td><td>가호 +8</td><td>느림</td><td>전체</td><td style="color:var(--teal);">회복(가호)</td></tr>
-        <tr><td><strong>⚔️ 마법 발리스타</strong></td><td><span class="badge b-amber">희귀</span></td><td>원거리 고위력 관통탄</td><td>110</td><td>느림</td><td>420</td><td style="color:var(--violet);">공격(관통)</td></tr>
-        <tr><td><strong>💥 마법 박격포</strong></td><td><span class="badge b-amber">희귀</span></td><td>밀집 지점에 포탄 → 착탄 광역 폭발</td><td>85 (광역)</td><td>빠름</td><td>380</td><td style="color:var(--cyan);">공격(범위)</td></tr>
-        <tr><td><strong>🛡️ 수호 결계</strong></td><td><span class="badge b-violet">영웅</span></td><td>수문 HP 주기적 회복</td><td>수문 +15</td><td>매우 느림</td><td>전체</td><td style="color:var(--coral);">회복(수문)</td></tr>
-        <tr><td><strong>🧚 서리 정령</strong></td><td><span class="badge b-violet">영웅</span></td><td>범위 내 적 이동 속도 감소</td><td>감속 -25%</td><td>매우 느림</td><td>300</td><td style="color:var(--violet);">군중제어</td></tr>
+        <tr style="background:rgba(158,158,158,.04)"><td><strong>🏹 석궁 포탑</strong></td><td><span class="badge b-gray">일반</span></td><td>가장 가까운 적 연사</td><td>30</td><td>0.8s</td><td>280</td><td style="color:#bdbdbd;">공격(단일)</td></tr>
+        <tr style="background:rgba(158,158,158,.04)"><td><strong>⛲ 성수 제단</strong></td><td><span class="badge b-gray">일반</span></td><td>주기적으로 가호 회복</td><td>가호 +10</td><td>4.0s</td><td>전체</td><td style="color:#bdbdbd;">회복(가호)</td></tr>
+        <tr style="background:rgba(76,175,80,.04)"><td><strong>⚔️ 마법 발리스타</strong></td><td><span class="badge b-green">고급</span></td><td>고위력 관통탄 발사</td><td>110</td><td>2.2s</td><td>420</td><td style="color:#81c784;">공격(관통)</td></tr>
+        <tr style="background:rgba(76,175,80,.04)"><td><strong>❄️ 서리 정령</strong></td><td><span class="badge b-green">고급</span></td><td>범위 내 적 이동속도 감소</td><td>감속 -25%</td><td>2.5s</td><td>300</td><td style="color:#81c784;">군중제어</td></tr>
+        <tr style="background:rgba(33,150,243,.04)"><td><strong>💥 마법 박격포</strong></td><td><span class="badge b-blue">희귀</span></td><td>밀집 지점 포탄 → 광역 폭발</td><td>85 (광역)</td><td>1.8s</td><td>380</td><td style="color:#64b5f6;">공격(범위)</td></tr>
+        <tr style="background:rgba(33,150,243,.04)"><td><strong>🛡️ 수호 결계</strong></td><td><span class="badge b-blue">희귀</span></td><td>수문 HP 주기적 회복</td><td>수문 +15</td><td>5.0s</td><td>전체</td><td style="color:#64b5f6;">회복(수문)</td></tr>
+        <tr style="background:rgba(156,39,176,.05)"><td><strong>⚡ 뇌격 마법진</strong></td><td><span class="badge b-violet">고유</span></td><td>최대 3명에게 번개 연쇄 공격</td><td>55 ×3연쇄</td><td>2.0s</td><td>340</td><td style="color:#b0a8ff;">공격(연쇄)</td></tr>
+        <tr style="background:rgba(156,39,176,.05)"><td><strong>✨ 성스러운 방벽</strong></td><td><span class="badge b-violet">고유</span></td><td>인근 시설 공격력 +30% 증폭</td><td>공격 ×1.30</td><td>패시브</td><td>200</td><td style="color:#b0a8ff;">버프</td></tr>
+        <tr style="background:rgba(255,152,0,.05)"><td><strong>🔥 발키리의 분노</strong></td><td><span class="badge b-orange">전설</span></td><td>신성 포격 → 강력한 광역 폭발</td><td>180 (광역)</td><td>3.5s</td><td>500</td><td style="color:#ffb74d;">공격(전체)</td></tr>
       </tbody>
     </table>
 
@@ -1840,44 +1848,51 @@ footer{
 
     <div class="g12r mb12">
       <div class="gs6 glass accent-top accent-amber" style="padding:22px;">
-        <div class="card-label mb12" style="color:var(--amber);font-size:10px;">👑 영웅 카드 풀 (11종)</div>
+        <div class="card-label mb12" style="color:var(--amber);font-size:10px;">👑 영웅 카드 풀 (13종 · 5등급)</div>
         <table class="tbl">
           <thead><tr><th>카드명</th><th>효과</th><th>등급</th><th>최대</th></tr></thead>
           <tbody>
-            <tr><td><strong>투검 숙련</strong></td><td>공격력 +15%</td><td><span class="badge b-teal">일반</span></td><td>5회</td></tr>
-            <tr><td><strong>신속한 투척</strong></td><td>공속 +20%</td><td><span class="badge b-teal">일반</span></td><td>5회</td></tr>
-            <tr><td><strong>장거리 투척</strong></td><td>사거리 +25%</td><td><span class="badge b-teal">일반</span></td><td>3회</td></tr>
-            <tr><td><strong>경량 갑주</strong></td><td>이동속도 +15%</td><td><span class="badge b-teal">일반</span></td><td>4회</td></tr>
-            <tr><td><strong>발키리의 심장</strong></td><td>가호 최대치 +20 & 즉시 회복</td><td><span class="badge b-teal">일반</span></td><td>3회</td></tr>
-            <tr><td><strong>바람의 가호</strong></td><td>질주 쿨 -1s</td><td><span class="badge b-teal">일반</span></td><td>2회</td></tr>
-            <tr><td><strong>인력의 부적</strong></td><td>수집 반경 +30%</td><td><span class="badge b-teal">일반</span></td><td>3회</td></tr>
-            <tr><td><strong>광역 확장</strong></td><td>충격파 반경 +30% & 피해 +20%</td><td><span class="badge b-amber">희귀</span></td><td>3회</td></tr>
-            <tr><td><strong>치명 직감</strong></td><td>크리티컬 +15%</td><td><span class="badge b-amber">희귀</span></td><td>4회</td></tr>
-            <tr><td><strong>보주 공명</strong></td><td>보주 회복량 +50%</td><td><span class="badge b-amber">희귀</span></td><td>3회</td></tr>
-            <tr><td><strong>이중 투척</strong></td><td>동시 2연발 투척</td><td><span class="badge b-violet">영웅</span></td><td>1회</td></tr>
+            <tr style="background:rgba(158,158,158,.04)"><td><strong>투검 숙련</strong></td><td>공격력 +15%</td><td><span class="badge b-gray">일반</span></td><td>5회</td></tr>
+            <tr style="background:rgba(158,158,158,.04)"><td><strong>질풍 투척</strong></td><td>공속 +20%</td><td><span class="badge b-gray">일반</span></td><td>5회</td></tr>
+            <tr style="background:rgba(158,158,158,.04)"><td><strong>경량 갑주</strong></td><td>이동속도 +15%</td><td><span class="badge b-gray">일반</span></td><td>4회</td></tr>
+            <tr style="background:rgba(158,158,158,.04)"><td><strong>발키리의 심장</strong></td><td>가호 최대치 +20 & 즉시 회복</td><td><span class="badge b-gray">일반</span></td><td>3회</td></tr>
+            <tr style="background:rgba(76,175,80,.04)"><td><strong>장거리 투척</strong></td><td>사거리 +25%</td><td><span class="badge b-green">고급</span></td><td>3회</td></tr>
+            <tr style="background:rgba(76,175,80,.04)"><td><strong>인력의 부적</strong></td><td>수집 반경 +30%</td><td><span class="badge b-green">고급</span></td><td>3회</td></tr>
+            <tr style="background:rgba(76,175,80,.04)"><td><strong>바람의 가호</strong></td><td>질주 쿨 -1s</td><td><span class="badge b-green">고급</span></td><td>2회</td></tr>
+            <tr style="background:rgba(33,150,243,.04)"><td><strong>광폭 충격파</strong></td><td>충격파 반경 +30% & 피해 +20%</td><td><span class="badge b-blue">희귀</span></td><td>3회</td></tr>
+            <tr style="background:rgba(33,150,243,.04)"><td><strong>치명 직감</strong></td><td>크리티컬 +15%</td><td><span class="badge b-blue">희귀</span></td><td>4회</td></tr>
+            <tr style="background:rgba(33,150,243,.04)"><td><strong>보주 공명</strong></td><td>보주 회복량 +50%</td><td><span class="badge b-blue">희귀</span></td><td>3회</td></tr>
+            <tr style="background:rgba(156,39,176,.05)"><td><strong>이중 투척</strong></td><td>동시 2연발 투척</td><td><span class="badge b-violet">고유</span></td><td>1회</td></tr>
+            <tr style="background:rgba(156,39,176,.05)"><td><strong>가호의 각인</strong></td><td>피격 시 20% 확률 가호 소모 무시</td><td><span class="badge b-violet">고유</span></td><td>1회</td></tr>
+            <tr style="background:rgba(255,152,0,.05)"><td><strong>발키리의 각성</strong></td><td>검 투척 관통 + 사거리 극대 + 피해 +50%</td><td><span class="badge b-orange">전설</span></td><td>1회</td></tr>
           </tbody>
         </table>
       </div>
       <div class="gs6 glass accent-top accent-violet" style="padding:22px;">
-        <div class="card-label mb12" style="color:var(--violet);font-size:10px;">🏹 시설 카드 풀 (6종)</div>
+        <div class="card-label mb12" style="color:var(--violet);font-size:10px;">🏹 시설 카드 풀 (9종 · 5등급)</div>
         <table class="tbl mb16">
           <thead><tr><th>시설명</th><th>효과</th><th>등급</th></tr></thead>
           <tbody>
-            <tr><td><strong>🏹 석궁 포탑</strong></td><td>빠른 연사, 근거리 자동 방어</td><td><span class="badge b-teal">일반</span></td></tr>
-            <tr><td><strong>⛲ 성수 제단</strong></td><td>주기적으로 가호 회복</td><td><span class="badge b-teal">일반</span></td></tr>
-            <tr><td><strong>⚔️ 마법 발리스타</strong></td><td>느린 공속, 관통 고위력 한 방</td><td><span class="badge b-amber">희귀</span></td></tr>
-            <tr><td><strong>⚡ 번개 마법진</strong></td><td>범위 전기 공격, 다수 적 동시 타격</td><td><span class="badge b-amber">희귀</span></td></tr>
-            <tr><td><strong>🛡️ 수호 결계</strong></td><td>주기적으로 수문 회복</td><td><span class="badge b-violet">영웅</span></td></tr>
-            <tr><td><strong>🧚 서리 정령</strong></td><td>주변 적 이동속도 감소</td><td><span class="badge b-violet">영웅</span></td></tr>
+            <tr style="background:rgba(158,158,158,.04)"><td><strong>🏹 석궁 포탑</strong></td><td>빠른 연사, 근거리 단일 타격</td><td><span class="badge b-gray">일반</span></td></tr>
+            <tr style="background:rgba(158,158,158,.04)"><td><strong>⛲ 성수 제단</strong></td><td>주기적으로 가호 회복</td><td><span class="badge b-gray">일반</span></td></tr>
+            <tr style="background:rgba(76,175,80,.04)"><td><strong>⚔️ 마법 발리스타</strong></td><td>관통 고위력 한 방</td><td><span class="badge b-green">고급</span></td></tr>
+            <tr style="background:rgba(76,175,80,.04)"><td><strong>❄️ 서리 정령</strong></td><td>주변 적 이동속도 감소</td><td><span class="badge b-green">고급</span></td></tr>
+            <tr style="background:rgba(33,150,243,.04)"><td><strong>💥 마법 박격포</strong></td><td>밀집 지점 광역 포격</td><td><span class="badge b-blue">희귀</span></td></tr>
+            <tr style="background:rgba(33,150,243,.04)"><td><strong>🛡️ 수호 결계</strong></td><td>주기적으로 수문 회복</td><td><span class="badge b-blue">희귀</span></td></tr>
+            <tr style="background:rgba(156,39,176,.05)"><td><strong>⚡ 뇌격 마법진</strong></td><td>번개 3연쇄 공격</td><td><span class="badge b-violet">고유</span></td></tr>
+            <tr style="background:rgba(156,39,176,.05)"><td><strong>✨ 성스러운 방벽</strong></td><td>인근 시설 공격력 +30%</td><td><span class="badge b-violet">고유</span></td></tr>
+            <tr style="background:rgba(255,152,0,.05)"><td><strong>🔥 발키리의 분노</strong></td><td>신성 포격 광역 폭발</td><td><span class="badge b-orange">전설</span></td></tr>
           </tbody>
         </table>
 
         <div class="card-label mt16 mb8" style="color:var(--muted);font-size:10px;">카드 등급별 출현 확률</div>
         <table class="tbl">
           <tbody>
-            <tr><td><span class="badge b-teal">일반</span></td><td>60%</td></tr>
-            <tr><td><span class="badge b-amber">희귀</span></td><td>30%</td></tr>
-            <tr><td><span class="badge b-violet">영웅</span></td><td>10%</td></tr>
+            <tr><td><span class="badge b-gray">일반</span></td><td>50%</td></tr>
+            <tr><td><span class="badge b-green">고급</span></td><td>28%</td></tr>
+            <tr><td><span class="badge b-blue">희귀</span></td><td>15%</td></tr>
+            <tr><td><span class="badge b-violet">고유</span></td><td>6%</td></tr>
+            <tr><td><span class="badge b-orange">전설</span></td><td>1%</td></tr>
           </tbody>
         </table>
       </div>

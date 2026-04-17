@@ -82,15 +82,30 @@
   #player{width:120px;height:120px;filter:drop-shadow(0 0 12px rgba(0,229,255,.6))}
   #player.dashing{filter:drop-shadow(0 0 22px var(--cyan)) brightness(1.35)}
   #player.hit{filter:drop-shadow(0 0 14px var(--red)) brightness(1.6)}
-  /* 가호 아우라 — 게이지에 따라 투명도 변화 */
-  #player .aura{position:absolute;inset:-24px;border-radius:50%;pointer-events:none;
-    background:radial-gradient(circle,rgba(0,229,255,.28) 0%,rgba(0,200,255,.14) 35%,rgba(0,180,255,.04) 60%,transparent 75%);
-    box-shadow:inset 0 0 20px rgba(0,229,255,.1);
-    animation:auraPulse 2.2s ease-in-out infinite;transition:opacity .6s,filter .6s,background .6s}
-  @keyframes auraPulse{0%,100%{transform:scale(1);opacity:var(--aura-o,1)}50%{transform:scale(1.08);opacity:calc(var(--aura-o,1)*0.65)}}
-  #player .aura.warn{background:radial-gradient(circle,rgba(255,160,40,.25) 0%,rgba(255,100,30,.1) 35%,transparent 65%);
-    box-shadow:inset 0 0 16px rgba(255,100,30,.1);animation:auraWarn .8s ease-in-out infinite}
-  @keyframes auraWarn{0%,100%{transform:scale(1);opacity:var(--aura-o,.5)}50%{transform:scale(1.1);opacity:calc(var(--aura-o,.5)*0.3)}}
+  /* 가호 아우라 — 게이지에 따라 투명도/색상 변화 */
+  #player .aura{
+    position:absolute;
+    inset:-36px;
+    border-radius:50%;
+    pointer-events:none;
+    background:radial-gradient(circle,rgba(0,229,255,.35) 0%,rgba(0,180,255,.18) 40%,transparent 70%);
+    box-shadow:0 0 28px rgba(0,229,255,.4), 0 0 12px rgba(0,229,255,.25), inset 0 0 20px rgba(0,229,255,.1);
+    animation:auraPulse 1.8s ease-in-out infinite;
+    transition:opacity .4s, filter .4s, background .5s, box-shadow .5s;
+  }
+  @keyframes auraPulse{
+    0%,100%{transform:scale(1);opacity:var(--aura-o,1)}
+    50%{transform:scale(1.12);opacity:calc(var(--aura-o,1)*0.7)}
+  }
+  #player .aura.warn{
+    background:radial-gradient(circle,rgba(255,120,0,.45) 0%,rgba(255,60,0,.22) 40%,transparent 70%);
+    box-shadow:0 0 32px rgba(255,100,0,.6), 0 0 16px rgba(255,60,0,.35), inset 0 0 24px rgba(255,100,0,.15);
+    animation:auraWarn .6s ease-in-out infinite;
+  }
+  @keyframes auraWarn{
+    0%,100%{transform:scale(1);opacity:var(--aura-o,.5)}
+    50%{transform:scale(1.15);opacity:calc(var(--aura-o,.5)*0.4)}
+  }
   #player .aura.depleted{opacity:0!important;animation:none}
   /* 발키리 공격 스윙 모션 (v0.9.6) */
   #player.attacking img{animation:valkSwing .14s cubic-bezier(.2,.8,.2,1)}
@@ -607,6 +622,47 @@
   .draft-card.r-amber:hover{border-color:var(--amber);box-shadow:0 16px 40px rgba(255,184,48,.55)}
   .draft-card.r-violet{border-color:rgba(157,123,255,.75)}
   .draft-card.r-violet:hover{border-color:var(--purple);box-shadow:0 18px 48px rgba(157,123,255,.7)}
+
+  /* === 새 5등급 컬러 시스템 === */
+  .draft-card.r-gray{border-color:rgba(158,158,158,.5)}
+  .draft-card.r-gray:hover{border-color:#9e9e9e;box-shadow:0 16px 40px rgba(158,158,158,.4)}
+  .draft-card.r-green{border-color:rgba(76,175,80,.55)}
+  .draft-card.r-green:hover{border-color:#4caf50;box-shadow:0 16px 40px rgba(76,175,80,.5)}
+  .draft-card.r-blue{border-color:rgba(33,150,243,.6)}
+  .draft-card.r-blue:hover{border-color:#2196f3;box-shadow:0 16px 40px rgba(33,150,243,.55)}
+  .draft-card.r-orange{border-color:rgba(255,152,0,.75)}
+  .draft-card.r-orange:hover{border-color:#ff9800;box-shadow:0 18px 48px rgba(255,152,0,.7)}
+  .draft-card.r-gray .rarity-tag{color:#fff;background:linear-gradient(90deg,rgba(120,120,120,.85),rgba(158,158,158,.95),rgba(120,120,120,.85))}
+  .draft-card.r-green .rarity-tag{color:#fff;background:linear-gradient(90deg,rgba(56,142,60,.85),rgba(76,175,80,.95),rgba(56,142,60,.85))}
+  .draft-card.r-blue .rarity-tag{color:#fff;background:linear-gradient(90deg,rgba(25,118,210,.85),rgba(33,150,243,.95),rgba(25,118,210,.85))}
+  .draft-card.r-orange .rarity-tag{color:#fff;background:linear-gradient(90deg,rgba(230,100,0,.85),rgba(255,152,0,.95),rgba(230,100,0,.85))}
+  .draft-card.r-gray .card-name{color:#bdbdbd}
+  .draft-card.r-green .card-name{color:#81c784}
+  .draft-card.r-blue .card-name{color:#64b5f6}
+  .draft-card.r-orange .card-name{color:#ffb74d}
+  .draft-card.card--facility.r-gray{border-color:rgba(158,158,158,.45)}
+  .draft-card.card--facility.r-gray:hover{border-color:#9e9e9e;box-shadow:0 16px 40px rgba(158,158,158,.35)}
+  .draft-card.card--facility.r-green{border-color:rgba(76,175,80,.5)}
+  .draft-card.card--facility.r-green:hover{border-color:#4caf50;box-shadow:0 16px 40px rgba(76,175,80,.45)}
+  .draft-card.card--facility.r-blue{border-color:rgba(33,150,243,.55)}
+  .draft-card.card--facility.r-blue:hover{border-color:#2196f3;box-shadow:0 16px 40px rgba(33,150,243,.5)}
+  .draft-card.card--facility.r-orange{border-color:rgba(255,152,0,.7)}
+  .draft-card.card--facility.r-orange:hover{border-color:#ff9800;box-shadow:0 18px 48px rgba(255,152,0,.65)}
+  .draft-card.card--hero.r-gray{border-color:rgba(158,158,158,.4)}
+  .draft-card.card--hero.r-gray:hover{border-color:#9e9e9e;box-shadow:0 16px 40px rgba(158,158,158,.35)}
+  .draft-card.card--hero.r-green{border-color:rgba(76,175,80,.5)}
+  .draft-card.card--hero.r-green:hover{border-color:#4caf50;box-shadow:0 16px 40px rgba(76,175,80,.45)}
+  .draft-card.card--hero.r-blue{border-color:rgba(33,150,243,.55)}
+  .draft-card.card--hero.r-blue:hover{border-color:#2196f3;box-shadow:0 16px 40px rgba(33,150,243,.5)}
+  .draft-card.card--hero.r-orange{border-color:rgba(255,152,0,.7);background:linear-gradient(135deg,rgba(255,100,0,.06),rgba(255,152,0,.04))}
+  .draft-card.card--hero.r-orange::before{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,rgba(255,152,0,.04),rgba(255,200,0,.02));pointer-events:none;animation:legendaryGlow 2s ease-in-out infinite}
+  @keyframes legendaryGlow{0%,100%{box-shadow:inset 0 0 20px rgba(255,152,0,.05)}50%{box-shadow:inset 0 0 30px rgba(255,152,0,.12)}}
+  .draft-card.card--hero.r-orange:hover{border-color:#ff9800;box-shadow:0 18px 48px rgba(255,152,0,.65)}
+  #hudCards .c-row.r-gray{border-left:2px solid #9e9e9e}
+  #hudCards .c-row.r-green{border-left:2px solid #4caf50}
+  #hudCards .c-row.r-blue{border-left:2px solid #2196f3}
+  #hudCards .c-row.r-orange{border-left:2px solid #ff9800}
+
   /* 등급 리본 (상단 전체 너비) */
   .draft-card .rarity-tag{position:absolute;top:0;left:0;right:0;font-size:10px;font-weight:900;letter-spacing:.25em;
     padding:4px 0;text-align:center;text-transform:uppercase;z-index:2}
@@ -1952,82 +2008,110 @@ const ENEMY_DEFS={
 
 // 방어 시설 풀
 const FACILITY_POOL=[
-  {id:'crossbow', name:'석궁 포탑',    rarity:'일반', kind:'facility', icon:'🏹',
-    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-<rect x="12" y="20" width="12" height="12" rx="1.5" fill="#7a5520" stroke="#c8902a" stroke-width="1.5"/>
-<rect x="14" y="11" width="8" height="11" fill="#5a3a10" stroke="#a07030" stroke-width="1.5"/>
-<rect x="11" y="7" width="5" height="6" rx="1" fill="#5a3a10" stroke="#a07030" stroke-width="1.5"/>
-<rect x="20" y="7" width="5" height="6" rx="1" fill="#5a3a10" stroke="#a07030" stroke-width="1.5"/>
-<line x1="7" y1="15" x2="29" y2="15" stroke="#ffd86b" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="18" y1="7" x2="18" y2="17" stroke="#ff9d2a" stroke-width="1.5" stroke-linecap="round"/>
-<polygon points="18,3 15,8 21,8" fill="#ffd86b"/>
-</svg>`,
-    desc:'근거리 단일 대상 연사',
-    stats:[{icon:'\u2694',label:'공격력',val:'30'},{icon:'\u23F1',label:'공속',val:'0.6s'},{icon:'\uD83D\uDCD0',label:'사거리',val:'280'}],
-    range:280, cooldown:0.6, dmg:30, type:'single', projSpeed:900, projColor:'#ffd86b'},
-  {id:'ballista', name:'마법 발리스타', rarity:'희귀', kind:'facility', icon:'⚔️',
-    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-<rect x="9" y="24" width="18" height="7" rx="2" fill="#2a1840" stroke="#9d7bff" stroke-width="1.5"/>
-<circle cx="12" cy="28" r="3.5" fill="#1a0e30" stroke="#9d7bff" stroke-width="1.5"/>
-<circle cx="24" cy="28" r="3.5" fill="#1a0e30" stroke="#9d7bff" stroke-width="1.5"/>
-<rect x="15" y="10" width="6" height="16" rx="1" fill="#3a2060" stroke="#c8a0ff" stroke-width="1.5"/>
-<line x1="5" y1="14" x2="31" y2="14" stroke="#c8a0ff" stroke-width="2" stroke-linecap="round"/>
-<line x1="18" y1="5" x2="18" y2="15" stroke="#9d7bff" stroke-width="2" stroke-linecap="round"/>
-<polygon points="18,2 15,7 21,7" fill="#c8a0ff"/>
-</svg>`,
-    desc:'원거리 고위력 관통탄',
-    stats:[{icon:'\u2694',label:'공격력',val:'110'},{icon:'\u23F1',label:'공속',val:'2.0s'},{icon:'\uD83D\uDCD0',label:'사거리',val:'420'}],
-    range:420, cooldown:2.0, dmg:110, type:'pierce', projSpeed:780, projColor:'#9d7bff'},
-  {id:'mortar',   name:'마법 박격포',  rarity:'희귀', kind:'facility', icon:'💥',
-    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-<rect x="13" y="22" width="10" height="10" rx="2" fill="#2a1a0a" stroke="#ff9d2a" stroke-width="1.5"/>
-<rect x="15" y="10" width="6" height="14" rx="3" fill="#1a1000" stroke="#ffb347" stroke-width="2"/>
-<circle cx="18" cy="8" r="4" fill="rgba(255,180,60,.25)" stroke="#ffd86b" stroke-width="1.5"/>
-<line x1="10" y1="28" x2="26" y2="28" stroke="#ff9d2a" stroke-width="2" stroke-linecap="round"/>
-<circle cx="18" cy="8" r="2" fill="#ffd86b" opacity=".9"/>
-<line x1="18" y1="4" x2="22" y2="1" stroke="#ff6a00" stroke-width="1.5" stroke-linecap="round" opacity=".8"/>
-</svg>`,
-    desc:'가장 밀집된 위치에 마법 포탄 발사, 착탄 시 광역 폭발',
-    stats:[{icon:'⚔',label:'폭발 피해',val:'85'},{icon:'⏱',label:'쿨타임',val:'1.8s'},{icon:'📐',label:'폭발 반경',val:'130'}],
+  /* ── 일반 (회색) ── */
+  {id:'crossbow', name:'석궁 포탑', rarity:'일반', kind:'facility', icon:'🏹',
+    svgIcon:`<svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="15" width="28" height="6" rx="2" fill="#ccc"/>
+      <rect x="14" y="4" width="4" height="20" rx="1.5" fill="#aaa"/>
+      <path d="M8 18 L18 8 L28 18" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="18" cy="10" r="3" fill="#64b5f6"/>
+    </svg>`,
+    desc:'가장 가까운 적에게 빠르게 화살을 연사한다.',
+    stats:[{icon:'⚔',label:'피해',val:'30'},{icon:'⏱',label:'공속',val:'0.8s'},{icon:'📐',label:'사거리',val:'280'}],
+    range:280, cooldown:0.8, dmg:30, type:'projectile', projSpeed:520, projColor:'#aef'},
+  {id:'holy_well', name:'성수 제단', rarity:'일반', kind:'facility', icon:'⛲',
+    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
+      <rect x="8" y="22" width="20" height="8" rx="3" fill="#4dd"/>
+      <rect x="13" y="12" width="10" height="12" rx="2" fill="#3cc"/>
+      <circle cx="18" cy="8" r="5" fill="#7ef"/>
+      <path d="M15 8 Q18 4 21 8" stroke="#fff" stroke-width="1.5" fill="none"/>
+    </svg>`,
+    desc:'주기적으로 발키리의 가호 게이지를 회복한다.',
+    stats:[{icon:'💙',label:'회복량',val:'가호 +10'},{icon:'⏱',label:'주기',val:'4.0s'}],
+    range:0, cooldown:4.0, healAmount:10, type:'heal', projColor:'#7cc4ff'},
+
+  /* ── 고급 (녹색) ── */
+  {id:'ballista', name:'마법 발리스타', rarity:'고급', kind:'facility', icon:'⚔️',
+    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
+      <rect x="3" y="16" width="30" height="5" rx="1.5" fill="#81c784"/>
+      <rect x="16" y="6" width="4" height="18" rx="1" fill="#66bb6a"/>
+      <polygon points="18,4 24,16 12,16" fill="#a5d6a7"/>
+      <line x1="3" y1="18" x2="33" y2="18" stroke="#c8e6c9" stroke-width="1.5"/>
+    </svg>`,
+    desc:'강력한 마법 볼트를 발사해 경로상의 모든 적을 관통한다.',
+    stats:[{icon:'⚔',label:'피해',val:'110'},{icon:'⏱',label:'공속',val:'2.2s'},{icon:'📐',label:'사거리',val:'420'}],
+    range:420, cooldown:2.2, dmg:110, type:'pierce', projSpeed:580, projColor:'#81c784'},
+  {id:'frost_spirit', name:'서리 정령', rarity:'고급', kind:'facility', icon:'❄️',
+    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
+      <line x1="18" y1="4" x2="18" y2="32" stroke="#90caf9" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="4" y1="18" x2="32" y2="18" stroke="#90caf9" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="8" y1="8" x2="28" y2="28" stroke="#90caf9" stroke-width="2" stroke-linecap="round"/>
+      <line x1="28" y1="8" x2="8" y2="28" stroke="#90caf9" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="18" cy="18" r="4" fill="#bbdefb"/>
+      <circle cx="18" cy="6" r="2" fill="#e3f2fd"/>
+      <circle cx="18" cy="30" r="2" fill="#e3f2fd"/>
+      <circle cx="6" cy="18" r="2" fill="#e3f2fd"/>
+      <circle cx="30" cy="18" r="2" fill="#e3f2fd"/>
+    </svg>`,
+    desc:'범위 내의 적들의 이동속도를 지속적으로 감소시킨다.',
+    stats:[{icon:'❄',label:'감속',val:'-25%'},{icon:'⏱',label:'주기',val:'2.5s'},{icon:'📐',label:'사거리',val:'300'}],
+    range:300, cooldown:2.5, slowDur:3.0, type:'debuff', projColor:'#90caf9'},
+
+  /* ── 희귀 (파란) ── */
+  {id:'mortar', name:'마법 박격포', rarity:'희귀', kind:'facility', icon:'💥',
+    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
+      <ellipse cx="18" cy="28" rx="10" ry="4" fill="#444" opacity=".5"/>
+      <rect x="14" y="10" width="8" height="18" rx="3" fill="#64b5f6"/>
+      <rect x="12" y="22" width="12" height="6" rx="2" fill="#42a5f5"/>
+      <circle cx="18" cy="8" r="5" fill="#ffb74d"/>
+      <circle cx="18" cy="8" r="2.5" fill="#ff7043"/>
+    </svg>`,
+    desc:'적이 밀집한 지점에 마법 포탄을 발사해 착탄 시 광역 폭발을 일으킨다.',
+    stats:[{icon:'💥',label:'피해',val:'85 (광역)'},{icon:'⏱',label:'공속',val:'1.8s'},{icon:'📐',label:'사거리',val:'380'}],
     range:380, cooldown:1.8, dmg:85, type:'mortar', splashR:130, shellSpeed:320, projColor:'#ffb347'},
-  {id:'holy_well', name:'성수 제단',  rarity:'일반', kind:'facility', icon:'⛲',
-    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-<rect x="8" y="28" width="20" height="5" rx="2" fill="#0e2040" stroke="#7cc4ff" stroke-width="1.5"/>
-<rect x="11" y="16" width="4" height="14" rx="1" fill="#0a1830" stroke="#5aa0d8" stroke-width="1"/>
-<rect x="21" y="16" width="4" height="14" rx="1" fill="#0a1830" stroke="#5aa0d8" stroke-width="1"/>
-<ellipse cx="18" cy="18" rx="8" ry="5" fill="rgba(124,196,255,.15)" stroke="#7cc4ff" stroke-width="1.5"/>
-<ellipse cx="18" cy="18" rx="5" ry="3" fill="rgba(124,196,255,.3)"/>
-<line x1="18" y1="14" x2="18" y2="6" stroke="#b0d8ff" stroke-width="1.5" opacity=".7"/>
-<circle cx="18" cy="5" r="3" fill="rgba(200,230,255,.4)" stroke="#c8e8ff" stroke-width="1"/>
-</svg>`,
-    desc:'주기적으로 가호 회복',
-    stats:[{icon:'\u2728',label:'가호 회복',val:'+8'},{icon:'\u23F1',label:'주기',val:'3.0s'},{icon:'\uD83D\uDCD0',label:'범위',val:'전체'}],
-    range:9999, cooldown:3.0, dmg:0, type:'heal', healAmount:8, projSpeed:0, projColor:'#7cc4ff'},
-  {id:'barrier',   name:'수호 결계',  rarity:'영웅', kind:'facility', icon:'🛡️',
-    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-<rect x="5" y="18" width="4" height="14" rx="2" fill="#062030" stroke="#26ffe9" stroke-width="1.5"/>
-<rect x="27" y="18" width="4" height="14" rx="2" fill="#062030" stroke="#26ffe9" stroke-width="1.5"/>
-<ellipse cx="7" cy="17" rx="5" ry="5" fill="rgba(38,255,233,.12)" stroke="#26ffe9" stroke-width="1.5"/>
-<ellipse cx="29" cy="17" rx="5" ry="5" fill="rgba(38,255,233,.12)" stroke="#26ffe9" stroke-width="1.5"/>
-<path d="M9,13 Q18,5 27,13 Q27,24 18,31 Q9,24 9,13 Z" fill="rgba(38,255,233,.07)" stroke="#26ffe9" stroke-width="1.5"/>
-<path d="M13,16 Q18,11 23,16 Q23,22 18,26 Q13,22 13,16 Z" fill="rgba(38,255,233,.1)" stroke="rgba(38,255,233,.5)" stroke-width="1"/>
-</svg>`,
-    desc:'수문 HP를 주기적 회복',
-    stats:[{icon:'\uD83D\uDEE1',label:'수문 회복',val:'+15'},{icon:'\u23F1',label:'주기',val:'4.0s'},{icon:'\uD83C\uDFAF',label:'대상',val:'수문'}],
-    range:9999, cooldown:4.0, dmg:0, type:'gate_heal', healAmount:15, projSpeed:0, projColor:'#26ffe9'},
-  {id:'repair_spirit', name:'서리 정령', rarity:'영웅', kind:'facility', icon:'🧚',
-    svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-<line x1="18" y1="4" x2="18" y2="32" stroke="#c8a0ff" stroke-width="1.5" opacity=".5"/>
-<line x1="4" y1="18" x2="32" y2="18" stroke="#c8a0ff" stroke-width="1.5" opacity=".5"/>
-<line x1="8" y1="8" x2="28" y2="28" stroke="#c8a0ff" stroke-width="1" opacity=".35"/>
-<line x1="28" y1="8" x2="8" y2="28" stroke="#c8a0ff" stroke-width="1" opacity=".35"/>
-<polygon points="18,4 20,14 28,14 21,20 24,30 18,24 12,30 15,20 8,14 16,14" fill="rgba(200,160,255,.18)" stroke="#c8a0ff" stroke-width="1.5"/>
-<circle cx="18" cy="16" r="5" fill="rgba(200,160,255,.3)" stroke="#e0c8ff" stroke-width="1.5"/>
-<circle cx="18" cy="16" r="2" fill="#e0c8ff" opacity=".9"/>
-</svg>`,
-    desc:'적 감속 + 아군 시설 강화',
-    stats:[{icon:'\u2744',label:'감속',val:'-25%'},{icon:'\u23F1',label:'주기',val:'5.0s'},{icon:'\uD83D\uDCD0',label:'범위',val:'300'}],
-    range:300, cooldown:5.0, dmg:0, type:'debuff', slowPct:0.25, slowDur:3.0, projSpeed:0, projColor:'#c8a0ff'},
+  {id:'barrier', name:'수호 결계', rarity:'희귀', kind:'facility', icon:'🛡️',
+    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
+      <path d="M18 4 L30 9 L30 20 Q30 29 18 33 Q6 29 6 20 L6 9 Z" fill="rgba(33,150,243,.25)" stroke="#2196f3" stroke-width="2"/>
+      <path d="M18 10 L25 13 L25 20 Q25 26 18 29 Q11 26 11 20 L11 13 Z" fill="rgba(33,150,243,.2)" stroke="#64b5f6" stroke-width="1"/>
+      <circle cx="18" cy="19" r="4" fill="#90caf9"/>
+    </svg>`,
+    desc:'주기적으로 수문 HP를 회복하고 보호한다.',
+    stats:[{icon:'🏰',label:'회복량',val:'수문 +15'},{icon:'⏱',label:'주기',val:'5.0s'}],
+    range:0, cooldown:5.0, healAmount:15, type:'gate_heal', projColor:'#26ffe9'},
+
+  /* ── 고유 (보라) ── */
+  {id:'lightning_orb', name:'뇌격 마법진', rarity:'고유', kind:'facility', icon:'⚡',
+    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
+      <circle cx="18" cy="18" r="13" stroke="#9c27b0" stroke-width="2" fill="rgba(156,39,176,.12)"/>
+      <circle cx="18" cy="18" r="8" stroke="#ce93d8" stroke-width="1.5" fill="rgba(206,147,216,.1)"/>
+      <path d="M18 8 L14 18 L20 18 L16 28" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="18" cy="18" r="3" fill="#e040fb"/>
+    </svg>`,
+    desc:'번개를 방출해 범위 내 최대 3명의 적에게 연쇄 공격한다.',
+    stats:[{icon:'⚡',label:'피해',val:'55 ×3연쇄'},{icon:'⏱',label:'공속',val:'2.0s'},{icon:'📐',label:'사거리',val:'340'}],
+    range:340, cooldown:2.0, dmg:55, type:'chain', chainCount:3, projColor:'#e040fb'},
+  {id:'holy_amplifier', name:'성스러운 방벽', rarity:'고유', kind:'facility', icon:'✨',
+    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
+      <circle cx="18" cy="18" r="13" stroke="#9c27b0" stroke-width="1.5" fill="rgba(156,39,176,.08)" stroke-dasharray="4 2"/>
+      <rect x="13" y="13" width="10" height="10" rx="2" fill="rgba(206,147,216,.3)" stroke="#ce93d8" stroke-width="1.5"/>
+      <path d="M18 9 L18 13 M18 23 L18 27 M9 18 L13 18 M23 18 L27 18" stroke="#e040fb" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="18" cy="18" r="3" fill="#f48fb1"/>
+    </svg>`,
+    desc:'인근 방어 시설의 공격력을 강화하는 마력 증폭 결계를 형성한다.',
+    stats:[{icon:'⬆',label:'강화',val:'인근 시설 공격력 +30%'},{icon:'📐',label:'반경',val:'200'}],
+    range:200, cooldown:99999, type:'buff', buffAmount:0.30, projColor:'#e040fb'},
+
+  /* ── 전설 (주황) ── */
+  {id:'valk_wrath', name:'발키리의 분노', rarity:'전설', kind:'facility', icon:'🔥',
+    svgIcon:`<svg viewBox="0 0 36 36" fill="none">
+      <circle cx="18" cy="18" r="14" fill="rgba(255,152,0,.15)" stroke="#ff9800" stroke-width="2"/>
+      <circle cx="18" cy="18" r="9" fill="rgba(255,152,0,.2)" stroke="#ffb74d" stroke-width="1.5"/>
+      <path d="M18 6 L21 15 L30 12 L23 19 L28 27 L18 22 L8 27 L13 19 L6 12 L15 15 Z" fill="#ff9800" opacity=".9"/>
+      <circle cx="18" cy="18" r="4" fill="#fff3e0"/>
+    </svg>`,
+    desc:'발키리의 힘을 빌린 신성한 포격으로 전장의 가장 위험한 위치에 강력한 광역 폭발을 일으킨다.',
+    stats:[{icon:'💥',label:'피해',val:'180 (광역)'},{icon:'⏱',label:'공속',val:'3.5s'},{icon:'📐',label:'사거리',val:'500'}],
+    range:500, cooldown:3.5, dmg:180, type:'siege', splashR:200, shellSpeed:280, projColor:'#ff9800'},
 ];
 
 // 슬롯 순서: 좌하 → 우하 → 좌상 → 우상 → 수문 위
@@ -2043,31 +2127,44 @@ const FACILITY_SLOT_DEFS=[
 
 // 카드 풀
 const CARD_POOL=[
+  /* ── 일반 (회색, 4종) ── */
   {id:'sword_mastery',  name:'투검 숙련',      rarity:'일반', kind:'hero', icon:'⚔️', desc:'기본 공격 강화',
-    stats:[{icon:'\u2694',label:'공격력',val:'+15%'}],                    maxStack:5, apply:()=>{ player.swordDmg*=1.15 }},
-  {id:'swift_throw',    name:'신속한 투척',    rarity:'일반', kind:'hero', icon:'💨', desc:'검 투척 속도 증가',
-    stats:[{icon:'\u23F1',label:'공속',val:'+20%'}],                  maxStack:5, apply:()=>{ player.attackInterval*=0.833 }},
-  {id:'long_shot',      name:'장거리 투척',    rarity:'일반', kind:'hero', icon:'🏹', desc:'사거리 확장',
-    stats:[{icon:'\uD83D\uDCD0',label:'사거리',val:'+25%'}],                     maxStack:3, apply:()=>{ player.attackRange*=1.25 }},
-  {id:'light_armor',    name:'경량 갑주',      rarity:'일반', kind:'hero', icon:'👢', desc:'이동속도 증가',
-    stats:[{icon:'\uD83C\uDFC3',label:'이동속도',val:'+15%'}],                  maxStack:4, apply:()=>{ player.speed*=1.15 }},
+    stats:[{icon:'⚔',label:'공격력',val:'+15%'}], maxStack:5, apply:()=>{ player.swordDmg*=1.15 }},
+  {id:'swift_throw',    name:'질풍 투척',       rarity:'일반', kind:'hero', icon:'💨', desc:'검 투척 속도 증가',
+    stats:[{icon:'⏱',label:'공속',val:'+20%'}], maxStack:5, apply:()=>{ player.attackInterval*=0.833 }},
+  {id:'light_armor',    name:'경량 갑주',       rarity:'일반', kind:'hero', icon:'👢', desc:'이동속도 증가',
+    stats:[{icon:'🏃',label:'이동속도',val:'+15%'}], maxStack:4, apply:()=>{ player.speed*=1.15 }},
   {id:'valkyrie_heart', name:'발키리의 심장',   rarity:'일반', kind:'hero', icon:'✨', desc:'가호 게이지 최대치 증가',
-    stats:[{icon:'\uD83D\uDC96',label:'가호',val:'+20'},{icon:'\u2764',label:'즉시 회복',val:'+20'}],   maxStack:3, apply:()=>{ state.gaugeMax+=20; state.gauge=Math.min(state.gaugeMax,state.gauge+20) }},
-  {id:'wind_blessing',  name:'바람의 가호',    rarity:'일반', kind:'hero', icon:'🌪️', desc:'질주 쿨타임 감소',
-    stats:[{icon:'\uD83C\uDF2A',label:'쿨타임',val:'-1s'}], maxStack:2, apply:()=>{ skills.Q.max=Math.max(1,skills.Q.max-1) }},
-  {id:'magnet_charm',   name:'인력의 부적',    rarity:'일반', kind:'hero', icon:'🧲', desc:'아이템 수집 범위 확대',
-    stats:[{icon:'\uD83E\uDDF2',label:'수집 반경',val:'+30%'}],         maxStack:3, apply:()=>{ player.pickupRadius*=1.30 }},
-  {id:'wide_blast',     name:'광역 확장',      rarity:'희귀', kind:'hero', icon:'💥', desc:'충격파 범위와 위력 강화',
-    stats:[{icon:'\uD83D\uDCA5',label:'반경',val:'+30%'},{icon:'\u2694',label:'피해',val:'+20%'}],     maxStack:3, apply:()=>{ player.shockwaveRadius*=1.30; player.shockwaveDmg*=1.20 }},
-  {id:'crit_instinct',  name:'치명 직감',      rarity:'희귀', kind:'hero', icon:'🎯', desc:'치명타 확률 증가',
-    stats:[{icon:'\uD83C\uDFAF',label:'크리티컬',val:'+15%'}],              maxStack:4, apply:()=>{ player.critChance=Math.min(0.95,player.critChance+0.15) }},
-  {id:'orb_resonance',  name:'보주 공명',      rarity:'희귀', kind:'hero', icon:'💎', desc:'보주 획득 시 회복량 증가',
-    stats:[{icon:'\uD83D\uDC8E',label:'회복량',val:'+50%'}],                maxStack:3, apply:()=>{ player.orbMultiplier*=1.5 }},
-  {id:'double_throw',   name:'이중 투척',      rarity:'영웅', kind:'hero', icon:'🔱', desc:'동시 2연발 투척',
-    stats:[{icon:'\u26A1',label:'투사체',val:'2개'}],            maxStack:1, apply:()=>{ player.projectileCount=2 }},
+    stats:[{icon:'💙',label:'가호',val:'+20'},{icon:'❤',label:'즉시 회복',val:'+20'}], maxStack:3, apply:()=>{ state.gaugeMax+=20; state.gauge=Math.min(state.gaugeMax,state.gauge+20) }},
+
+  /* ── 고급 (녹색, 3종) ── */
+  {id:'long_shot',      name:'장거리 투척',     rarity:'고급', kind:'hero', icon:'🏹', desc:'사거리 확장',
+    stats:[{icon:'📐',label:'사거리',val:'+25%'}], maxStack:3, apply:()=>{ player.attackRange*=1.25 }},
+  {id:'magnet_charm',   name:'인력의 부적',     rarity:'고급', kind:'hero', icon:'🧲', desc:'아이템 수집 범위 확대',
+    stats:[{icon:'🧲',label:'수집 반경',val:'+30%'}], maxStack:3, apply:()=>{ player.pickupRadius*=1.30 }},
+  {id:'wind_blessing',  name:'바람의 가호',     rarity:'고급', kind:'hero', icon:'🌪️', desc:'질주 쿨타임 감소',
+    stats:[{icon:'🌀',label:'쿨타임',val:'-1s'}], maxStack:2, apply:()=>{ skills.Q.max=Math.max(1,skills.Q.max-1) }},
+
+  /* ── 희귀 (파란, 3종) ── */
+  {id:'wide_blast',     name:'광폭 충격파',     rarity:'희귀', kind:'hero', icon:'💥', desc:'충격파 범위와 위력 강화',
+    stats:[{icon:'💥',label:'반경',val:'+30%'},{icon:'⚔',label:'피해',val:'+20%'}], maxStack:3, apply:()=>{ player.shockwaveRadius*=1.30; player.shockwaveDmg*=1.20 }},
+  {id:'crit_instinct',  name:'치명 직감',       rarity:'희귀', kind:'hero', icon:'🎯', desc:'치명타 확률 증가',
+    stats:[{icon:'🎯',label:'크리티컬',val:'+15%'}], maxStack:4, apply:()=>{ player.critChance=Math.min(0.95,player.critChance+0.15) }},
+  {id:'orb_resonance',  name:'보주 공명',       rarity:'희귀', kind:'hero', icon:'💎', desc:'보주 획득 시 회복량 증가',
+    stats:[{icon:'💎',label:'회복량',val:'+50%'}], maxStack:3, apply:()=>{ player.orbMultiplier=(player.orbMultiplier||1)*1.5 }},
+
+  /* ── 고유 (보라, 2종) ── */
+  {id:'double_throw',   name:'이중 투척',       rarity:'고유', kind:'hero', icon:'🔱', desc:'동시 2연발 투척',
+    stats:[{icon:'⚡',label:'투사체',val:'2개'}], maxStack:1, apply:()=>{ player.projectileCount=2 }},
+  {id:'holy_aegis',     name:'가호의 각인',     rarity:'고유', kind:'hero', icon:'🛡️', desc:'피격 시 20% 확률로 가호를 소모하지 않음',
+    stats:[{icon:'🛡',label:'방어 확률',val:'20%'}], maxStack:1, apply:()=>{ player.aegisChance=(player.aegisChance||0)+0.20 }},
+
+  /* ── 전설 (주황, 1종) ── */
+  {id:'valk_awakening', name:'발키리의 각성',   rarity:'전설', kind:'hero', icon:'⚔️', desc:'검 투척이 적을 관통하며 사거리와 위력이 극대화된다.',
+    stats:[{icon:'⚔',label:'피해',val:'+50%'},{icon:'📐',label:'사거리',val:'최대화'},{icon:'↗',label:'관통',val:'활성화'}], maxStack:1, apply:()=>{ player.projectilePierce=true; player.swordDmg*=1.50; player.attackRange=Math.max(player.attackRange,600) }},
 ];
-const RARITY_WEIGHTS={ '일반':60, '희귀':30, '영웅':10 };
-const RARITY_COLORS={ '일반':'teal', '희귀':'amber', '영웅':'violet' };
+const RARITY_WEIGHTS={ '일반':50, '고급':28, '희귀':15, '고유':6, '전설':1 };
+const RARITY_COLORS={ '일반':'gray', '고급':'green', '희귀':'blue', '고유':'violet', '전설':'orange' };
 
 const WAVE_DEFS=[
   // W1: 입문 — 피라냐만 (v1.6: 어인기사 W2로 이동)
@@ -2555,7 +2652,8 @@ function selectFacility(f, el){
     <div class="slot-ring"><span class="facility-icon">${f.svgIcon||f.icon}</span></div>
     <div class="deposit-ring"><svg viewBox="0 0 92 92"><circle class="dr-track" cx="46" cy="46" r="42.5"/><circle class="dr-fill" cx="46" cy="46" r="42.5" style="stroke-dasharray:267;stroke-dashoffset:0"/></svg></div>`;
   s.el.classList.add('built'); s.el.classList.remove('ready','depositing','insufficient');
-  if(f.type==='aoe'||f.type==='mortar') s.el.classList.add('aoe-facility');
+  if(f.type==='aoe'||f.type==='mortar'||f.type==='siege') s.el.classList.add('aoe-facility');
+  applyBuffFacilities();
   if(el) el.classList.add('selected');
   setTimeout(()=>{
     document.getElementById('cardDraft').classList.remove('show');
@@ -2566,6 +2664,22 @@ function selectFacility(f, el){
     state.phase='playing';
   }, 550);
 }
+function applyBuffFacilities(){
+  // 성스러운 방벽 버프 적용: 인근 시설의 dmg*1.30
+  for(const s of state.facilitySlots){
+    if(!s.unlocked||!s.facility) continue;
+    const f=s.facility;
+    if(f.type!=='buff') continue;
+    for(const s2 of state.facilitySlots){
+      if(!s2.unlocked||!s2.facility||s2===s) continue;
+      const f2=s2.facility;
+      if(Math.hypot(s.x-s2.x,s.y-s2.y)<(f.range||200)){
+        if(!f2._buffApplied){ f2._buffApplied=true; f2.dmg=(f2.dmg||0)*(1+f.buffAmount); }
+      }
+    }
+  }
+}
+
 function facilityAttack(dt){
   for(const s of state.facilitySlots){
     if(!s.unlocked || !s.facility) continue;
@@ -2624,6 +2738,52 @@ function facilityAttack(dt){
         dmg:f.dmg, splashR:f.splashR||130,
         travelTime:0.4, elapsed:0,
         shellEl, warnEl, done:false
+      };
+      state.mortarShells.push(shell);
+      s.el.classList.remove('firing'); void s.el.offsetWidth; s.el.classList.add('firing');
+      f.attackCD=f.cooldown;
+    } else if(f.type==='chain'){
+      // 뇨격 마법진: 연쇄 번개
+      const inRange=enemies.filter(e=>Math.hypot(e.x-s.x,e.y-s.y)<f.range && e._alive);
+      if(inRange.length===0){ continue; }
+      inRange.sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y));
+      const targets=inRange.slice(0,f.chainCount||3);
+      let prev={x:s.x,y:s.y};
+      for(const tgt of targets){
+        chainLightningFX(prev.x,prev.y,tgt.x,tgt.y);
+        dealDamage(tgt, f.dmg, false);
+        prev=tgt;
+      }
+      s.el.classList.remove('firing'); void s.el.offsetWidth; s.el.classList.add('firing');
+      spawnFacilityFloat(s.x,s.y,'⚡ ×'+targets.length,'#e040fb');
+      f.attackCD=f.cooldown;
+    } else if(f.type==='buff'){
+      // 성스러운 방벽: passive 버프 (시각 이펙트만)
+      f.attackCD=f.cooldown;
+    } else if(f.type==='siege'){
+      // 발키리의 분노: 강력한 광역 포격
+      const inRange=enemies.filter(e=>Math.hypot(e.x-s.x,e.y-s.y)<f.range && e._alive);
+      if(inRange.length===0){ continue; }
+      let cx=0,cy=0;
+      for(const e of inRange){cx+=e.x;cy+=e.y;}
+      cx/=inRange.length; cy/=inRange.length;
+      const warnEl=document.createElement('div');
+      const warnSize=(f.splashR||200)*2;
+      warnEl.style.cssText=`left:${cx}px;top:${cy}px;width:${warnSize}px;height:${warnSize}px;border:2px dashed rgba(255,152,0,.9);border-radius:50%;background:rgba(255,100,0,.06);position:absolute;transform:translate(-50%,-50%);animation:mortarWarnPulse .3s ease-in-out infinite alternate;pointer-events:none;z-index:3;`;
+      stage.appendChild(warnEl);
+      const shellEl=document.createElement('div');
+      shellEl.className='mortar-shell';
+      shellEl.style.background='radial-gradient(circle,#fff3e0,#ff9800)';
+      shellEl.style.boxShadow='0 0 14px #ff9800, 0 0 6px #fff';
+      shellEl.style.width='18px'; shellEl.style.height='18px';
+      shellEl.style.left=s.x+'px'; shellEl.style.top=s.y+'px';
+      stage.appendChild(shellEl);
+      const shell={
+        sx:s.x, sy:s.y, x:s.x, y:s.y, tx:cx, ty:cy,
+        dmg:f.dmg, splashR:f.splashR||200,
+        travelTime:0.5, elapsed:0,
+        shellEl, warnEl, done:false,
+        isSiege:true
       };
       state.mortarShells.push(shell);
       s.el.classList.remove('firing'); void s.el.offsetWidth; s.el.classList.add('firing');
@@ -2749,23 +2909,54 @@ function runeStrike(x,y,R){
   for(let i=0;i<24;i++) particles.push({x:x+(Math.random()-.5)*R*1.6, y:y+(Math.random()-.5)*R*0.7, vx:(Math.random()-.5)*120, vy:-60-Math.random()*140, life:.7, size:3+Math.random()*4, color:'rgba(180,160,255,'});
 }
 
-function mortarExplosion(x,y,R){
+function chainLightningFX(x1,y1,x2,y2){
+  const start=performance.now();
+  const segments=8;
+  function draw(){
+    const t=(performance.now()-start)/150;
+    if(t>1) return;
+    ctx.save();
+    ctx.globalAlpha=(1-t)*0.85;
+    ctx.strokeStyle='#e040fb';
+    ctx.shadowColor='#9c27b0';
+    ctx.shadowBlur=12;
+    ctx.lineWidth=2.5;
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    for(let i=1;i<segments;i++){
+      const px=x1+(x2-x1)*(i/segments)+(Math.random()-0.5)*20*(1-t);
+      const py=y1+(y2-y1)*(i/segments)+(Math.random()-0.5)*20*(1-t);
+      ctx.lineTo(px,py);
+    }
+    ctx.lineTo(x2,y2);
+    ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,0.7)';
+    ctx.lineWidth=1;
+    ctx.stroke();
+    ctx.restore();
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+
+function mortarExplosion(x,y,R,color='#ffb347'){
   const t0=performance.now();
+  const isSiege=(color==='#ff9800');
   (function draw(){
     const t=(performance.now()-t0)/400;
     if(t>1)return;
     ctx.save();
     // 외부 충격파 링
     ctx.globalAlpha=(1-t)*0.7;
-    ctx.strokeStyle=`rgba(255,180,60,${1-t})`;
-    ctx.lineWidth=3;
-    ctx.shadowColor='#ff9d00';ctx.shadowBlur=12;
+    ctx.strokeStyle=isSiege?`rgba(255,152,0,${1-t})`:`rgba(255,180,60,${1-t})`;
+    ctx.lineWidth=isSiege?5:3;
+    ctx.shadowColor=isSiege?'#ff9800':'#ff9d00';ctx.shadowBlur=isSiege?20:12;
     ctx.beginPath();ctx.arc(x,y,R*t,0,Math.PI*2);ctx.stroke();
     // 내부 화염 폭발
     ctx.globalAlpha=(1-t)*0.5;
     const rg=ctx.createRadialGradient(x,y,0,x,y,R*0.6*t+0.001);
     rg.addColorStop(0,'rgba(255,240,180,1)');
-    rg.addColorStop(0.4,'rgba(255,140,0,.8)');
+    rg.addColorStop(0.4,isSiege?'rgba(255,120,0,.9)':'rgba(255,140,0,.8)');
     rg.addColorStop(1,'rgba(255,60,0,0)');
     ctx.fillStyle=rg;
     ctx.beginPath();ctx.arc(x,y,R*0.6*t+0.001,0,Math.PI*2);ctx.fill();
@@ -2773,7 +2964,8 @@ function mortarExplosion(x,y,R){
     requestAnimationFrame(draw);
   })();
   // 폭발 파티클
-  for(let i=0;i<20;i++) particles.push({x,y,vx:(Math.random()-.5)*320,vy:-80-Math.random()*200,life:.6,size:3+Math.random()*5,color:'rgba(255,160,40,'});
+  const pColor=isSiege?'rgba(255,130,20,':'rgba(255,160,40,';
+  for(let i=0;i<(isSiege?30:20);i++) particles.push({x,y,vx:(Math.random()-.5)*320,vy:-80-Math.random()*200,life:.6,size:3+Math.random()*5,color:pColor});
 }
 
 function renderHudCards(){
@@ -2802,7 +2994,7 @@ function renderHudCards(){
 function showCardTooltip(meta,stack,e){
   const tt=document.getElementById('cardTooltip');
   const _R=['I','II','III','IV','V'];
-  const _rarityHex={'일반':'#26ffe9','희귀':'#ffb830','영웅':'#9d7bff'};
+  const _rarityHex={'일반':'#9e9e9e','고급':'#4caf50','희귀':'#2196f3','고유':'#9d7bff','전설':'#ff9800'};
   const _nc=_rarityHex[meta.rarity]||'#fff';
   tt.querySelector('.tt-name').innerHTML=meta.icon+' <span style="color:'+_nc+'">'+meta.name+' '+(_R[stack-1]||stack)+'단계 ('+stack+'/'+meta.maxStack+')</span>';
   tt.querySelector('.tt-desc').textContent=meta.desc;
@@ -3568,6 +3760,12 @@ function renderGateCracks(){
 
 // 발키리 피격 공통 처리 — 가호 0 시 수문 HP 직접 감소
 function damagePlayer(dmg){
+  // 가호의 각인: 가호가 있을 때 aegisChance 확률로 가호 소모 무시
+  if(state.gauge>0 && player.aegisChance && Math.random()<player.aegisChance){
+    // 가호 소모 무시 (피해 차단)
+    spawnFacilityFloat(player.x, player.y-30, '🛡 각인','#9d7bff');
+    return;
+  }
   if(state.gauge>0){
     state.gauge=Math.max(0,state.gauge-dmg);
   } else {
@@ -3692,8 +3890,16 @@ function updatePlayerGaugeTop(){
   // 가호 아우라 연출 업데이트
   const aura=document.getElementById('playerAura');
   if(aura){
-    const auraOpacity=Math.max(0, Math.min(1, gp/80)); // 80%에서 1.0, 0%에서 0
+    const auraOpacity=Math.max(0, Math.min(1, gp/70));
     aura.style.setProperty('--aura-o', auraOpacity.toFixed(2));
+    // 게이지 레벨에 따라 아우라 색상 변화
+    if(gp>60){
+      aura.style.setProperty('--aura-color','rgba(0,229,255,');
+    } else if(gp>30){
+      aura.style.setProperty('--aura-color','rgba(100,255,100,');
+    } else if(gp>10){
+      aura.style.setProperty('--aura-color','rgba(255,180,0,');
+    }
     aura.classList.toggle('warn', gp<=30 && gp>0);
     aura.classList.toggle('depleted', state.gaugeDepleted);
   }
@@ -4351,8 +4557,8 @@ function update(dt){
       for(const e of enemies){
         if(Math.hypot(e.x-m.tx,e.y-m.ty)<m.splashR) dealDamage(e,m.dmg,false);
       }
-      mortarExplosion(m.tx,m.ty,m.splashR);
-      spawnFacilityFloat(m.tx,m.ty,'💥 폭발','#ffb347');
+      mortarExplosion(m.tx,m.ty,m.splashR, m.isSiege ? '#ff9800' : '#ffb347');
+      spawnFacilityFloat(m.tx,m.ty,m.isSiege?'🔥 분노':'💥 폭발',m.isSiege?'#ff9800':'#ffb347');
     }
   }
   handleDeposit(dt);
@@ -4477,8 +4683,10 @@ function fireSword(x,y,tgt){
     const offset=count>1?(i-(count-1)/2)*spread:0;
     const a=baseAngle+offset;
     const crit=Math.random()<player.critChance;
+    const pierce=player.projectilePierce||false;
     projectiles.push({ x,y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, life:1.0,
-      dmg:player.swordDmg*(crit?2:1), crit, angle:a });
+      dmg:player.swordDmg*(crit?2:1), crit, angle:a,
+      pierce, hitSet:pierce?new Set():null });
   }
 }
 
@@ -4544,16 +4752,17 @@ function renderFx(dt){
   for(const s of state.facilitySlots){
     if(!s.unlocked || !s.facility) continue;
     const f=s.facility;
-    // 마법진/박격포 범위 상시 표시 (옅은 원)
-    if(f.type==='aoe'||f.type==='mortar'){
+    // 마법진/박격포/뇨격/방벽/포격 범위 상시 표시 (옅은 원)
+    if(f.type==='aoe'||f.type==='mortar'||f.type==='chain'||f.type==='buff'||f.type==='siege'){
       ctx.save();
       const rPulse=0.06+0.03*Math.sin(performance.now()/600);
+      const rColor=f.type==='chain'?'156,39,176':f.type==='buff'?'224,64,251':f.type==='siege'?'255,152,0':'157,123,255';
       const rg2=ctx.createRadialGradient(s.x,s.y,f.range*0.5,s.x,s.y,f.range);
-      rg2.addColorStop(0,'rgba(157,123,255,0)');
-      rg2.addColorStop(1,`rgba(157,123,255,${rPulse})`);
+      rg2.addColorStop(0,`rgba(${rColor},0)`);
+      rg2.addColorStop(1,`rgba(${rColor},${rPulse})`);
       ctx.fillStyle=rg2;
       ctx.beginPath();ctx.arc(s.x,s.y,f.range,0,Math.PI*2);ctx.fill();
-      ctx.strokeStyle=`rgba(157,123,255,${rPulse+0.08})`; ctx.lineWidth=1; ctx.setLineDash([6,4]);
+      ctx.strokeStyle=`rgba(${rColor},${rPulse+0.08})`; ctx.lineWidth=1; ctx.setLineDash([6,4]);
       ctx.beginPath();ctx.arc(s.x,s.y,f.range,0,Math.PI*2);ctx.stroke();
       ctx.setLineDash([]);
       ctx.restore();
