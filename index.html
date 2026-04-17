@@ -138,6 +138,17 @@
   .boss-proj.big{width:22px;height:22px;background:radial-gradient(circle,rgba(255,100,130,.95),rgba(180,0,60,.6));
     box-shadow:0 0 14px rgba(255,77,109,.9),0 0 28px rgba(180,0,60,.5)}
   @keyframes bpGlow{0%{opacity:.8;transform:translate(-50%,-50%) scale(.88)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}}
+  /* 마법 박격포 포탄 */
+  .mortar-shell{position:absolute;width:14px;height:14px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,220,100,1),rgba(255,140,0,.8));
+    box-shadow:0 0 12px rgba(255,200,60,.9),0 0 24px rgba(255,140,0,.5);
+    transform:translate(-50%,-50%);pointer-events:none;z-index:7;}
+  /* 마법 박격포 착탄 경고 원 */
+  .mortar-warn{position:absolute;border-radius:50%;border:2px dashed rgba(255,180,40,.8);
+    background:rgba(255,140,0,.07);transform:translate(-50%,-50%);pointer-events:none;z-index:4;
+    animation:mortarWarnPulse .3s ease-in-out infinite alternate;}
+  @keyframes mortarWarnPulse{0%{border-color:rgba(255,180,40,.5);background:rgba(255,140,0,.04)}
+    100%{border-color:rgba(255,220,80,1);background:rgba(255,160,0,.12)}}
 
   /* ═══ 보스 페이즈 비주얼 ═══ */
   .enemy.boss.boss-p2{filter:drop-shadow(0 0 20px rgba(255,140,0,.85)) drop-shadow(0 0 40px rgba(200,80,0,.4));}
@@ -1853,6 +1864,12 @@ document.addEventListener('keydown',e=>{
     state.bossProjectiles=[];
     state.rayProjectiles.forEach(rp=>{if(rp.el&&rp.el.parentNode)rp.el.parentNode.removeChild(rp.el)});
     state.rayProjectiles=[];
+    state.mortarShells.forEach(m=>{
+      if(m.warnEl&&m.warnEl.parentNode)m.warnEl.parentNode.removeChild(m.warnEl);
+      if(m.shellEl&&m.shellEl.parentNode)m.shellEl.parentNode.removeChild(m.shellEl);
+    });
+    state.mortarShells=[];
+    stage.querySelectorAll('.mortar-shell,.mortar-warn').forEach(el=>el.remove());
     stage.querySelectorAll('.ray-spine').forEach(el=>el.remove());
     state.enemiesToSpawn.length=0;
     stage.querySelectorAll('.boss-slam-warn,.boss-ink-zone,.boss-proj').forEach(el=>el.remove());
@@ -1961,18 +1978,18 @@ const FACILITY_POOL=[
     desc:'원거리 고위력 관통탄',
     stats:[{icon:'\u2694',label:'공격력',val:'110'},{icon:'\u23F1',label:'공속',val:'2.0s'},{icon:'\uD83D\uDCD0',label:'사거리',val:'420'}],
     range:420, cooldown:2.0, dmg:110, type:'pierce', projSpeed:780, projColor:'#9d7bff'},
-  {id:'rune',     name:'번개 마법진',  rarity:'희귀', kind:'facility', icon:'⚡',
+  {id:'mortar',   name:'마법 박격포',  rarity:'희귀', kind:'facility', icon:'💥',
     svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-<circle cx="18" cy="18" r="14" fill="rgba(0,229,255,.07)" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="5,3"/>
-<circle cx="18" cy="18" r="8" fill="rgba(0,229,255,.12)" stroke="#00e5ff" stroke-width="1"/>
-<polygon points="18,7 20.4,13.8 27.5,13.8 21.9,17.8 24.3,24.5 18,20.5 11.7,24.5 14.1,17.8 8.5,13.8 15.6,13.8" fill="rgba(0,229,255,.15)" stroke="#00e5ff" stroke-width="1"/>
-<line x1="18" y1="5" x2="18" y2="31" stroke="#7ff0ff" stroke-width="1" opacity=".35"/>
-<line x1="5" y1="18" x2="31" y2="18" stroke="#7ff0ff" stroke-width="1" opacity=".35"/>
-<circle cx="18" cy="18" r="3" fill="#00e5ff" opacity=".8"/>
+<rect x="13" y="22" width="10" height="10" rx="2" fill="#2a1a0a" stroke="#ff9d2a" stroke-width="1.5"/>
+<rect x="15" y="10" width="6" height="14" rx="3" fill="#1a1000" stroke="#ffb347" stroke-width="2"/>
+<circle cx="18" cy="8" r="4" fill="rgba(255,180,60,.25)" stroke="#ffd86b" stroke-width="1.5"/>
+<line x1="10" y1="28" x2="26" y2="28" stroke="#ff9d2a" stroke-width="2" stroke-linecap="round"/>
+<circle cx="18" cy="8" r="2" fill="#ffd86b" opacity=".9"/>
+<line x1="18" y1="4" x2="22" y2="1" stroke="#ff6a00" stroke-width="1.5" stroke-linecap="round" opacity=".8"/>
 </svg>`,
-    desc:'범위 내 모든 적에게 전기 피해',
-    stats:[{icon:'\u26A1',label:'초당 피해',val:'40'},{icon:'\uD83D\uDCD0',label:'범위',val:'320'},{icon:'\uD83C\uDFAF',label:'다중 타격',val:''}],
-    range:320, cooldown:1.8, dmg:72, type:'aoe', projSpeed:0, projColor:'#00e5ff'},
+    desc:'가장 밀집된 위치에 마법 포탄 발사, 착탄 시 광역 폭발',
+    stats:[{icon:'⚔',label:'폭발 피해',val:'85'},{icon:'⏱',label:'쿨타임',val:'1.8s'},{icon:'📐',label:'폭발 반경',val:'130'}],
+    range:380, cooldown:1.8, dmg:85, type:'mortar', splashR:130, shellSpeed:320, projColor:'#ffb347'},
   {id:'holy_well', name:'성수 제단',  rarity:'일반', kind:'facility', icon:'⛲',
     svgIcon:`<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
 <rect x="8" y="28" width="20" height="5" rx="2" fill="#0e2040" stroke="#7cc4ff" stroke-width="1.5"/>
@@ -2088,11 +2105,12 @@ function startGame(){
   state.battleLog.forEach(l=>{if(l.el.parentNode)l.el.parentNode.removeChild(l.el)});
   state.battleLog.length=0;
   // v1.0.2: 잔존 플로팅 DOM 전부 제거 (데미지 넘버, 파티클 DOM 등)
-  stage.querySelectorAll('.dmg,.fly-rsc,.fly-rsc-flash,.crit-starburst,.boss-slam-warn,.boss-ink-zone,.boss-proj').forEach(el=>el.remove());
+  stage.querySelectorAll('.dmg,.fly-rsc,.fly-rsc-flash,.crit-starburst,.boss-slam-warn,.boss-ink-zone,.boss-proj,.mortar-shell,.mortar-warn').forEach(el=>el.remove());
   state._inkZones=[];  // v1.6: 확실한 초기화
   state.bossSpawned=false; state.bossDefeated=false;
   state.bossProjectiles=[];
   state.rayProjectiles=[];
+  state.mortarShells=[];
   startBGM();  // v1.6: BGM 시작
   state.gateHp=state.gateHpMax;
   state.gaugeMax=100; state.gauge=state.gaugeMax;
@@ -2537,7 +2555,7 @@ function selectFacility(f, el){
     <div class="slot-ring"><span class="facility-icon">${f.svgIcon||f.icon}</span></div>
     <div class="deposit-ring"><svg viewBox="0 0 92 92"><circle class="dr-track" cx="46" cy="46" r="42.5"/><circle class="dr-fill" cx="46" cy="46" r="42.5" style="stroke-dasharray:267;stroke-dashoffset:0"/></svg></div>`;
   s.el.classList.add('built'); s.el.classList.remove('ready','depositing','insufficient');
-  if(f.type==='aoe') s.el.classList.add('aoe-facility');
+  if(f.type==='aoe'||f.type==='mortar') s.el.classList.add('aoe-facility');
   if(el) el.classList.add('selected');
   setTimeout(()=>{
     document.getElementById('cardDraft').classList.remove('show');
@@ -2582,17 +2600,34 @@ function facilityAttack(dt){
       if(hit) spawnFacilityFloat(s.x,s.y,'❄ 감속','#c8a0ff');
       if(hit){ s.el.classList.remove('firing'); void s.el.offsetWidth; s.el.classList.add('firing'); }
       f.attackCD=f.cooldown;
-    } else if(f.type==='aoe'){
-      let hit=false;
-      for(const e of enemies){
-        const d=Math.hypot(e.x-s.x,e.y-s.y)-(e.r||0);
-        if(d<f.range){ dealDamage(e,f.dmg,false); hit=true; }
-      }
-      if(hit){
-        runeStrike(s.x,s.y,f.range);
-        s.el.classList.remove('firing'); void s.el.offsetWidth; s.el.classList.add('firing');
-        f.attackCD=f.cooldown;
-      }
+    } else if(f.type==='mortar'){
+      // 가장 밀집된 위치 탐지
+      const inRange=enemies.filter(e=>Math.hypot(e.x-s.x,e.y-s.y)<f.range && e._alive);
+      if(inRange.length===0){ continue; }
+      // 클러스터 중심 계산 (범위 내 적들의 중앙)
+      let cx=0,cy=0;
+      for(const e of inRange){cx+=e.x;cy+=e.y;}
+      cx/=inRange.length; cy/=inRange.length;
+      // 경고 원 생성
+      const warnEl=document.createElement('div');
+      warnEl.className='mortar-warn';
+      const warnSize=(f.splashR||130)*2;
+      warnEl.style.cssText=`left:${cx}px;top:${cy}px;width:${warnSize}px;height:${warnSize}px;`;
+      stage.appendChild(warnEl);
+      // 포탄 DOM 생성
+      const shellEl=document.createElement('div');
+      shellEl.className='mortar-shell';
+      shellEl.style.left=s.x+'px'; shellEl.style.top=s.y+'px';
+      stage.appendChild(shellEl);
+      const shell={
+        sx:s.x, sy:s.y, x:s.x, y:s.y, tx:cx, ty:cy,
+        dmg:f.dmg, splashR:f.splashR||130,
+        travelTime:0.4, elapsed:0,
+        shellEl, warnEl, done:false
+      };
+      state.mortarShells.push(shell);
+      s.el.classList.remove('firing'); void s.el.offsetWidth; s.el.classList.add('firing');
+      f.attackCD=f.cooldown;
     }else{
       const tgt=nearestEnemy(s.x,s.y,f.range);
       if(tgt){
@@ -2712,6 +2747,33 @@ function runeStrike(x,y,R){
     for(let i=0;i<10;i++) particles.push({x:h.ex+(Math.random()-.5)*24, y:h.ey+(Math.random()-.5)*24, vx:(Math.random()-.5)*200, vy:-60-Math.random()*120, life:.5, size:2+Math.random()*4, color:'rgba(220,200,255,'});
   }
   for(let i=0;i<24;i++) particles.push({x:x+(Math.random()-.5)*R*1.6, y:y+(Math.random()-.5)*R*0.7, vx:(Math.random()-.5)*120, vy:-60-Math.random()*140, life:.7, size:3+Math.random()*4, color:'rgba(180,160,255,'});
+}
+
+function mortarExplosion(x,y,R){
+  const t0=performance.now();
+  (function draw(){
+    const t=(performance.now()-t0)/400;
+    if(t>1)return;
+    ctx.save();
+    // 외부 충격파 링
+    ctx.globalAlpha=(1-t)*0.7;
+    ctx.strokeStyle=`rgba(255,180,60,${1-t})`;
+    ctx.lineWidth=3;
+    ctx.shadowColor='#ff9d00';ctx.shadowBlur=12;
+    ctx.beginPath();ctx.arc(x,y,R*t,0,Math.PI*2);ctx.stroke();
+    // 내부 화염 폭발
+    ctx.globalAlpha=(1-t)*0.5;
+    const rg=ctx.createRadialGradient(x,y,0,x,y,R*0.6*t+0.001);
+    rg.addColorStop(0,'rgba(255,240,180,1)');
+    rg.addColorStop(0.4,'rgba(255,140,0,.8)');
+    rg.addColorStop(1,'rgba(255,60,0,0)');
+    ctx.fillStyle=rg;
+    ctx.beginPath();ctx.arc(x,y,R*0.6*t+0.001,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+    requestAnimationFrame(draw);
+  })();
+  // 폭발 파티클
+  for(let i=0;i<20;i++) particles.push({x,y,vx:(Math.random()-.5)*320,vy:-80-Math.random()*200,life:.6,size:3+Math.random()*5,color:'rgba(255,160,40,'});
 }
 
 function renderHudCards(){
@@ -3202,6 +3264,12 @@ function killEnemy(e){
     state.bossProjectiles=[];
     state.rayProjectiles.forEach(rp=>{if(rp.el&&rp.el.parentNode)rp.el.parentNode.removeChild(rp.el)});
     state.rayProjectiles=[];
+    state.mortarShells.forEach(m=>{
+      if(m.warnEl&&m.warnEl.parentNode)m.warnEl.parentNode.removeChild(m.warnEl);
+      if(m.shellEl&&m.shellEl.parentNode)m.shellEl.parentNode.removeChild(m.shellEl);
+    });
+    state.mortarShells=[];
+    stage.querySelectorAll('.mortar-shell,.mortar-warn').forEach(el=>el.remove());
     stage.querySelectorAll('.ray-spine').forEach(el=>el.remove());
     stage.querySelectorAll('.boss-ink-zone,.boss-slam-warn').forEach(el=>el.remove());
     state._inkZones=[];
@@ -4267,6 +4335,26 @@ function update(dt){
       state.rayProjectiles.splice(i,1);
     }
   }
+  // 마법 박격포 포탄 이동 및 착탄 처리
+  for(let i=state.mortarShells.length-1;i>=0;i--){
+    const m=state.mortarShells[i];
+    if(m.done){ state.mortarShells.splice(i,1); continue; }
+    m.elapsed+=dt;
+    const t=Math.min(m.elapsed/m.travelTime,1);
+    const curX=m.sx+(m.tx-m.sx)*t;
+    const curY=m.sy+(m.ty-m.sy)*t - 120*4*t*(1-t);
+    if(m.shellEl){ m.shellEl.style.left=curX+'px'; m.shellEl.style.top=curY+'px'; }
+    if(t>=1){
+      m.done=true;
+      if(m.warnEl&&m.warnEl.parentNode)m.warnEl.parentNode.removeChild(m.warnEl);
+      if(m.shellEl&&m.shellEl.parentNode)m.shellEl.parentNode.removeChild(m.shellEl);
+      for(const e of enemies){
+        if(Math.hypot(e.x-m.tx,e.y-m.ty)<m.splashR) dealDamage(e,m.dmg,false);
+      }
+      mortarExplosion(m.tx,m.ty,m.splashR);
+      spawnFacilityFloat(m.tx,m.ty,'💥 폭발','#ffb347');
+    }
+  }
   handleDeposit(dt);
 
   // 아이템(보주/자원) 처리
@@ -4456,8 +4544,8 @@ function renderFx(dt){
   for(const s of state.facilitySlots){
     if(!s.unlocked || !s.facility) continue;
     const f=s.facility;
-    // 마법진 범위 상시 표시 (옅은 보라색 원)
-    if(f.type==='aoe'){
+    // 마법진/박격포 범위 상시 표시 (옅은 원)
+    if(f.type==='aoe'||f.type==='mortar'){
       ctx.save();
       const rPulse=0.06+0.03*Math.sin(performance.now()/600);
       const rg2=ctx.createRadialGradient(s.x,s.y,f.range*0.5,s.x,s.y,f.range);
