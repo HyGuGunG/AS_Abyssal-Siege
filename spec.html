@@ -1874,16 +1874,53 @@ footer{
       <div class="glass accent-top accent-teal" style="padding:22px;">
         <div class="card-label mb12" style="color:var(--teal)">REWARD TABLE</div>
         <table class="tbl">
-          <thead><tr><th>달성 조건</th><th>보상</th></tr></thead>
+          <thead><tr><th>결과</th><th>등급</th><th>발키리 마력석</th><th>영지 자원(식량)</th></tr></thead>
           <tbody>
-            <tr><td><strong>클리어 (기본)</strong></td><td>식량 +800</td></tr>
-            <tr><td><strong>보스 처치</strong></td><td>수문 수리 재료 +1</td></tr>
-            <tr><td><strong>시설 3개 이상 건설</strong></td><td>건설 재료 +1</td></tr>
-            <tr><td><strong>수문 HP 80% 이상</strong></td><td>랜덤 자원 추가</td></tr>
-            <tr style="background:rgba(255,60,60,.08);"><td><strong style="color:#ff3b38;">⚠ 미응전</strong></td><td style="color:#ff3b38;font-weight:700;">수문 HP -10%</td></tr>
+            <tr style="background:rgba(255,216,107,.06)"><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge b-amber">S</span></td><td>×3</td><td>+5,000</td></tr>
+            <tr style="background:rgba(255,216,107,.04)"><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge b-cyan">A</span></td><td>×2</td><td>+3,000</td></tr>
+            <tr style="background:rgba(255,216,107,.02)"><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge b-teal">B</span></td><td>×1</td><td>+2,000</td></tr>
+            <tr><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge" style="background:rgba(255,255,255,.12);color:#ccc">C/D</span></td><td>×1</td><td>+1,000</td></tr>
+            <tr style="background:rgba(255,60,60,.06)"><td><strong style="color:#ff4d6d">패배</strong></td><td>—</td><td>없음</td><td>+200 (위로 보상)</td></tr>
           </tbody>
         </table>
         <div style="margin-top:8px;font-size:11px;color:#ff6b6b;font-weight:600;">※ 임시 밸런스 — 수치는 추후 조정될 예정입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 결과창 보상 모형 -->
+  <div class="glass accent-top accent-violet" style="padding:24px;margin-bottom:16px;">
+    <div class="card-label mb12" style="color:var(--violet)">결과창 보상 표시 — 모형</div>
+    <div class="grid2">
+      <!-- 승리 모형 -->
+      <div style="background:rgba(5,18,34,.7);border:1px solid rgba(255,216,107,.3);border-radius:12px;padding:20px;text-align:center;">
+        <div style="font-size:11px;color:rgba(156,216,255,.5);letter-spacing:.2em;margin-bottom:8px;">VICTORY</div>
+        <div style="font-size:36px;font-weight:900;color:#ffd86b;text-shadow:0 0 20px rgba(255,216,107,.6);margin-bottom:8px;">S</div>
+        <div style="font-size:10px;color:rgba(156,216,255,.5);letter-spacing:.15em;margin-bottom:10px;">REWARD</div>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <div style="background:rgba(0,0,0,.4);border:1px solid rgba(0,229,255,.3);border-radius:8px;padding:8px 12px;text-align:center;">
+            <div style="font-size:9px;color:rgba(156,216,255,.6)">발키리 마력석</div>
+            <div style="font-size:18px;font-weight:900;color:#00e5ff;">×3</div>
+          </div>
+          <div style="background:rgba(0,0,0,.4);border:1px solid rgba(255,216,107,.25);border-radius:8px;padding:8px 12px;text-align:center;">
+            <div style="font-size:9px;color:rgba(156,216,255,.6)">영지 자원</div>
+            <div style="font-size:18px;font-weight:900;color:#ffd86b;">+5,000</div>
+          </div>
+        </div>
+        <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:8px;">우편함에서 수령</div>
+      </div>
+      <!-- 패배 모형 -->
+      <div style="background:rgba(5,18,34,.7);border:1px solid rgba(255,77,109,.25);border-radius:12px;padding:20px;text-align:center;">
+        <div style="font-size:11px;color:rgba(255,77,109,.7);letter-spacing:.2em;margin-bottom:8px;">DEFEAT</div>
+        <div style="font-size:36px;font-weight:900;color:#ff4d6d;text-shadow:0 0 20px rgba(255,77,109,.4);margin-bottom:8px;">D</div>
+        <div style="font-size:10px;color:rgba(156,216,255,.5);letter-spacing:.15em;margin-bottom:10px;">REWARD</div>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <div style="background:rgba(0,0,0,.4);border:1px solid rgba(255,216,107,.2);border-radius:8px;padding:8px 12px;text-align:center;">
+            <div style="font-size:9px;color:rgba(156,216,255,.6)">영지 자원</div>
+            <div style="font-size:18px;font-weight:900;color:#ffd86b;">+200</div>
+          </div>
+        </div>
+        <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:8px;">도전 자체에도 작은 보상이 주어집니다.</div>
       </div>
     </div>
   </div>
@@ -1913,7 +1950,7 @@ footer{
 </div><!-- /wrap -->
 
 <footer>
-  ABYSSAL SIEGE &nbsp;·&nbsp; 심해 습격 미니게임 기획서 v2.0 &nbsp;·&nbsp; 2026-04-16 &nbsp;·&nbsp; 발키리, 성 수문을 사수하라
+  ABYSSAL SIEGE &nbsp;·&nbsp; 심해 습격 미니게임 기획서 v2.1 &nbsp;·&nbsp; 2026-04-17 &nbsp;·&nbsp; 발키리, 성 수문을 사수하라
 </footer>
 
 <script>
