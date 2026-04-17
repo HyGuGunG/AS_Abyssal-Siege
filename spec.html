@@ -848,6 +848,7 @@ footer{
     <a class="nav-link" href="#sec-trigger">진입방식</a>
     <a class="nav-link" href="#sec-difficulty">난이도</a>
     <a class="nav-link" href="#sec-gameplay">게임플레이</a>
+    <a class="nav-link" href="#sec-valkyrie">발키리</a>
     <a class="nav-link" href="#sec-enemies">적 구성</a>
     <a class="nav-link" href="#sec-systems">시스템</a>
     <a class="nav-link" href="#sec-boss">보스전</a>
@@ -1220,6 +1221,118 @@ footer{
 <div class="sec-sep"></div>
 
 <!-- ═══════════════════════════════
+  03.5 PLAYER CHARACTER — VALKYRIE
+═══════════════════════════════ -->
+<div class="section" id="sec-valkyrie">
+  <div class="sec-label">
+    <span class="sec-num">03.5 — CHARACTER</span>
+    <div class="sec-line"></div>
+  </div>
+  <h2 class="sec-title">플레이어 캐릭터 — 발키리(다이버)</h2>
+  <p class="sec-desc">심해에 잠수해 수문을 지키는 <strong>발키리</strong>. 직접 조작하는 유일한 아군으로, 이동과 두 가지 스킬이 전투의 핵심이다.</p>
+
+  <!-- 캐릭터 개요 -->
+  <div class="glass accent-top accent-cyan mb12" style="padding:28px;">
+    <div class="card-label mb16" style="color:var(--cyan)">CHARACTER OVERVIEW</div>
+    <div class="g12r" style="gap:20px;">
+      <div class="gs4" style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,rgba(0,229,255,.18),rgba(123,111,240,.18));border:2px solid rgba(0,229,255,.35);display:flex;align-items:center;justify-content:center;font-size:48px;filter:drop-shadow(0 0 16px rgba(0,229,255,.4));">⚡</div>
+        <div style="text-align:center;">
+          <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;color:var(--cyan);">발키리 (Valkyrie)</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">다이버 클래스 · SSR</div>
+        </div>
+      </div>
+      <div class="gs8">
+        <table class="tbl mb12">
+          <thead><tr><th>항목</th><th>내용</th></tr></thead>
+          <tbody>
+            <tr><td><strong>기본 역할</strong></td><td>전방 직접 교전 · 파괴자</td></tr>
+            <tr><td><strong>공격 방식</strong></td><td>자동 검 투척 — 사거리 내 최근접 적 자동 조준, 별도 조작 불필요</td></tr>
+            <tr><td><strong>이동</strong></td><td>전방향 자유 이동 (WASD / 가상 조이스틱). 비례 속도 지원</td></tr>
+            <tr><td><strong>HP 대체</strong></td><td>가호 게이지 — 발키리 자체 HP 없음, 피격 시 가호 소모</td></tr>
+            <tr><td><strong>생존 특성</strong></td><td>아이템 수집으로 가호 자가 회복 (수동 유지)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 스킬 2종 -->
+  <div class="glass accent-top accent-violet mb12" style="padding:28px;">
+    <div class="card-label mb16" style="color:var(--violet)">SKILLS — 2종 능동 스킬</div>
+    <div class="g12r" style="gap:16px;">
+      <!-- 성창 질주 -->
+      <div class="gs6 glass" style="padding:20px;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:rgba(0,229,255,.12);border:2px solid rgba(0,229,255,.4);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">🏃</div>
+          <div>
+            <div style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:var(--cyan);">성창 질주</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;">단축키: ⇧ Shift (PC) · 좌 버튼 (모바일)</div>
+          </div>
+          <div style="margin-left:auto;text-align:right;">
+            <div style="font-size:11px;color:var(--muted);">쿨타임</div>
+            <div style="font-size:16px;font-weight:700;color:var(--cyan);">3s</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--white);line-height:1.7;margin-bottom:10px;">
+          발키리가 전방으로 <strong>빠르게 질주</strong>하며 경로상의 모든 적에게 피해를 입힌다.<br>
+          이동 중에도 사용 가능, <strong>적 무리 관통</strong>으로 빠른 위치 선정에 유리.
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="badge" style="background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.3);color:var(--cyan);font-size:10px;">즉시 발동</span>
+          <span class="badge" style="background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.3);color:var(--cyan);font-size:10px;">관통 피해</span>
+          <span class="badge" style="background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.3);color:var(--cyan);font-size:10px;">위치 선정용</span>
+        </div>
+      </div>
+      <!-- 성검 폭풍 -->
+      <div class="gs6 glass" style="padding:20px;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:rgba(123,111,240,.12);border:2px solid rgba(123,111,240,.4);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">⚔️</div>
+          <div>
+            <div style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:var(--violet);">성검 폭풍</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;">단축키: E (PC) · 우 버튼 (모바일)</div>
+          </div>
+          <div style="margin-left:auto;text-align:right;">
+            <div style="font-size:11px;color:var(--muted);">쿨타임</div>
+            <div style="font-size:16px;font-weight:700;color:var(--violet);">18s</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--white);line-height:1.7;margin-bottom:10px;">
+          발키리 주변에 <strong>성검 충격파</strong>를 방출, 넓은 범위의 적 전원에게 대량 피해.<br>
+          긴 쿨타임이지만 적이 몰렸을 때 사용하면 전황을 단번에 역전 가능.
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="badge" style="background:rgba(123,111,240,.1);border-color:rgba(123,111,240,.3);color:var(--violet);font-size:10px;">광역 대피해</span>
+          <span class="badge" style="background:rgba(123,111,240,.1);border-color:rgba(123,111,240,.3);color:var(--violet);font-size:10px;">장쿨 1회성</span>
+          <span class="badge" style="background:rgba(123,111,240,.1);border-color:rgba(123,111,240,.3);color:var(--violet);font-size:10px;">위기 탈출기</span>
+        </div>
+      </div>
+    </div>
+    <div class="callout mt16">
+      <div class="callout-l">콤보 활용법</div>
+      <div class="callout-b">성창 질주로 적 무리 한가운데 진입 → 성검 폭풍 즉시 발동. 두 스킬은 <strong>독립 쿨타임</strong>이므로 연속 사용 가능. 파도가 몰릴 때 이 콤보를 보류해두는 것이 핵심.</div>
+    </div>
+  </div>
+
+  <!-- 성장 (카드 드래프트) -->
+  <div class="glass accent-top accent-amber" style="padding:28px;">
+    <div class="card-label mb12" style="color:var(--amber)">CARD DRAFT — Wave 클리어 성장</div>
+    <div class="card-sub mb16">매 Wave 클리어 후 <strong>영웅 카드 3장 중 1택</strong>으로 발키리를 강화한다. 카드 선택이 곧 그 판의 빌드를 결정한다.</div>
+    <table class="tbl">
+      <thead><tr><th>카드 종류</th><th>효과 예시</th><th>전략 성향</th></tr></thead>
+      <tbody>
+        <tr><td><strong>공격 강화</strong></td><td>검 투척 피해 +20%, 사거리 +50</td><td style="color:var(--coral);">딜러형</td></tr>
+        <tr><td><strong>이동/기동</strong></td><td>질주 쿨타임 -1s, 이동속도 +15%</td><td style="color:var(--cyan);">기동형</td></tr>
+        <tr><td><strong>생존 강화</strong></td><td>가호 최대치 +2, 보주 흡수 범위 +30</td><td style="color:var(--teal);">지속형</td></tr>
+        <tr><td><strong>스킬 강화</strong></td><td>충격파 범위 +30%, 쿨타임 -3s</td><td style="color:var(--violet);">버스트형</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sec-sep"></div>
+
+<!-- ═══════════════════════════════
   04 ENEMIES
 ═══════════════════════════════ -->
 <div class="section" id="sec-enemies">
@@ -1413,8 +1526,8 @@ footer{
       <div class="gs4 glass" style="padding:18px;">
         <div class="card-label mb10" style="color:var(--violet);font-size:10px;">🏹 방어 시설</div>
         <div class="card-body">
-          <strong>공격형 3종</strong> — 석궁(연사), 발리스타(고위력 관통), 번개(범위)로 역할이 구분됩니다. 배치 조합에 따라 전략이 달라집니다.<br><br>
-          <strong>보조형 3종</strong> — 성수 제단(가호 회복), 수호 결계(수문 회복), 서리 정령(적 감속)으로 방어 라인을 구축합니다. 공격형과 보조형을 섞는 것이 핵심.
+          <strong>공격형 3종</strong> — 석궁(단일 연사), 발리스타(관통 고위력), 마법 박격포(범위 폭발)로 역할이 구분됩니다. 배치 조합에 따라 전략이 달라집니다.<br><br>
+          <strong>지원형 3종</strong> — 성수 제단(가호 회복), 수호 결계(수문 회복), 서리 정령(군중 제어)으로 방어 라인을 구축합니다. 공격형과 지원형을 섞는 것이 핵심.
         </div>
       </div>
     </div>
@@ -1595,12 +1708,12 @@ footer{
     <table class="tbl mb16">
       <thead><tr><th>시설</th><th>등급</th><th>효과</th><th>공격력/효과</th><th>공속/주기</th><th>사거리</th><th>타입</th></tr></thead>
       <tbody>
-        <tr><td><strong>🏹 석궁 포탑</strong></td><td><span class="badge b-teal">일반</span></td><td>근거리 단일 대상 연사</td><td>30</td><td>보통</td><td>280</td><td style="color:var(--amber);">화력형</td></tr>
-        <tr><td><strong>⛲ 성수 제단</strong></td><td><span class="badge b-teal">일반</span></td><td>주기적으로 가호 회복</td><td>가호 +8</td><td>느림</td><td>전체</td><td style="color:var(--teal);">생존형</td></tr>
-        <tr><td><strong>⚔️ 마법 발리스타</strong></td><td><span class="badge b-amber">희귀</span></td><td>원거리 고위력 관통탄</td><td>110</td><td>느림</td><td>420</td><td style="color:var(--violet);">관통형</td></tr>
-        <tr><td><strong>⚡ 번개 마법진</strong></td><td><span class="badge b-amber">희귀</span></td><td>범위 내 모든 적 전기 피해</td><td>72 (광역)</td><td>느림</td><td>320</td><td style="color:var(--cyan);">광역형</td></tr>
-        <tr><td><strong>🛡️ 수호 결계</strong></td><td><span class="badge b-violet">영웅</span></td><td>수문 HP 주기적 회복</td><td>수문 +15</td><td>매우 느림</td><td>전체</td><td style="color:var(--coral);">수호형</td></tr>
-        <tr><td><strong>🧚 서리 정령</strong></td><td><span class="badge b-violet">영웅</span></td><td>적 감속</td><td>감속 -25%</td><td>매우 느림</td><td>300</td><td style="color:var(--violet);">디버프형</td></tr>
+        <tr><td><strong>🏹 석궁 포탑</strong></td><td><span class="badge b-teal">일반</span></td><td>근거리 단일 대상 연사</td><td>30</td><td>보통</td><td>280</td><td style="color:var(--amber);">공격(단일)</td></tr>
+        <tr><td><strong>⛲ 성수 제단</strong></td><td><span class="badge b-teal">일반</span></td><td>주기적으로 가호 회복</td><td>가호 +8</td><td>느림</td><td>전체</td><td style="color:var(--teal);">회복(가호)</td></tr>
+        <tr><td><strong>⚔️ 마법 발리스타</strong></td><td><span class="badge b-amber">희귀</span></td><td>원거리 고위력 관통탄</td><td>110</td><td>느림</td><td>420</td><td style="color:var(--violet);">공격(관통)</td></tr>
+        <tr><td><strong>💥 마법 박격포</strong></td><td><span class="badge b-amber">희귀</span></td><td>밀집 지점에 포탄 → 착탄 광역 폭발</td><td>85 (광역)</td><td>빠름</td><td>380</td><td style="color:var(--cyan);">공격(범위)</td></tr>
+        <tr><td><strong>🛡️ 수호 결계</strong></td><td><span class="badge b-violet">영웅</span></td><td>수문 HP 주기적 회복</td><td>수문 +15</td><td>매우 느림</td><td>전체</td><td style="color:var(--coral);">회복(수문)</td></tr>
+        <tr><td><strong>🧚 서리 정령</strong></td><td><span class="badge b-violet">영웅</span></td><td>범위 내 적 이동 속도 감소</td><td>감속 -25%</td><td>매우 느림</td><td>300</td><td style="color:var(--violet);">군중제어</td></tr>
       </tbody>
     </table>
 
