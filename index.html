@@ -654,10 +654,29 @@
   .draft-card.card--hero.r-green:hover{border-color:#4caf50;box-shadow:0 16px 40px rgba(76,175,80,.45)}
   .draft-card.card--hero.r-blue{border-color:rgba(33,150,243,.55)}
   .draft-card.card--hero.r-blue:hover{border-color:#2196f3;box-shadow:0 16px 40px rgba(33,150,243,.5)}
-  .draft-card.card--hero.r-orange{border-color:rgba(255,152,0,.7);background:linear-gradient(135deg,rgba(255,100,0,.06),rgba(255,152,0,.04))}
-  .draft-card.card--hero.r-orange::before{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,rgba(255,152,0,.04),rgba(255,200,0,.02));pointer-events:none;animation:legendaryGlow 2s ease-in-out infinite}
-  @keyframes legendaryGlow{0%,100%{box-shadow:inset 0 0 20px rgba(255,152,0,.05)}50%{box-shadow:inset 0 0 30px rgba(255,152,0,.12)}}
-  .draft-card.card--hero.r-orange:hover{border-color:#ff9800;box-shadow:0 18px 48px rgba(255,152,0,.65)}
+  /* 전설 카드 — 회전 테두리 + 파티클 연출 */
+  .draft-card.card--hero.r-orange{border-color:rgba(255,152,0,.8);background:linear-gradient(135deg,rgba(255,100,0,.09),rgba(255,200,0,.05))}
+  .draft-card.r-orange::before{content:'';position:absolute;inset:-3px;border-radius:21px;z-index:-1;pointer-events:none;
+    background:conic-gradient(from 0deg,transparent 0%,rgba(255,200,0,.9) 20%,rgba(255,152,0,1) 35%,rgba(255,240,100,.6) 50%,rgba(255,152,0,1) 65%,rgba(255,200,0,.9) 80%,transparent 100%);
+    animation:legendSpin 2.5s linear infinite;}
+  .draft-card.r-orange::after{content:'';position:absolute;inset:-1px;border-radius:19px;z-index:-1;pointer-events:none;
+    background:linear-gradient(135deg,rgba(255,152,0,.12),rgba(255,220,0,.08));
+    animation:legendaryGlow 1.8s ease-in-out infinite;}
+  @keyframes legendSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+  @keyframes legendaryGlow{0%,100%{box-shadow:0 0 20px rgba(255,152,0,.3),inset 0 0 20px rgba(255,152,0,.05)}50%{box-shadow:0 0 40px rgba(255,220,0,.55),inset 0 0 30px rgba(255,200,0,.12)}}
+  .draft-card.card--hero.r-orange:hover{border-color:#ffd740;box-shadow:0 18px 50px rgba(255,152,0,.75)}
+  /* 전설 카드 파티클 스파크 (JS로 동적 추가) */
+  .legend-spark{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:10;
+    background:radial-gradient(circle,#fff9e0,#ffcc00);
+    animation:sparkFly var(--dur,1.4s) ease-out var(--delay,0s) infinite;}
+  @keyframes sparkFly{
+    0%{transform:translate(var(--sx,0px),var(--sy,0px)) scale(1);opacity:.9}
+    60%{opacity:.5}
+    100%{transform:translate(calc(var(--sx,0px)+var(--vx,0px)),calc(var(--sy,0px)+var(--vy,0px))) scale(0);opacity:0}
+  }
+  /* HUD 투명도 전환 */
+  #hudWave,#hudRightStack,#skillBar,#mobileSkillPanel{transition:opacity .35s ease;}
+  #joystickZone{transition:opacity .35s ease;}
   #hudCards .c-row.r-gray{border-left:2px solid #9e9e9e}
   #hudCards .c-row.r-green{border-left:2px solid #4caf50}
   #hudCards .c-row.r-blue{border-left:2px solid #2196f3}
@@ -675,6 +694,7 @@
     background:radial-gradient(circle,rgba(255,255,255,.08),rgba(255,255,255,.02));
     border:2px solid rgba(255,255,255,.12);box-shadow:0 4px 20px rgba(0,0,0,.4)}
   .draft-card .card-icon-wrap .card-icon{font-size:48px;filter:drop-shadow(0 4px 10px rgba(0,229,255,.4));line-height:1}
+  .draft-card .card-icon-wrap .card-icon-img{width:76px;height:76px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 4px 12px rgba(0,229,255,.35))}
   .draft-card.r-violet .card-icon-wrap{border-color:rgba(157,123,255,.3);
     background:radial-gradient(circle,rgba(157,123,255,.12),rgba(157,123,255,.03));
     box-shadow:0 4px 20px rgba(157,123,255,.2),0 0 30px rgba(157,123,255,.1)}
@@ -1835,6 +1855,10 @@ function fitStage(){
   stage.style.setProperty('--scale',s);
 }
 window.addEventListener('resize',fitStage); fitStage();
+// 전체화면 종료 시(ESC 포함) fitStage 재호출
+document.addEventListener('fullscreenchange',()=>setTimeout(fitStage,80));
+document.addEventListener('webkitfullscreenchange',()=>setTimeout(fitStage,80));
+document.addEventListener('msfullscreenchange',()=>setTimeout(fitStage,80));
 
 // v0.9.7 디버그/자동플레이 플래그
 const DBG = (typeof location!=='undefined') && location.search.includes('debug');
@@ -2128,39 +2152,39 @@ const FACILITY_SLOT_DEFS=[
 // 카드 풀
 const CARD_POOL=[
   /* ── 일반 (회색, 4종) ── */
-  {id:'sword_mastery',  name:'투검 숙련',      rarity:'일반', kind:'hero', icon:'⚔️', desc:'기본 공격 강화',
+  {id:'sword_mastery',  name:'투검 숙련',      rarity:'일반', kind:'hero', icon:'AS_Assets/skills/card_sword_mastery.png', desc:'기본 공격 강화',
     stats:[{icon:'⚔',label:'공격력',val:'+15%'}], maxStack:5, apply:()=>{ player.swordDmg*=1.15 }},
-  {id:'swift_throw',    name:'질풍 투척',       rarity:'일반', kind:'hero', icon:'💨', desc:'검 투척 속도 증가',
+  {id:'swift_throw',    name:'질풍 투척',       rarity:'일반', kind:'hero', icon:'AS_Assets/skills/card_swift_throw.png', desc:'검 투척 속도 증가',
     stats:[{icon:'⏱',label:'공속',val:'+20%'}], maxStack:5, apply:()=>{ player.attackInterval*=0.833 }},
-  {id:'light_armor',    name:'경량 갑주',       rarity:'일반', kind:'hero', icon:'👢', desc:'이동속도 증가',
+  {id:'light_armor',    name:'경량 갑주',       rarity:'일반', kind:'hero', icon:'AS_Assets/skills/card_light_armor.png', desc:'이동속도 증가',
     stats:[{icon:'🏃',label:'이동속도',val:'+15%'}], maxStack:4, apply:()=>{ player.speed*=1.15 }},
-  {id:'valkyrie_heart', name:'발키리의 심장',   rarity:'일반', kind:'hero', icon:'✨', desc:'가호 게이지 최대치 증가',
+  {id:'valkyrie_heart', name:'발키리의 심장',   rarity:'일반', kind:'hero', icon:'AS_Assets/skills/card_valkyrie_heart.png', desc:'가호 게이지 최대치 증가',
     stats:[{icon:'💙',label:'가호',val:'+20'},{icon:'❤',label:'즉시 회복',val:'+20'}], maxStack:3, apply:()=>{ state.gaugeMax+=20; state.gauge=Math.min(state.gaugeMax,state.gauge+20) }},
 
   /* ── 고급 (녹색, 3종) ── */
-  {id:'long_shot',      name:'장거리 투척',     rarity:'고급', kind:'hero', icon:'🏹', desc:'사거리 확장',
+  {id:'long_shot',      name:'장거리 투척',     rarity:'고급', kind:'hero', icon:'AS_Assets/skills/card_long_shot.png', desc:'사거리 확장',
     stats:[{icon:'📐',label:'사거리',val:'+25%'}], maxStack:3, apply:()=>{ player.attackRange*=1.25 }},
-  {id:'magnet_charm',   name:'인력의 부적',     rarity:'고급', kind:'hero', icon:'🧲', desc:'아이템 수집 범위 확대',
+  {id:'magnet_charm',   name:'인력의 부적',     rarity:'고급', kind:'hero', icon:'AS_Assets/skills/card_magnet_charm.png', desc:'아이템 수집 범위 확대',
     stats:[{icon:'🧲',label:'수집 반경',val:'+30%'}], maxStack:3, apply:()=>{ player.pickupRadius*=1.30 }},
-  {id:'wind_blessing',  name:'바람의 가호',     rarity:'고급', kind:'hero', icon:'🌪️', desc:'질주 쿨타임 감소',
+  {id:'wind_blessing',  name:'바람의 가호',     rarity:'고급', kind:'hero', icon:'AS_Assets/skills/card_wind_blessing.png', desc:'질주 쿨타임 감소',
     stats:[{icon:'🌀',label:'쿨타임',val:'-1s'}], maxStack:2, apply:()=>{ skills.Q.max=Math.max(1,skills.Q.max-1) }},
 
   /* ── 희귀 (파란, 3종) ── */
-  {id:'wide_blast',     name:'광폭 충격파',     rarity:'희귀', kind:'hero', icon:'💥', desc:'충격파 범위와 위력 강화',
+  {id:'wide_blast',     name:'광폭 충격파',     rarity:'희귀', kind:'hero', icon:'AS_Assets/skills/card_wide_blast.png', desc:'충격파 범위와 위력 강화',
     stats:[{icon:'💥',label:'반경',val:'+30%'},{icon:'⚔',label:'피해',val:'+20%'}], maxStack:3, apply:()=>{ player.shockwaveRadius*=1.30; player.shockwaveDmg*=1.20 }},
-  {id:'crit_instinct',  name:'치명 직감',       rarity:'희귀', kind:'hero', icon:'🎯', desc:'치명타 확률 증가',
+  {id:'crit_instinct',  name:'치명 직감',       rarity:'희귀', kind:'hero', icon:'AS_Assets/skills/card_crit_instinct.png', desc:'치명타 확률 증가',
     stats:[{icon:'🎯',label:'크리티컬',val:'+15%'}], maxStack:4, apply:()=>{ player.critChance=Math.min(0.95,player.critChance+0.15) }},
-  {id:'orb_resonance',  name:'보주 공명',       rarity:'희귀', kind:'hero', icon:'💎', desc:'보주 획득 시 회복량 증가',
+  {id:'orb_resonance',  name:'보주 공명',       rarity:'희귀', kind:'hero', icon:'AS_Assets/skills/card_orb_resonance.png', desc:'보주 획득 시 회복량 증가',
     stats:[{icon:'💎',label:'회복량',val:'+50%'}], maxStack:3, apply:()=>{ player.orbMultiplier=(player.orbMultiplier||1)*1.5 }},
 
   /* ── 고유 (보라, 2종) ── */
-  {id:'double_throw',   name:'이중 투척',       rarity:'고유', kind:'hero', icon:'🔱', desc:'동시 2연발 투척',
+  {id:'double_throw',   name:'이중 투척',       rarity:'고유', kind:'hero', icon:'AS_Assets/skills/card_double_throw.png', desc:'동시 2연발 투척',
     stats:[{icon:'⚡',label:'투사체',val:'2개'}], maxStack:1, apply:()=>{ player.projectileCount=2 }},
-  {id:'holy_aegis',     name:'가호의 각인',     rarity:'고유', kind:'hero', icon:'🛡️', desc:'피격 시 20% 확률로 가호를 소모하지 않음',
+  {id:'holy_aegis',     name:'가호의 각인',     rarity:'고유', kind:'hero', icon:'AS_Assets/skills/card_holy_aegis.png', desc:'피격 시 20% 확률로 가호를 소모하지 않음',
     stats:[{icon:'🛡',label:'방어 확률',val:'20%'}], maxStack:1, apply:()=>{ player.aegisChance=(player.aegisChance||0)+0.20 }},
 
   /* ── 전설 (주황, 1종) ── */
-  {id:'valk_awakening', name:'발키리의 각성',   rarity:'전설', kind:'hero', icon:'⚔️', desc:'검 투척이 적을 관통하며 사거리와 위력이 극대화된다.',
+  {id:'valk_awakening', name:'발키리의 각성',   rarity:'전설', kind:'hero', icon:'AS_Assets/skills/card_valk_awakening.png', desc:'검 투척이 적을 관통하며 사거리와 위력이 극대화된다.',
     stats:[{icon:'⚔',label:'피해',val:'+50%'},{icon:'📐',label:'사거리',val:'최대화'},{icon:'↗',label:'관통',val:'활성화'}], maxStack:1, apply:()=>{ player.projectilePierce=true; player.swordDmg*=1.50; player.attackRange=Math.max(player.attackRange,600) }},
 ];
 const RARITY_WEIGHTS={ '일반':50, '고급':28, '희귀':15, '고유':6, '전설':1 };
@@ -2412,14 +2436,21 @@ function openCardDraft(){
     el.className='draft-card r-'+RARITY_COLORS[c.rarity]+' card--hero';
     const statsHtml=c.stats?c.stats.map(s=>`<div class="card-stat"><span class="stat-icon">${s.icon}</span><span class="stat-val">${s.val}</span><span class="stat-lbl">${s.label}</span></div>`).join(''):'';
     const stackLabel=stack>0?`${romanStr} (${stack}/${maxStack})`:`NEW`;
+    const iconHtml = c.icon && (c.icon.startsWith('AS_') || c.icon.includes('/'))
+      ? `<img class="card-icon-img" src="${c.icon}" onerror="this.style.opacity='.3'">`
+      : `<div class="card-icon">${c.icon}</div>`;
     el.innerHTML=`
       <div class="rarity-tag">${c.rarity}</div>
-      <div class="card-icon-wrap"><div class="card-icon">${c.icon}</div></div>
+      <div class="card-icon-wrap">${iconHtml}</div>
       <div class="card-name">${c.name}${stack>0?' <span style="font-size:0.7em;opacity:.7">'+romanStr+'</span>':''}</div>
       <div class="card-desc">${c.desc}</div>
       <div class="card-stack">${stackLabel}</div>
       <div class="card-stats">${statsHtml}</div>`;
     el.addEventListener('click',()=>selectCard(c,el));
+    // 전설 카드 파티클 스파크 추가
+    if(c.rarity==='전설'){
+      spawnLegendaryParticles(el);
+    }
     wrap.appendChild(el);
     // 키캡을 카드 바깥(wrap 하단 중앙)에 배치
     const keycap=document.createElement('div');
@@ -2620,9 +2651,12 @@ function openFacilityDraft(slotIdx){
     const el=document.createElement('div');
     el.className='draft-card r-'+RARITY_COLORS[f.rarity]+' card--facility';
     const fStatsHtml=f.stats?f.stats.map(s=>`<div class="card-stat"><span class="stat-icon">${s.icon}</span><span class="stat-val">${s.val}</span><span class="stat-lbl">${s.label}</span></div>`).join(''):'';
+    const fIconHtml = f.icon && (f.icon.startsWith('AS_') || f.icon.includes('/'))
+      ? `<img class="card-icon-img" src="${f.icon}" onerror="this.style.opacity='.3'">`
+      : `<div class="card-icon">${f.icon}</div>`;
     el.innerHTML=`
       <div class="rarity-tag">${f.rarity}</div>
-      <div class="card-icon-wrap"><div class="card-icon">${f.icon}</div></div>
+      <div class="card-icon-wrap">${fIconHtml}</div>
       <div class="card-name">${f.name}</div>
       <div class="card-desc">${f.desc}</div>
       <div class="card-stack"></div>
@@ -3834,25 +3868,64 @@ function updateHudAutoHide(){
   }
 }
 
-// v2.1: 플레이어 ↔ 우측 HUD 겹침 시 패널 반투명 처리
+// v2.1+: 플레이어/적 ↔ HUD 겹침 시 패널 반투명 처리
 function updateHudProximityFade(){
+  if(!state.running) return;
+  const px=player.x, py=player.y;
+  // 가장 가까운 적 위치도 고려
+  let nearEX=px, nearEY=py;
+  for(const e of enemies){
+    if(!e._alive) continue;
+    if(Math.hypot(e.x-px,e.y-py)<200){ nearEX=e.x; nearEY=e.y; break; }
+  }
+
+  function calcFade(objX,objY, zoneX1,zoneY1,zoneX2,zoneY2, minAlpha=0.28){
+    for(const [ox,oy] of [[objX,objY],[nearEX,nearEY]]){
+      if(ox>zoneX1 && ox<zoneX2 && oy>zoneY1 && oy<zoneY2){
+        const dx=Math.min(ox-zoneX1,zoneX2-ox)/(zoneX2-zoneX1)*2;
+        const dy=Math.min(oy-zoneY1,zoneY2-oy)/(zoneY2-zoneY1)*2;
+        return Math.max(minAlpha, 1-(Math.min(1,Math.min(dx,dy)+.1))*0.72);
+      }
+    }
+    return 1;
+  }
+
+  // 우측 HUD 스택 (x:1060~1280, y:400~720)
   const hrs=document.getElementById('hudRightStack');
-  if(!hrs || !state.running) return;
-  // 우측 HUD 영역 (게임 좌표 기준)
-  const hudRight=W;       // 1280
-  const hudLeft=W-200;    // ~1080
-  const hudBottom=H;      // 720
-  const hudTop=H-260;     // ~460
-  // 플레이어가 이 영역 내에 있으면 패널 반투명
-  const inZone = player.x > hudLeft-40 && player.y > hudTop-40;
-  if(inZone){
-    const dx=Math.max(0, player.x-(hudLeft-40))/(hudRight-hudLeft+40);
-    const dy=Math.max(0, player.y-(hudTop-40))/(hudBottom-hudTop+40);
-    const proximity=Math.min(1, Math.max(dx,dy));
-    const opacity=1-proximity*0.65; // 최소 0.35
-    hrs.style.opacity=opacity.toFixed(2);
-  } else {
-    hrs.style.opacity='1';
+  if(hrs) hrs.style.opacity=calcFade(px,py,1060,400,1280,720).toFixed(2);
+
+  // 스킬바 / 모바일 스킬 패널 (x:1050~1280, y:580~720)
+  const sb=document.getElementById('skillBar');
+  const msp=document.getElementById('mobileSkillPanel');
+  const sbAlpha=calcFade(px,py,1050,580,1280,720).toFixed(2);
+  if(sb) sb.style.opacity=sbAlpha;
+  if(msp) msp.style.opacity=sbAlpha;
+
+  // 조이스틱 영역 (x:0~520, y:300~720)
+  const jz=document.getElementById('joystickZone');
+  if(jz) jz.style.opacity=calcFade(px,py,0,300,520,720,0.22).toFixed(2);
+
+  // 상단 WAVE 패널 (x:480~800, y:0~90)
+  const hw=document.getElementById('hudWave');
+  if(hw) hw.style.opacity=calcFade(px,py,480,0,800,90,0.32).toFixed(2);
+}
+
+// 전설 카드 파티클 스파크 생성
+function spawnLegendaryParticles(cardEl){
+  const COUNT=16;
+  for(let i=0;i<COUNT;i++){
+    const spark=document.createElement('div');
+    spark.className='legend-spark';
+    const angle=Math.random()*Math.PI*2;
+    const radius=95+Math.random()*30;
+    const sx=(Math.cos(angle)*radius)+'px';
+    const sy=(Math.sin(angle)*radius)+'px';
+    const vx=(Math.cos(angle)*60+Math.random()*40-20)+'px';
+    const vy=(Math.sin(angle)*60+Math.random()*40-20)+'px';
+    const dur=(1.2+Math.random()*1.0).toFixed(2)+'s';
+    const delay=(Math.random()*2.0).toFixed(2)+'s';
+    spark.style.cssText=`--sx:${sx};--sy:${sy};--vx:${vx};--vy:${vy};--dur:${dur};--delay:${delay};left:calc(50% + ${sx});top:calc(50% + ${sy});`;
+    cardEl.appendChild(spark);
   }
 }
 
@@ -4105,20 +4178,43 @@ function update(dt){
       moveTowards(e,tgtX+offX,tgtY,dt,spdMul);
     } else if(e.ai==='hover_shoot'){
       if(!e._hovering){
-        // 목표 Y까지 내려옴
+        // 목표 Y까지 내려오는 중
         e.y+=e.speed*dt*spdMul;
-        const dx=tgtX-e.x;
-        e.x+=Math.sign(dx)*Math.min(Math.abs(dx),80*dt);
-        if(e.y>=e.hoverY){ e.y=e.hoverY; e._hovering=true; }
+        if(e.y>=e.hoverY){
+          e.y=e.hoverY;
+          e._hovering=true;
+          // 스폰 위치 고정 (모이는 현상 방지)
+          e._wBaseX=e.x; e._wBaseY=e.y;
+          e._wAngle=Math.random()*Math.PI*2;
+          e._wTurnT=0; e._wTurnInt=1.2+Math.random()*2;
+          e._shootT=0; // 게이지 확실히 0 초기화
+          if(e._sfill) e._sfill.style.width='0%';
+        }
       } else {
-        // 호버링: X만 플레이어 따라감 (부드럽게)
-        const dx=tgtX-e.x;
-        e.x+=dx*1.5*dt;
+        // 배회: 스폰 위치 중심으로 ±120px 무작위 이동
+        e._wTurnT+=dt;
+        if(e._wTurnT>=e._wTurnInt){
+          e._wTurnT=0; e._wTurnInt=1.2+Math.random()*2;
+          e._wAngle+=(Math.random()-.5)*Math.PI*.9;
+        }
+        const spd=50;
+        const nx=e.x+Math.cos(e._wAngle)*spd*dt;
+        const ny=e.y+Math.sin(e._wAngle)*spd*dt*0.4;
+        const dx2=nx-e._wBaseX, dy2=ny-e._wBaseY;
+        const dist=Math.hypot(dx2,dy2);
+        if(dist<130){
+          e.x=nx; e.y=Math.max(60,Math.min(e.hoverY+60,ny));
+        } else {
+          // 경계에 닿으면 반전
+          e._wAngle=Math.atan2(-dy2,-dx2)+(Math.random()-.5)*.5;
+        }
         // 발사 타이머
         e._shootT+=dt;
-        if(e._sfill) e._sfill.style.width=Math.min(e._shootT/e.shootInterval*100,100)+'%';
+        const pct=Math.min(e._shootT/e.shootInterval,1)*100;
+        if(e._sfill) e._sfill.style.width=pct+'%';
         if(e._shootT>=e.shootInterval){
           e._shootT=0;
+          if(e._sfill) e._sfill.style.width='0%';
           spawnRayProj(e);
         }
       }

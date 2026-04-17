@@ -451,14 +451,16 @@ body{
 /* ═══════════════════════════════════════
    TABLE
 ═══════════════════════════════════════ */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .tbl{width:100%;border-collapse:collapse;}
 .tbl thead{background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.12);}
-.tbl th{padding:11px 14px;text-align:left;
+.tbl th{padding:9px 12px;text-align:left;
   font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
   letter-spacing:.1em;text-transform:uppercase;color:var(--white);opacity:.85;
   white-space:nowrap;}
-.tbl td{padding:12px 14px;font-size:13.5px;color:var(--muted);
-  border-bottom:1px solid rgba(255,255,255,.05);line-height:1.65;vertical-align:top;}
+.tbl td{padding:8px 12px;font-size:13px;color:var(--muted);
+  border-bottom:1px solid rgba(255,255,255,.05);line-height:1.4;vertical-align:middle;
+  white-space:nowrap;}
 .tbl td strong{color:var(--white);}
 .tbl tr:last-child td{border-bottom:none;}
 .tbl tr:hover td{background:rgba(255,255,255,.015);}
@@ -537,9 +539,9 @@ body{
 ═══════════════════════════════════════ */
 .badge{
   display:inline-flex;align-items:center;gap:5px;
-  padding:5px 12px;border-radius:6px;
-  font-family:'Noto Sans KR',sans-serif;font-size:12.5px;font-weight:700;
-  letter-spacing:.01em;line-height:1;
+  padding:4px 10px;border-radius:6px;
+  font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:.01em;line-height:1;white-space:nowrap;
 }
 .b-cyan{background:rgba(0,229,255,.14);border:1px solid rgba(0,229,255,.4);color:var(--cyan);}
 .b-teal{background:rgba(0,201,167,.14);border:1px solid rgba(0,201,167,.4);color:var(--teal);}
@@ -713,23 +715,9 @@ footer{
   .grid2,.grid3,.ds-grid,.enemy-detail-grid{grid-template-columns:1fr;}
 
   /* 테이블 — 스크롤 가능 */
-  .tbl-wrap{position:relative;overflow:hidden;}
-  .tbl-wrap .tbl-scroll{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  .tbl-wrap .tbl-scroll table{margin:0;}
-  .tbl-wrap .tbl-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
-    background:rgba(0,0,0,.7);color:rgba(255,255,255,.8);font-size:11px;
-    padding:4px 14px;border-radius:20px;pointer-events:none;
-    display:flex;align-items:center;gap:6px;z-index:2;
-    transition:opacity .4s;white-space:nowrap;}
-  .tbl-wrap .tbl-hint.hide{opacity:0;}
-  .tbl-wrap.has-scroll::after{content:'';position:absolute;top:0;right:0;bottom:0;width:28px;
-    background:linear-gradient(to right,transparent,rgba(0,0,0,.35));
-    pointer-events:none;z-index:1;transition:opacity .3s;}
-  .tbl-wrap.scrolled-end::after{opacity:0;}
-  .tbl{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  .tbl thead,.tbl tbody,.tbl tr,.tbl th,.tbl td{white-space:nowrap;}
-  .tbl th{padding:8px 10px;font-size:10px;}
-  .tbl td{padding:8px 10px;font-size:12px;}
+  .tbl-wrap{position:relative;}
+  .tbl th{padding:7px 9px;font-size:10px;}
+  .tbl td{padding:7px 9px;font-size:11.5px;}
 
   /* 보스 섹션 */
   .boss-hero{padding:24px 16px;overflow:visible;}
