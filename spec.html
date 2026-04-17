@@ -1236,7 +1236,7 @@ footer{
     <div class="card-label mb16" style="color:var(--cyan)">CHARACTER OVERVIEW</div>
     <div class="g12r" style="gap:20px;">
       <div class="gs4" style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,rgba(0,229,255,.18),rgba(123,111,240,.18));border:2px solid rgba(0,229,255,.35);display:flex;align-items:center;justify-content:center;font-size:48px;filter:drop-shadow(0 0 16px rgba(0,229,255,.4));">⚡</div>
+        <img src="AS_Assets/characters/valkyrie.png" alt="발키리" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid rgba(0,229,255,.45);filter:drop-shadow(0 0 16px rgba(0,229,255,.5));">
         <div style="text-align:center;">
           <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;color:var(--cyan);">발키리 (Valkyrie)</div>
           <div style="font-size:12px;color:var(--muted);margin-top:4px;">다이버 클래스 · SSR</div>
@@ -1264,7 +1264,7 @@ footer{
       <!-- 성창 질주 -->
       <div class="gs6 glass" style="padding:20px;">
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
-          <div style="width:52px;height:52px;border-radius:50%;background:rgba(0,229,255,.12);border:2px solid rgba(0,229,255,.4);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">🏃</div>
+          <img src="AS_Assets/skills/valk_dash.png" alt="성창 질주" style="width:52px;height:52px;border-radius:10px;object-fit:cover;border:2px solid rgba(0,229,255,.4);flex-shrink:0;filter:drop-shadow(0 0 6px rgba(0,229,255,.4));">
           <div>
             <div style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:var(--cyan);">성창 질주</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px;">단축키: ⇧ Shift (PC) · 좌 버튼 (모바일)</div>
@@ -1287,7 +1287,7 @@ footer{
       <!-- 성검 폭풍 -->
       <div class="gs6 glass" style="padding:20px;">
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
-          <div style="width:52px;height:52px;border-radius:50%;background:rgba(123,111,240,.12);border:2px solid rgba(123,111,240,.4);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">⚔️</div>
+          <img src="AS_Assets/skills/valk_shockwave.png" alt="성검 폭풍" style="width:52px;height:52px;border-radius:10px;object-fit:cover;border:2px solid rgba(123,111,240,.4);flex-shrink:0;filter:drop-shadow(0 0 6px rgba(123,111,240,.4));">
           <div>
             <div style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:var(--violet);">성검 폭풍</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px;">단축키: E (PC) · 우 버튼 (모바일)</div>
@@ -2217,9 +2217,10 @@ document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLi
   window.moveCarousel = function(dir){ goTo(current + dir); };
 
   // Touch / mouse drag support
-  let startX = 0, isDrag = false, dragId = -1;
+  let startX = 0, isDrag = false, dragId = -1, tapTarget = null;
   track.addEventListener('pointerdown', e => {
     startX = e.clientX; isDrag = true; dragId = e.pointerId;
+    tapTarget = e.target; // 탭한 원래 이미지 저장 (lightbox용)
     track.setPointerCapture(e.pointerId);
   });
   track.addEventListener('pointermove', e => {
@@ -2237,8 +2238,16 @@ document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLi
     track.style.transition = '';
     track.style.touchAction = '';
     const diff = e.clientX - startX;
-    if(Math.abs(diff) > 30) goTo(current + (diff < 0 ? 1 : -1));
-    else goTo(current);
+    if(Math.abs(diff) > 30){
+      goTo(current + (diff < 0 ? 1 : -1));
+    } else {
+      goTo(current);
+      // 드래그가 아닌 탭이면 lightbox 열기
+      if(Math.abs(diff) < 8 && tapTarget && tapTarget.tagName === 'IMG'){
+        openLightbox(tapTarget);
+      }
+    }
+    tapTarget = null;
   }
   track.addEventListener('pointerup', endDrag);
   track.addEventListener('pointercancel', endDrag);
