@@ -1146,8 +1146,8 @@ footer{
         <tbody>
           <tr><td><strong>WASD 키</strong></td><td>발키리 상하좌우 이동<br><span style="font-size:12px;opacity:.6">아이템 근접 시 자동 수집</span></td></tr>
           <tr><td><strong>자동 검 투척</strong></td><td>사거리 내 최근접 적 자동 조준 · 발사<br><span style="font-size:12px;opacity:.6">유저 입력 불필요 — 위치 선택이 전략</span></td></tr>
-          <tr><td><strong>Shift — 바람 질주</strong></td><td>방향 대시 + 0.2초 무적<br><span style="font-size:12px;opacity:.6">쿨타임 3초 (독립 쿨다운)</span></td></tr>
-          <tr><td><strong>E — 성스러운 충격파</strong></td><td>360° 충격파 — 주변 적 전체 밀어냄 + 90 피해<br><span style="font-size:12px;opacity:.6">쿨타임 18초 (독립 쿨다운)</span></td></tr>
+          <tr><td><strong>Shift — 질주</strong></td><td>방향 대시 + 0.2초 무적<br><span style="font-size:12px;opacity:.6">쿨타임 3초 (독립 쿨다운)</span></td></tr>
+          <tr><td><strong>E — 충격파</strong></td><td>360° 충격파 — 주변 적 전체 밀어냄 + 90 피해<br><span style="font-size:12px;opacity:.6">쿨타임 18초 (독립 쿨다운)</span></td></tr>
         </tbody>
       </table>
       <div class="card-label mb8" style="color:var(--muted);font-size:10px;">📱 모바일 (가로 모드)</div>
@@ -1156,8 +1156,8 @@ footer{
         <tbody>
           <tr><td><strong>가상 조이스틱</strong></td><td>화면 좌측 하단 드래그로 상하좌우 이동<br><span style="font-size:12px;opacity:.6">WASD와 동일 — 아이템 자동 수집</span></td></tr>
           <tr><td><strong>자동 검 투척</strong></td><td>PC와 동일 — 별도 조작 없이 자동 발사</td></tr>
-          <tr><td><strong>바람 질주</strong></td><td>화면 우측 하단 스킬 버튼 터치<br><span style="font-size:12px;opacity:.6">쿨타임 3초 (독립 쿨다운)</span></td></tr>
-          <tr><td><strong>성스러운 충격파</strong></td><td>화면 우측 하단 스킬 버튼 터치<br><span style="font-size:12px;opacity:.6">쿨타임 18초 (독립 쿨다운)</span></td></tr>
+          <tr><td><strong>질주</strong></td><td>화면 우측 하단 스킬 버튼 터치<br><span style="font-size:12px;opacity:.6">쿨타임 3초 (독립 쿨다운)</span></td></tr>
+          <tr><td><strong>충격파</strong></td><td>화면 우측 하단 스킬 버튼 터치<br><span style="font-size:12px;opacity:.6">쿨타임 18초 (독립 쿨다운)</span></td></tr>
           <tr><td><strong>모드 전환</strong></td><td>좌측 상단 토글 버튼으로 PC ↔ 터치 모드 전환</td></tr>
         </tbody>
       </table>
@@ -1167,7 +1167,7 @@ footer{
       </div>
       <div class="callout warn mt8">
         <div class="callout-l">독립 쿨타임</div>
-        <div class="callout-b">바람 질주와 성스러운 충격파는 <strong>각자 독립된 쿨타임</strong>을 가진다. 두 스킬을 연속 사용하여 콤보 플레이가 가능.</div>
+        <div class="callout-b">질주와 충격파는 <strong>각자 독립된 쿨타임</strong>을 가진다. 두 스킬을 연속 사용하여 콤보 플레이가 가능.</div>
       </div>
     </div>
   </div>
@@ -1355,7 +1355,7 @@ footer{
         <div class="card-label mb10" style="color:var(--amber);font-size:10px;">⚔️ 발키리 전투</div>
         <div class="card-body">
           <strong>자동 공격</strong> — 검 투척은 자동이므로 플레이어는 <em>어디에 서느냐</em>만 결정합니다. "조작 스킬"이 아닌 "전략적 위치 선정"이 핵심.<br><br>
-          <strong>두 가지 긴급 스킬</strong> — 바람 질주(짧은 쿨, 회피용)와 성스러운 충격파(긴 쿨, 위기 탈출용)로 긴장감 있는 리듬을 만듭니다. 두 스킬의 쿨타임이 독립이라 연속 사용 콤보가 가능합니다.
+          <strong>두 가지 긴급 스킬</strong> — 질주(짧은 쿨, 회피용)와 충격파(긴 쿨, 위기 탈출용)로 긴장감 있는 리듬을 만듭니다. 두 스킬의 쿨타임이 독립이라 연속 사용 콤보가 가능합니다.
         </div>
       </div>
       <div class="gs4 glass" style="padding:18px;">
@@ -1683,7 +1683,7 @@ footer{
             <tr><td><strong>발키리의 심장</strong></td><td>가호 최대치 +20 & 즉시 회복</td><td><span class="badge b-teal">일반</span></td><td>3회</td></tr>
             <tr><td><strong>바람의 가호</strong></td><td>질주 쿨 -1s</td><td><span class="badge b-teal">일반</span></td><td>2회</td></tr>
             <tr><td><strong>인력의 부적</strong></td><td>수집 반경 +30%</td><td><span class="badge b-teal">일반</span></td><td>3회</td></tr>
-            <tr><td><strong>광역 확장</strong></td><td>성스러운 충격파 반경 +30% & 피해 +20%</td><td><span class="badge b-amber">희귀</span></td><td>3회</td></tr>
+            <tr><td><strong>광역 확장</strong></td><td>충격파 반경 +30% & 피해 +20%</td><td><span class="badge b-amber">희귀</span></td><td>3회</td></tr>
             <tr><td><strong>치명 직감</strong></td><td>크리티컬 +15%</td><td><span class="badge b-amber">희귀</span></td><td>4회</td></tr>
             <tr><td><strong>보주 공명</strong></td><td>보주 회복량 +50%</td><td><span class="badge b-amber">희귀</span></td><td>3회</td></tr>
             <tr><td><strong>이중 투척</strong></td><td>동시 2연발 투척</td><td><span class="badge b-violet">영웅</span></td><td>1회</td></tr>
@@ -1757,7 +1757,7 @@ footer{
           <div class="p-icon">💧</div>
           <div><div class="p-name">패턴 2 — 먹물 투사체</div>
             <div class="p-desc">부채꼴로 투사체 발사. 단계가 높아질수록 발수 증가.</div>
-            <div class="p-tip">→ 투사체 사이 틈으로 이동 / 바람 질주로 관통 회피</div></div>
+            <div class="p-tip">→ 투사체 사이 틈으로 이동 / 질주로 관통 회피</div></div>
         </div>
         <div class="pattern">
           <div class="p-icon">🌀</div>
