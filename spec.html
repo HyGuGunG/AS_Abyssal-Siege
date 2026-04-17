@@ -848,7 +848,7 @@ footer{
     <a class="nav-link" href="#sec-reward">보상 & 연동</a>
   </div>
   <div class="nav-end">
-    <span class="nav-ver">v2.3</span>
+    <span class="nav-ver">v2.5</span>
     <div class="nav-status"><div class="nav-dot"></div>2026-04-17</div>
   </div>
 </nav>
@@ -1375,7 +1375,7 @@ footer{
   </div>
 
   <div class="glass accent-top accent-cyan" style="padding:24px;">
-    <div class="card-label mb12" style="color:var(--cyan)">적 능력치 — v2.3 기준</div>
+    <div class="card-label mb12" style="color:var(--cyan)">적 능력치 — v2.5 기준</div>
     <table class="tbl mb8">
       <thead><tr><th>종류</th><th>HP</th><th>속도</th><th>수문 피해</th><th>히트박스</th><th>특수 행동</th></tr></thead>
       <tbody>
@@ -1519,8 +1519,8 @@ footer{
       <div class="gs4 glass" style="padding:18px;">
         <div class="card-label mb10" style="color:var(--violet);font-size:10px;">🏹 방어 시설</div>
         <div class="card-body">
-          <strong>공격형 5종</strong> — 석궁(단일), 발리스타(관통), 박격포(범위), 뇌격 마법진(연쇄), 발키리의 분노(전체)로 역할이 구분됩니다. 높은 등급일수록 강력하고 희소합니다.<br><br>
-          <strong>지원형 4종</strong> — 성수 제단(가호 회복), 수호 결계(수문 회복), 서리 정령(군중제어), 성스러운 방벽(버프)으로 방어 라인을 구축합니다. 공격형과 지원형을 조합하는 것이 핵심.
+          <strong>공격형 5종</strong> — 석궁 망루(단일), 원거리 망루(관통), 마법구 포탑(범위), 뇌전 요새(연쇄), 발키리 망루(전체)로 역할이 구분됩니다. 높은 등급일수록 강력하고 희소합니다.<br><br>
+          <strong>지원형 4종</strong> — 치유 야영지(가호 회복), 수호 요새(수문 회복), 빙결 탑(군중제어), 성광 첨탑(버프)으로 방어 라인을 구축합니다. 공격형과 지원형을 조합하는 것이 핵심.
         </div>
       </div>
     </div>
@@ -1529,7 +1529,7 @@ footer{
   <!-- 수문 상태 시스템 -->
   <div class="glass accent-top accent-cyan" style="padding:28px;margin-bottom:12px;">
     <div class="card-label mb4" style="color:var(--cyan)">GATE STATUS</div>
-    <div class="card-title mb4">수문 상태 — HP에 따른 동적 이펙트 변화 <span style="font-size:11px;color:var(--muted);font-weight:400;">(v2.3 — 단일 이미지 + CSS 방식)</span></div>
+    <div class="card-title mb4">수문 상태 — HP에 따른 동적 이펙트 변화 <span style="font-size:11px;color:var(--muted);font-weight:400;">(v2.5 — 단일 이미지 + CSS 방식)</span></div>
     <div class="card-sub mb16">GC 관문 리소스(단일 이미지)에 CSS 클래스를 동적으로 적용해 HP 단계별 파손 상태를 표현합니다. 4단계 이미지 교체 방식에서 CSS 이펙트 방식으로 변경되었습니다.</div>
 
     <div class="g12r mb16">
@@ -1546,7 +1546,7 @@ footer{
         <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">균열 (75%~51%)</div>
         <div style="font-size:11px;color:var(--muted);line-height:1.6;">
           CSS .dmg-1 적용. 채도↓ 약화.<br>
-          <strong style="color:var(--amber);">균열 균열 오버레이</strong> 등장.
+          <strong style="color:var(--amber);">균열 오버레이</strong> 등장.
         </div>
       </div>
       <div class="gs3 glass" style="padding:14px;text-align:center;">
@@ -1630,7 +1630,7 @@ footer{
       </div>
       <div>
         <div style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:4px;">가호의 보주</div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.7;">가호 게이지 +25% 즉시 회복<br>적 처치 시 28% 확률 드랍 / 근접 시 자동 수집</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7;">가호 게이지 <strong style="color:var(--cyan);">+25 즉시 회복</strong><br>적 처치 시 확률 드랍 (가호 부족 시 드랍률 자동 상승) / 근접 시 자동 수집</div>
       </div>
     </div>
 
@@ -1639,8 +1639,8 @@ footer{
     <table class="tbl mb12">
       <tbody>
         <tr><td><strong>기본 최대치</strong></td><td>100 (스킬로 증가 가능)</td></tr>
-        <tr><td><strong>기본 감소 속도</strong></td><td>-1.5% / 초 (게임 내내 지속)</td></tr>
-        <tr><td><strong>가호의 보주 회복</strong></td><td>+25% 즉시 회복 (근접 자동 수집)</td></tr>
+        <tr><td><strong>기본 감소 속도</strong></td><td>Wave 1: -3%/초 · Wave마다 +0.5%씩 증가 (Wave 7 최대 -6%/초)</td></tr>
+        <tr><td><strong>가호의 보주 회복</strong></td><td>+25 즉시 회복 (근접 자동 수집, 가호 부족 시 드랍률 최대 2.2배)</td></tr>
         <tr><td><strong>경고 구간</strong></td><td>30% 이하 — 화면 테두리가 빨갛게 깜빡임</td></tr>
         <tr><td><strong>0% 도달 시</strong></td><td>수문 HP -2%/초 (보주 수집 시 즉시 중단)</td></tr>
       </tbody>
@@ -1690,7 +1690,7 @@ footer{
         슬롯 1 <strong style="color:var(--amber);">×25</strong> →
         슬롯 2 <strong style="color:var(--amber);">×55</strong> →
         슬롯 3 <strong style="color:var(--amber);">×100</strong> →
-        슬롯 4 <strong style="color:var(--amber);">×150</strong> →
+        슬롯 4 <strong style="color:var(--amber);">×100</strong> →
         슬롯 5 <strong style="color:var(--amber);">×200</strong> (최대)<br>
         <span style="font-size:12px;color:var(--muted);">Wave 중 잠긴 슬롯 근처 이동 → 자원 자동 투입 → 오픈 → <strong style="color:var(--white);">슬로우모션</strong> + 시설 카드 3장 중 1택 → 즉시 건설</span>
       </div>
@@ -1701,15 +1701,15 @@ footer{
     <table class="tbl mb16">
       <thead><tr><th>시설</th><th>등급</th><th>효과</th><th>공격력/효과</th><th>공속/주기</th><th>사거리</th><th>타입</th></tr></thead>
       <tbody>
-        <tr style="background:rgba(158,158,158,.04)"><td><strong>🏹 석궁 포탑</strong></td><td><span class="badge b-gray">일반</span></td><td>가장 가까운 적 연사</td><td>30</td><td>0.8s</td><td>280</td><td style="color:#bdbdbd;">공격(단일)</td></tr>
-        <tr style="background:rgba(158,158,158,.04)"><td><strong>⛲ 성수 제단</strong></td><td><span class="badge b-gray">일반</span></td><td>주기적으로 가호 회복</td><td>가호 +10</td><td>4.0s</td><td>전체</td><td style="color:#bdbdbd;">회복(가호)</td></tr>
-        <tr style="background:rgba(76,175,80,.04)"><td><strong>⚔️ 마법 발리스타</strong></td><td><span class="badge b-green">고급</span></td><td>고위력 관통탄 발사</td><td>110</td><td>2.2s</td><td>420</td><td style="color:#81c784;">공격(관통)</td></tr>
-        <tr style="background:rgba(76,175,80,.04)"><td><strong>❄️ 서리 정령</strong></td><td><span class="badge b-green">고급</span></td><td>범위 내 적 이동속도 감소</td><td>감속 -25%</td><td>2.5s</td><td>300</td><td style="color:#81c784;">군중제어</td></tr>
-        <tr style="background:rgba(33,150,243,.04)"><td><strong>💥 마법 박격포</strong></td><td><span class="badge b-blue">희귀</span></td><td>밀집 지점 포탄 → 광역 폭발</td><td>85 (광역)</td><td>1.8s</td><td>380</td><td style="color:#64b5f6;">공격(범위)</td></tr>
-        <tr style="background:rgba(33,150,243,.04)"><td><strong>🛡️ 수호 결계</strong></td><td><span class="badge b-blue">희귀</span></td><td>수문 HP 주기적 회복</td><td>수문 +15</td><td>5.0s</td><td>전체</td><td style="color:#64b5f6;">회복(수문)</td></tr>
-        <tr style="background:rgba(156,39,176,.05)"><td><strong>⚡ 뇌격 마법진</strong></td><td><span class="badge b-violet">고유</span></td><td>최대 3명에게 번개 연쇄 공격</td><td>55 ×3연쇄</td><td>2.0s</td><td>340</td><td style="color:#b0a8ff;">공격(연쇄)</td></tr>
-        <tr style="background:rgba(156,39,176,.05)"><td><strong>✨ 성스러운 방벽</strong></td><td><span class="badge b-violet">고유</span></td><td>인근 시설 공격력 +30% 증폭</td><td>공격 ×1.30</td><td>패시브</td><td>200</td><td style="color:#b0a8ff;">버프</td></tr>
-        <tr style="background:rgba(255,152,0,.05)"><td><strong>🔥 발키리의 분노</strong></td><td><span class="badge b-orange">전설</span></td><td>신성 포격 → 강력한 광역 폭발</td><td>180 (광역)</td><td>3.5s</td><td>500</td><td style="color:#ffb74d;">공격(전체)</td></tr>
+        <tr style="background:rgba(158,158,158,.04)"><td><strong>🏹 석궁 망루</strong></td><td><span class="badge b-gray">일반</span></td><td>가장 가까운 적 연사</td><td>30</td><td>0.8s</td><td>280</td><td style="color:#bdbdbd;">공격(단일)</td></tr>
+        <tr style="background:rgba(158,158,158,.04)"><td><strong>⛲ 치유 야영지</strong></td><td><span class="badge b-gray">일반</span></td><td>주기적으로 가호 회복</td><td>가호 +10</td><td>4.0s</td><td>전체</td><td style="color:#bdbdbd;">회복(가호)</td></tr>
+        <tr style="background:rgba(76,175,80,.04)"><td><strong>⚔️ 원거리 망루</strong></td><td><span class="badge b-green">고급</span></td><td>고위력 관통탄 발사</td><td>110</td><td>2.2s</td><td>420</td><td style="color:#81c784;">공격(관통)</td></tr>
+        <tr style="background:rgba(76,175,80,.04)"><td><strong>❄️ 빙결 탑</strong></td><td><span class="badge b-green">고급</span></td><td>범위 내 적 이동속도 감소</td><td>감속 -25%</td><td>2.5s</td><td>300</td><td style="color:#81c784;">군중제어</td></tr>
+        <tr style="background:rgba(33,150,243,.04)"><td><strong>💥 마법구 포탑</strong></td><td><span class="badge b-blue">희귀</span></td><td>밀집 지점 포탄 → 광역 폭발</td><td>85 (광역)</td><td>1.8s</td><td>380</td><td style="color:#64b5f6;">공격(범위)</td></tr>
+        <tr style="background:rgba(33,150,243,.04)"><td><strong>🛡️ 수호 요새</strong></td><td><span class="badge b-blue">희귀</span></td><td>수문 HP 주기적 회복</td><td>수문 +15</td><td>5.0s</td><td>전체</td><td style="color:#64b5f6;">회복(수문)</td></tr>
+        <tr style="background:rgba(156,39,176,.05)"><td><strong>⚡ 뇌전 요새</strong></td><td><span class="badge b-violet">고유</span></td><td>최대 3명에게 번개 연쇄 공격</td><td>55 ×3연쇄</td><td>2.0s</td><td>340</td><td style="color:#b0a8ff;">공격(연쇄)</td></tr>
+        <tr style="background:rgba(156,39,176,.05)"><td><strong>✨ 성광 첨탑</strong></td><td><span class="badge b-violet">고유</span></td><td>인근 시설 공격력 +30% 증폭</td><td>공격 ×1.30</td><td>패시브</td><td>200</td><td style="color:#b0a8ff;">버프</td></tr>
+        <tr style="background:rgba(255,152,0,.05)"><td><strong>🔥 발키리 망루</strong></td><td><span class="badge b-orange">전설</span></td><td>신성 포격 → 강력한 광역 폭발</td><td>180 (광역)</td><td>3.5s</td><td>전체</td><td style="color:#ffb74d;">공격(전체)</td></tr>
       </tbody>
     </table>
 
@@ -1744,7 +1744,7 @@ footer{
 
         <!-- 석궁 포탑 -->
         <div style="margin-bottom:10px;">
-          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">🏹 석궁 포탑 <span class="badge b-gray" style="font-size:10px;">일반</span></div>
+          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">🏹 석궁 망루 <span class="badge b-gray" style="font-size:10px;">일반</span></div>
           <table class="tbl">
             <thead><tr><th>단계</th><th>공격력</th><th>공속</th><th>사거리</th><th>업그레이드 비용</th><th>특수</th></tr></thead>
             <tbody>
@@ -1757,7 +1757,7 @@ footer{
 
         <!-- 성수 제단 -->
         <div style="margin-bottom:10px;">
-          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">⛲ 성수 제단 <span class="badge b-gray" style="font-size:10px;">일반</span></div>
+          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">⛲ 치유 야영지 <span class="badge b-gray" style="font-size:10px;">일반</span></div>
           <table class="tbl">
             <thead><tr><th>단계</th><th>가호 회복</th><th>주기</th><th>업그레이드 비용</th><th>특수</th></tr></thead>
             <tbody>
@@ -1770,7 +1770,7 @@ footer{
 
         <!-- 마법 발리스타 -->
         <div style="margin-bottom:10px;">
-          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">⚔️ 마법 발리스타 <span class="badge b-green" style="font-size:10px;">고급</span></div>
+          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">⚔️ 원거리 망루 <span class="badge b-green" style="font-size:10px;">고급</span></div>
           <table class="tbl">
             <thead><tr><th>단계</th><th>공격력</th><th>공속</th><th>사거리</th><th>업그레이드 비용</th><th>특수</th></tr></thead>
             <tbody>
@@ -1783,7 +1783,7 @@ footer{
 
         <!-- 마법 박격포 -->
         <div style="margin-bottom:10px;">
-          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">💥 마법 박격포 <span class="badge b-blue" style="font-size:10px;">희귀</span></div>
+          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">💥 마법구 포탑 <span class="badge b-blue" style="font-size:10px;">희귀</span></div>
           <table class="tbl">
             <thead><tr><th>단계</th><th>피해 (광역)</th><th>공속</th><th>폭발 반경</th><th>업그레이드 비용</th><th>특수</th></tr></thead>
             <tbody>
@@ -1796,7 +1796,7 @@ footer{
 
         <!-- 수호 결계 -->
         <div style="margin-bottom:10px;">
-          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">🛡️ 수호 결계 <span class="badge b-blue" style="font-size:10px;">희귀</span></div>
+          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">🛡️ 수호 요새 <span class="badge b-blue" style="font-size:10px;">희귀</span></div>
           <table class="tbl">
             <thead><tr><th>단계</th><th>수문 회복</th><th>주기</th><th>업그레이드 비용</th><th>특수</th></tr></thead>
             <tbody>
@@ -1809,7 +1809,7 @@ footer{
 
         <!-- 서리 정령 -->
         <div style="margin-bottom:16px;">
-          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">❄️ 서리 정령 <span class="badge b-green" style="font-size:10px;">고급</span></div>
+          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:4px;">❄️ 빙결 탑 <span class="badge b-green" style="font-size:10px;">고급</span></div>
           <table class="tbl">
             <thead><tr><th>단계</th><th>감속</th><th>지속시간</th><th>사거리</th><th>업그레이드 비용</th><th>특수</th></tr></thead>
             <tbody>
@@ -1944,9 +1944,9 @@ footer{
         </div>
         <div class="pattern">
           <div class="p-icon">🎯</div>
-          <div><div class="p-name">패턴 5 — 조준 투사체</div>
-            <div class="p-desc">플레이어를 조준하는 고속 투사체 발사. 3단계에서 2발로 증가.</div>
-            <div class="p-tip">→ 발사 순간 대시로 회피. 벽에 닿으면 소멸.</div></div>
+          <div><div class="p-name">패턴 5 — 조준 투사체 + 이동 텔레그래프</div>
+            <div class="p-desc">발사 0.6초 전 <strong style="color:var(--cyan)">시안 점선 조준선</strong>과 <strong style="color:rgba(255,80,80,.9)">적색 십자 마커</strong>가 표시되어 예고함. 크라켄이 이동할 때는 <strong style="color:rgba(0,220,255,.7)">다이아몬드 경로 마커</strong>가 이동 목표를 선행 표시. 3단계에서 연발 수 증가.</div>
+            <div class="p-tip">→ 조준선 표시 순간 대시로 선회피. 이동 마커 방향 미리 파악해 충돌 회피.</div></div>
         </div>
         <div class="pattern" style="border-color:rgba(255,94,91,.3);background:rgba(255,94,91,.03);">
           <div class="p-icon">💀</div>
@@ -2045,16 +2045,16 @@ footer{
       <div class="glass accent-top accent-teal" style="padding:22px;">
         <div class="card-label mb12" style="color:var(--teal)">REWARD TABLE</div>
         <table class="tbl">
-          <thead><tr><th>결과</th><th>등급</th><th>발키리 마력석</th><th>영지 자원(식량)</th></tr></thead>
+          <thead><tr><th>결과</th><th>등급</th><th>발키리 마력석</th><th>식량</th><th>목재</th><th>석재</th><th>금화</th></tr></thead>
           <tbody>
-            <tr style="background:rgba(255,216,107,.06)"><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge b-amber">S</span></td><td>×3</td><td>+5,000</td></tr>
-            <tr style="background:rgba(255,216,107,.04)"><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge b-cyan">A</span></td><td>×2</td><td>+3,000</td></tr>
-            <tr style="background:rgba(255,216,107,.02)"><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge b-teal">B</span></td><td>×1</td><td>+2,000</td></tr>
-            <tr><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge" style="background:rgba(255,255,255,.12);color:#ccc">C/D</span></td><td>×1</td><td>+1,000</td></tr>
-            <tr style="background:rgba(255,60,60,.06)"><td><strong style="color:#ff4d6d">패배</strong></td><td>—</td><td>없음</td><td>+200 (위로 보상)</td></tr>
+            <tr style="background:rgba(255,216,107,.06)"><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge b-amber">S</span></td><td>×3</td><td>+2,000</td><td>+1,500</td><td>+1,200</td><td>+800</td></tr>
+            <tr style="background:rgba(255,216,107,.04)"><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge b-cyan">A</span></td><td>×2</td><td>+1,500</td><td>+1,200</td><td>+900</td><td>+600</td></tr>
+            <tr style="background:rgba(255,216,107,.02)"><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge b-teal">B</span></td><td>×1</td><td>+1,200</td><td>+900</td><td>+700</td><td>+400</td></tr>
+            <tr><td><strong style="color:#ffd86b">승리</strong></td><td><span class="badge" style="background:rgba(255,255,255,.12);color:#ccc">C</span></td><td>×1</td><td>+800</td><td>+600</td><td>+400</td><td>+200</td></tr>
+            <tr style="background:rgba(255,60,60,.06)"><td><strong style="color:#ff4d6d">패배</strong></td><td>—</td><td>없음</td><td>+200</td><td>+150</td><td>+100</td><td>—</td></tr>
           </tbody>
         </table>
-        <div style="margin-top:8px;font-size:11px;color:#ff6b6b;font-weight:600;">※ 임시 밸런스 — 수치는 추후 조정될 예정입니다.</div>
+        <div style="margin-top:8px;font-size:11px;color:var(--muted);">※ 보상은 본 게임 복귀 후 우편함에서 수령. 수치는 추후 밸런스 조정될 수 있습니다.</div>
       </div>
     </div>
   </div>
@@ -2068,14 +2068,18 @@ footer{
         <div style="font-size:11px;color:rgba(156,216,255,.5);letter-spacing:.2em;margin-bottom:8px;">VICTORY</div>
         <div style="font-size:36px;font-weight:900;color:#ffd86b;text-shadow:0 0 20px rgba(255,216,107,.6);margin-bottom:8px;">S</div>
         <div style="font-size:10px;color:rgba(156,216,255,.5);letter-spacing:.15em;margin-bottom:10px;">REWARD</div>
-        <div style="display:flex;gap:10px;justify-content:center;">
-          <div style="background:rgba(0,0,0,.4);border:1px solid rgba(0,229,255,.3);border-radius:8px;padding:8px 12px;text-align:center;">
-            <div style="font-size:9px;color:rgba(156,216,255,.6)">발키리 마력석</div>
-            <div style="font-size:18px;font-weight:900;color:#00e5ff;">×3</div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <div style="background:rgba(0,0,0,.4);border:1px solid rgba(0,229,255,.3);border-radius:8px;padding:7px 10px;text-align:center;">
+            <div style="font-size:9px;color:rgba(156,216,255,.6)">마력석</div>
+            <div style="font-size:16px;font-weight:900;color:#00e5ff;">×3</div>
           </div>
-          <div style="background:rgba(0,0,0,.4);border:1px solid rgba(255,216,107,.25);border-radius:8px;padding:8px 12px;text-align:center;">
-            <div style="font-size:9px;color:rgba(156,216,255,.6)">영지 자원</div>
-            <div style="font-size:18px;font-weight:900;color:#ffd86b;">+5,000</div>
+          <div style="background:rgba(0,0,0,.4);border:1px solid rgba(255,216,107,.25);border-radius:8px;padding:7px 10px;text-align:center;">
+            <div style="font-size:9px;color:rgba(156,216,255,.6)">식량</div>
+            <div style="font-size:16px;font-weight:900;color:#ffd86b;">+2,000</div>
+          </div>
+          <div style="background:rgba(0,0,0,.4);border:1px solid rgba(255,216,107,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+            <div style="font-size:9px;color:rgba(156,216,255,.6)">목재+석재</div>
+            <div style="font-size:16px;font-weight:900;color:#ffd86b;">각 1.5K↑</div>
           </div>
         </div>
         <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:8px;">우편함에서 수령</div>
@@ -2121,7 +2125,7 @@ footer{
 </div><!-- /wrap -->
 
 <footer>
-  ABYSSAL SIEGE &nbsp;·&nbsp; 심해 습격 미니게임 기획서 v2.4 &nbsp;·&nbsp; 2026-04-17 &nbsp;·&nbsp; 발키리, 수문을 사수하라
+  ABYSSAL SIEGE &nbsp;·&nbsp; 심해 습격 미니게임 기획서 v2.5 &nbsp;·&nbsp; 2026-04-17 &nbsp;·&nbsp; 발키리, 수문을 사수하라
 </footer>
 
 <script>
