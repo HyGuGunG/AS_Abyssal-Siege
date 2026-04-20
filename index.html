@@ -1680,6 +1680,33 @@
     background:radial-gradient(circle,rgba(0,229,255,.55),transparent);
     animation:dashTrailFade .4s ease-out forwards;}
   @keyframes dashTrailFade{0%{opacity:.8}100%{opacity:0;transform:scale(1.6)}}
+
+  /* ── GC 발키리 공격 플래시 ── */
+  .atk-flash{position:absolute;pointer-events:none;z-index:8;
+    transform-origin:center center;
+    animation:atkFlashAnim .22s ease-out forwards;}
+  @keyframes atkFlashAnim{
+    0%  {opacity:.95;transform:translate(-50%,-50%) scale(.7)}
+    55% {opacity:.85;transform:translate(-50%,-50%) scale(1.15)}
+    100%{opacity:0;  transform:translate(-50%,-50%) scale(1.35)}
+  }
+
+  /* ── GC 발키리 E 스킬 이펙트 ── */
+  .e-skill-fx{position:absolute;pointer-events:none;z-index:9;
+    transform-origin:center center;}
+  .e-skill-fx.swords{animation:eSwordsAnim .55s cubic-bezier(.15,.7,.25,1) forwards;}
+  .e-skill-fx.wings {animation:eWingsAnim  .42s ease-out forwards;}
+  @keyframes eSwordsAnim{
+    0%  {opacity:0;  transform:translate(-50%,-50%) scale(.35) rotate(-15deg)}
+    25% {opacity:1;  transform:translate(-50%,-50%) scale(1.1)  rotate(5deg)}
+    70% {opacity:.85;transform:translate(-50%,-50%) scale(1.3)  rotate(0deg)}
+    100%{opacity:0;  transform:translate(-50%,-50%) scale(1.6)  rotate(3deg)}
+  }
+  @keyframes eWingsAnim{
+    0%  {opacity:.7; transform:translate(-50%,-50%) scale(.6)}
+    35% {opacity:.9; transform:translate(-50%,-50%) scale(1.25)}
+    100%{opacity:0;  transform:translate(-50%,-50%) scale(2.0)}
+  }
 </style>
 </head>
 <body>
@@ -2251,6 +2278,54 @@ function vibrate(pattern){
 }
 
 // ── B10: 스킬 임팩트 — 충격파 링 DOM ──
+// ── GC 발키리 공격 플래시 (일반 공격 임팩트) ──
+function spawnAtkFlash(px, py, tx, ty){
+  const angle = Math.atan2(ty-py, tx-px);
+  const dist = Math.min(Math.hypot(tx-px, ty-py), 120);
+  const fx = px + Math.cos(angle)*dist*0.6;
+  const fy = py + Math.sin(angle)*dist*0.6;
+  const el = document.createElement('div');
+  el.className = 'atk-flash';
+  el.style.cssText = `left:${fx}px;top:${fy}px;width:64px;height:64px;`
+    + `background:url('AS_Assets/skills/gc_valk_spear.png') center/contain no-repeat;`
+    + `transform:translate(-50%,-50%) rotate(${angle}rad) scale(.7)`;
+  // 회전을 위해 animation 내에 translate만 적용, 초기 rotate는 inline으로
+  el.style.animation = 'none';
+  el.style.transform = `translate(-50%,-50%) rotate(${angle + Math.PI/4}rad) scale(.7)`;
+  el.style.transition = 'opacity .18s,transform .18s';
+  stage.appendChild(el);
+  requestAnimationFrame(()=>{
+    el.style.opacity = '0.9';
+    el.style.transform = `translate(-50%,-50%) rotate(${angle + Math.PI/4}rad) scale(1.3)`;
+    el.style.opacity = '0.85';
+  });
+  setTimeout(()=>{
+    el.style.opacity = '0';
+    el.style.transform = `translate(-50%,-50%) rotate(${angle + Math.PI/4}rad) scale(1.6)`;
+    setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 180);
+  }, 80);
+}
+
+// ── GC 발키리 E 스킬 이펙트 ──
+function spawnESkillFx(x, y){
+  // 1) gc_valk_swords: 검폭풍 메인
+  const sw = document.createElement('div');
+  sw.className = 'e-skill-fx swords';
+  const sz1 = Math.round(player.shockwaveRadius * 1.4);
+  sw.style.cssText = `left:${x}px;top:${y}px;width:${sz1}px;height:${sz1}px;`
+    + `background:url('AS_Assets/skills/gc_valk_swords.png') center/contain no-repeat;`;
+  stage.appendChild(sw);
+  setTimeout(()=>{ if(sw.parentNode) sw.parentNode.removeChild(sw); }, 600);
+  // 2) gc_valk_wings: 날개 배경 플래시
+  const wg = document.createElement('div');
+  wg.className = 'e-skill-fx wings';
+  const sz2 = Math.round(player.shockwaveRadius * 2.0);
+  wg.style.cssText = `left:${x}px;top:${y}px;width:${sz2}px;height:${sz2}px;`
+    + `background:url('AS_Assets/skills/gc_valk_wings.png') center/contain no-repeat;`;
+  stage.appendChild(wg);
+  setTimeout(()=>{ if(wg.parentNode) wg.parentNode.removeChild(wg); }, 450);
+}
+
 function spawnShockwaveRing(x, y, radius){
   const r=document.createElement('div');
   r.className='shockwave-ring';
@@ -4012,6 +4087,7 @@ function useSkill(key){
     stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
     // B10: 충격파 링 DOM 연출
     spawnShockwaveRing(player.x, player.y, R);
+    spawnESkillFx(player.x, player.y); // GC 발키리 E 스킬 이펙트
     vibrate([20,10,40]); // A4: 진동
     s.cd=s.max;
   }
@@ -4919,6 +4995,8 @@ function update(dt){
       // 스윙 애니메이션 트리거 (v0.9.6)
       playerEl.classList.remove('attacking'); void playerEl.offsetWidth; playerEl.classList.add('attacking');
       setTimeout(()=>playerEl.classList.remove('attacking'), 150);
+      // GC 발키리 공격 플래시 이펙트
+      spawnAtkFlash(player.x, player.y-20, tgt.x, tgt.y);
     } else {
       player.attackCD=0; // v1.1.2: 대상 없으면 쿨다운 대기(0 고정), 음수 누적 방지
     }
