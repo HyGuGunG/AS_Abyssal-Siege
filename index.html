@@ -84,30 +84,34 @@
   #player{width:120px;height:120px;filter:drop-shadow(0 0 12px rgba(0,229,255,.6))}
   #player.dashing{filter:drop-shadow(0 0 22px var(--cyan)) brightness(1.35)}
   #player.hit{filter:drop-shadow(0 0 14px var(--red)) brightness(1.6)}
-  /* 가호 아우라 — 게이지에 따라 투명도/색상 변화 */
+  /* 가호 실드 아우라 (v2.3 — canvas 버블 보완 ambient glow) */
   #player .aura{
     position:absolute;
-    inset:-36px;
+    inset:-34px;
     border-radius:50%;
     pointer-events:none;
-    background:radial-gradient(circle,rgba(0,229,255,.35) 0%,rgba(0,180,255,.18) 40%,transparent 70%);
-    box-shadow:0 0 28px rgba(0,229,255,.4), 0 0 12px rgba(0,229,255,.25), inset 0 0 20px rgba(0,229,255,.1);
-    animation:auraPulse 1.8s ease-in-out infinite;
-    transition:opacity .4s, filter .4s, background .5s, box-shadow .5s;
+    /* 캔버스 버블의 ambient 보완 — 파란 환경광 */
+    background:radial-gradient(circle,rgba(60,180,255,.07) 45%,transparent 72%);
+    box-shadow:0 0 22px 5px rgba(60,190,255,.10);
+    animation:auraPulse 2.5s ease-in-out infinite;
+    transition:opacity .4s;
+    opacity:var(--aura-o,1);
   }
   @keyframes auraPulse{
-    0%,100%{transform:scale(1);opacity:var(--aura-o,1)}
-    50%{transform:scale(1.12);opacity:calc(var(--aura-o,1)*0.7)}
+    0%,100%{transform:scale(1)}
+    50%     {transform:scale(1.04)}
   }
+  /* 경고 ≤30%: 주황으로 변색 */
   #player .aura.warn{
-    background:radial-gradient(circle,rgba(255,120,0,.45) 0%,rgba(255,60,0,.22) 40%,transparent 70%);
-    box-shadow:0 0 32px rgba(255,100,0,.6), 0 0 16px rgba(255,60,0,.35), inset 0 0 24px rgba(255,100,0,.15);
-    animation:auraWarn .6s ease-in-out infinite;
+    background:radial-gradient(circle,rgba(255,100,20,.09) 45%,transparent 72%);
+    box-shadow:0 0 24px 6px rgba(255,80,10,.14);
+    animation:auraWarn .65s ease-in-out infinite;
   }
   @keyframes auraWarn{
-    0%,100%{transform:scale(1);opacity:var(--aura-o,.5)}
-    50%{transform:scale(1.15);opacity:calc(var(--aura-o,.5)*0.4)}
+    0%,100%{transform:scale(1)}
+    50%     {transform:scale(1.07)}
   }
+  /* 가호 소진: 완전 숨김 */
   #player .aura.depleted{opacity:0!important;animation:none;transition:none!important}
   /* 발키리 공격 스윙 모션 (v0.9.6) */
   #player.attacking img{animation:valkSwing .14s cubic-bezier(.2,.8,.2,1)}
@@ -224,17 +228,27 @@
   .boss-cross-warn::after{width:100%;height:4px;top:calc(50% - 2px);left:0;}
   @keyframes crossWarn{0%{opacity:0;transform:scaleY(0)}50%{opacity:.9}100%{opacity:0;}}
   /* 보스 HUD HP 바 */
-  #bossHpBar{position:absolute;top:var(--crop-top,10px);right:14px;width:240px;z-index:10;text-align:center;
-    background:rgba(5,18,34,.88);border:1px solid rgba(157,123,255,.5);border-radius:8px;padding:5px 10px;
-    box-shadow:0 3px 14px rgba(157,123,255,.3);backdrop-filter:blur(4px)}
+  /* 보스 HP 바 — 상단 가운데, 대형 */
+  #bossHpBar{position:absolute;top:var(--crop-top,10px);left:50%;transform:translateX(-50%);right:auto;
+    width:420px;z-index:10;text-align:center;
+    background:rgba(4,8,22,.92);
+    border:1px solid rgba(157,123,255,.55);border-radius:12px;padding:8px 18px 10px;
+    box-shadow:0 0 32px rgba(157,123,255,.35),0 4px 18px rgba(0,0,0,.7);backdrop-filter:blur(6px)}
   #bossHpBar.hidden{display:none}
-  .boss-hp-label{font-size:12px;font-weight:900;color:#c8a0ff;letter-spacing:.12em;margin-bottom:3px;
-    text-shadow:0 0 8px rgba(157,123,255,.6)}
-  .boss-hp-track{width:100%;height:10px;background:rgba(0,0,0,.6);border-radius:5px;border:1px solid rgba(157,123,255,.3);overflow:hidden}
-  .boss-hp-fill{height:100%;background:linear-gradient(90deg,#7b2ff2,#c8a0ff);border-radius:5px;transition:width .15s;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
-  .boss-hp-text{font-family:'Outfit',sans-serif;font-size:11px;font-weight:900;color:#e0d0ff;margin-top:2px;
-    text-shadow:0 1px 2px #000}
+  .boss-hp-label{font-size:13px;font-weight:900;color:#c8a0ff;letter-spacing:.18em;margin-bottom:5px;
+    text-shadow:0 0 12px rgba(157,123,255,.8),0 0 24px rgba(157,123,255,.4)}
+  .boss-hp-track{width:100%;height:13px;background:rgba(0,0,0,.65);border-radius:7px;
+    border:1px solid rgba(157,123,255,.35);overflow:hidden;
+    box-shadow:0 0 8px rgba(157,123,255,.2) inset}
+  .boss-hp-fill{height:100%;background:linear-gradient(90deg,#5b0dcf,#9d7bff,#c8a0ff);
+    border-radius:7px;transition:width .18s;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 10px rgba(157,123,255,.5)}
+  .boss-hp-text{font-family:'Outfit',sans-serif;font-size:12px;font-weight:900;color:#e0d0ff;margin-top:4px;
+    letter-spacing:.06em;text-shadow:0 1px 3px #000}
+  #bossHpBar.phase-2 .boss-hp-fill{background:linear-gradient(90deg,#8b3a00,#ff8c00,#ffb347)}
+  #bossHpBar.phase-3 .boss-hp-fill{background:linear-gradient(90deg,#6b0000,#cc2200,#ff5050);animation:blinkBar .35s infinite}
+  #bossHpBar.phase-2{border-color:rgba(255,140,0,.55);box-shadow:0 0 32px rgba(255,100,0,.3),0 4px 18px rgba(0,0,0,.7)}
+  #bossHpBar.phase-3{border-color:rgba(255,50,50,.65);box-shadow:0 0 40px rgba(255,30,30,.4),0 4px 18px rgba(0,0,0,.7)}
 
   /* 수문 — GC 관문 (AI 배경 제거 완료, 투명 PNG) */
   #gate{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);width:310px;height:210px;
@@ -315,9 +329,9 @@
   .panel .p-label{font-size:10px;color:var(--cyan);letter-spacing:.18em;margin-bottom:5px;
     text-shadow:0 0 6px var(--cyan);text-transform:uppercase;font-weight:900}
 
-  /* 상단 중앙 WAVE (v1.7 확대) — wide-mode: 상단 잘림 보상 */
-  #hudWave{top:var(--crop-top,10px);left:50%;transform:translateX(-50%);padding:6px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:0;
-    min-width:160px;transition:top .3s}
+  /* 좌상단 WAVE (v2.2 — 보스 HP 바가 중앙 점령, WAVE는 좌측으로 이동) */
+  #hudWave{top:var(--crop-top,10px);left:14px;transform:none;padding:5px 14px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:0;
+    min-width:130px;transition:top .3s}
   #hudWave .wv-tag{font-size:11px;color:var(--gold);letter-spacing:.25em;font-weight:900;text-shadow:0 0 8px var(--gold)}
   #hudWave .wv-num{font-family:'Outfit',sans-serif;font-size:22px;color:#fff;font-weight:900;letter-spacing:.06em}
   #hudWave .wv-num .slash{color:#6cc5ff;font-weight:400;margin:0 3px}
@@ -1526,7 +1540,7 @@
   body.portrait-mode #hudPlayer{bottom:6px;left:6px;min-width:100px;font-size:7px;padding:3px 5px}
   body.portrait-mode #touchSkills{display:none!important}
   body.portrait-mode #hudCards{max-width:120px;font-size:9px}
-  body.portrait-mode #hudWave{padding:3px 12px;min-width:100px}
+  body.portrait-mode #hudWave{padding:3px 8px;min-width:90px;left:6px}
   body.portrait-mode #hudWave .wv-tag{font-size:8px}
   body.portrait-mode #hudWave .wv-num{font-size:14px}
   body.portrait-mode #hudWaveInfo{min-width:100px;font-size:9px;padding:4px 6px}
@@ -1541,7 +1555,7 @@
   body.wide-mode #hudCards{max-width:150px;font-size:10px}
   body.wide-mode #hudCards .c-ico{font-size:12px}
   body.wide-mode #hudCards .c-nm{font-size:9px}
-  body.wide-mode #hudWave{padding:4px 16px;min-width:130px}
+  body.wide-mode #hudWave{padding:4px 12px;min-width:110px;left:10px}
   body.wide-mode #hudWave .wv-tag{font-size:9px}
   body.wide-mode #hudWave .wv-num{font-size:18px}
   body.wide-mode #hudWaveInfo{min-width:120px;font-size:10px;padding:6px 8px}
@@ -4717,18 +4731,11 @@ function updatePlayerGaugeTop(){
   // 가호 아우라 연출 업데이트
   const aura=document.getElementById('playerAura');
   if(aura){
-    const auraOpacity=(gp<=0||state.gaugeDepleted)?0:Math.max(0, Math.min(1, gp/70));
-    aura.style.setProperty('--aura-o', auraOpacity.toFixed(2));
-    // 게이지 레벨에 따라 아우라 색상 변화
-    if(gp>60){
-      aura.style.setProperty('--aura-color','rgba(0,229,255,');
-    } else if(gp>30){
-      aura.style.setProperty('--aura-color','rgba(100,255,100,');
-    } else if(gp>10){
-      aura.style.setProperty('--aura-color','rgba(255,180,0,');
-    }
-    aura.classList.toggle('warn', gp<=30 && gp>0);
-    aura.classList.toggle('depleted', state.gaugeDepleted);
+    // 선형 불투명도: 0%=완전투명, 100%=완전불투명, 최소 0.18(잔상 유지)
+    const auraOpacity=(gp<=0||state.gaugeDepleted)?0:Math.max(0.18,Math.min(1,gp/100));
+    aura.style.setProperty('--aura-o',auraOpacity.toFixed(2));
+    aura.classList.toggle('warn',gp<=30&&gp>0&&!state.gaugeDepleted);
+    aura.classList.toggle('depleted',state.gaugeDepleted);
   }
   // tier 색상 연동
   const gaugeTierCls=gp>75?'tier-blue':gp>50?'tier-green':gp>25?'tier-yellow':gp>10?'tier-red':'tier-blink';
@@ -5792,24 +5799,125 @@ function renderFx(dt){
     ctx.fillStyle=p.color+a+')';
     ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
   }
-  // 공격 범위
-  const pulse=0.2+0.1*Math.sin(performance.now()/400);
-  ctx.save();
-  ctx.strokeStyle=`rgba(0,229,255,${pulse})`; ctx.lineWidth=2;
-  ctx.setLineDash([8,6]);
-  ctx.beginPath();ctx.arc(player.x,player.y,player.attackRange,0,Math.PI*2);ctx.stroke();
-  ctx.setLineDash([]);
-  const rg=ctx.createRadialGradient(player.x,player.y,player.attackRange*0.85,player.x,player.y,player.attackRange);
-  rg.addColorStop(0,'rgba(0,229,255,0)');
-  rg.addColorStop(1,'rgba(0,229,255,0.1)');
-  ctx.fillStyle=rg;
-  ctx.beginPath();ctx.arc(player.x,player.y,player.attackRange,0,Math.PI*2);ctx.fill();
-  // 수집 반경 (은은하게)
-  ctx.strokeStyle=`rgba(255,216,107,${0.14+0.05*Math.sin(performance.now()/300)})`;
-  ctx.lineWidth=1; ctx.setLineDash([4,4]);
-  ctx.beginPath();ctx.arc(player.x,player.y,player.pickupRadius,0,Math.PI*2);ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.restore();
+  // ── 가호 실드 버블 (v2.3 — energy force field, 100%=강력/0%=소멸) ──
+  const _now=performance.now();
+  {
+    const _gp=Math.max(0,Math.min(1,state.gauge/state.gaugeMax));
+    if(_gp>0.005 && !state.gaugeDepleted){
+      const sR=46;
+      const _pulse=0.92+0.08*Math.sin(_now/550);
+      const _alpha=_gp*_pulse;
+      const _edgeW=1.5+5.5*_gp; // 100%=7px, 0%=1.5px
+      ctx.save();
+
+      // Layer 1: 외부 ambient halo (넓은 외부 광원)
+      ctx.shadowColor=`rgba(60,200,255,${_alpha*0.6})`;
+      ctx.shadowBlur=42*_gp;
+      ctx.strokeStyle=`rgba(80,210,255,${_alpha*0.12})`;
+      ctx.lineWidth=20;
+      ctx.beginPath();ctx.arc(player.x,player.y,sR+6,0,Math.PI*2);ctx.stroke();
+
+      // Layer 2: 내부 채움 — 3D 구체 느낌의 radial gradient
+      ctx.shadowBlur=0;
+      const _fgx=player.x-sR*0.26, _fgy=player.y-sR*0.30;
+      const _fg=ctx.createRadialGradient(_fgx,_fgy,0,player.x,player.y,sR);
+      _fg.addColorStop(0,   `rgba(210,245,255,${_alpha*0.16})`);
+      _fg.addColorStop(0.38,`rgba(80,195,255,${_alpha*0.07})`);
+      _fg.addColorStop(0.72,`rgba(30,130,255,${_alpha*0.10})`);
+      _fg.addColorStop(1,   `rgba(10,80,200,${_alpha*0.22})`);
+      ctx.fillStyle=_fg;
+      ctx.beginPath();ctx.arc(player.x,player.y,sR,0,Math.PI*2);ctx.fill();
+
+      // Layer 3: 버블 가장자리 링 (두께가 게이지에 비례 — 핵심)
+      ctx.shadowColor=`rgba(130,225,255,${_alpha*0.95})`;
+      ctx.shadowBlur=18*_gp;
+      ctx.strokeStyle=`rgba(175,235,255,${_alpha*0.88})`;
+      ctx.lineWidth=_edgeW;
+      ctx.lineCap='butt';
+      ctx.beginPath();ctx.arc(player.x,player.y,sR,0,Math.PI*2);ctx.stroke();
+
+      // Layer 4: 내측 밝은 링 (유리 안쪽 반사)
+      ctx.shadowBlur=4;
+      ctx.strokeStyle=`rgba(225,250,255,${_alpha*0.50})`;
+      ctx.lineWidth=0.8;
+      ctx.beginPath();ctx.arc(player.x,player.y,sR-_edgeW*0.7,0,Math.PI*2);ctx.stroke();
+
+      // Layer 5: 회전 하이라이트 스팟 (구체 반사광 — 3D 효과)
+      ctx.shadowBlur=0;
+      const _hlAng=(_now/5500)%(Math.PI*2);
+      const _hlX=player.x+Math.cos(_hlAng)*sR*0.58;
+      const _hlY=player.y+Math.sin(_hlAng)*sR*0.58;
+      ctx.save();
+      ctx.beginPath();ctx.arc(player.x,player.y,sR-1,0,Math.PI*2);ctx.clip();
+      const _hlG=ctx.createRadialGradient(_hlX,_hlY,0,_hlX,_hlY,sR*0.30);
+      _hlG.addColorStop(0,`rgba(255,255,255,${_alpha*0.42})`);
+      _hlG.addColorStop(0.55,`rgba(200,242,255,${_alpha*0.14})`);
+      _hlG.addColorStop(1,`rgba(255,255,255,0)`);
+      ctx.fillStyle=_hlG;
+      ctx.fillRect(player.x-sR,player.y-sR,sR*2,sR*2);
+      ctx.restore();
+
+      // Layer 6: 에너지 소용돌이 — 3가닥 (회전 wisps)
+      if(_gp>0.08){
+        ctx.save();
+        ctx.beginPath();ctx.arc(player.x,player.y,sR-2,0,Math.PI*2);ctx.clip();
+        for(let _wi=0;_wi<3;_wi++){
+          const _wt=(_now/3000+_wi/3)*Math.PI*2;
+          const _wR=sR*0.50;
+          const _wx=player.x+Math.cos(_wt)*_wR;
+          const _wy=player.y+Math.sin(_wt)*_wR;
+          ctx.shadowColor=`rgba(100,215,255,${_alpha*0.55})`;
+          ctx.shadowBlur=10;
+          ctx.strokeStyle=`rgba(160,230,255,${_alpha*_gp*0.40})`;
+          ctx.lineWidth=1.2;
+          ctx.beginPath();
+          ctx.arc(_wx,_wy,sR*0.30,_wt+0.4,_wt+2.7);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // Layer 7: 하단 파문 (타원형 ripple — 구체 바닥)
+      if(_gp>0.12){
+        const _rp=0.30+0.06*Math.sin(_now/450);
+        ctx.save();
+        ctx.scale(1,0.22);
+        const _ryCanvas=(player.y+sR*0.92)/0.22;
+        ctx.shadowColor=`rgba(80,200,255,${_alpha*0.38})`;
+        ctx.shadowBlur=14;
+        ctx.strokeStyle=`rgba(120,215,255,${_alpha*0.32})`;
+        ctx.lineWidth=2;
+        ctx.beginPath();ctx.arc(player.x,_ryCanvas,sR*_rp,0,Math.PI*2);ctx.stroke();
+        ctx.restore();
+      }
+
+      ctx.restore();
+    }
+  }
+  // ── 발키리 범위 표시 (v2.3 — 최소화, 인지 가능 수준) ──
+  // 1) 공격 범위: 매우 얇고 희미하게 (정보용 최소 표시)
+  {
+    const ap=0.14+0.05*Math.sin(_now/650);
+    ctx.save();
+    ctx.shadowBlur=0;
+    ctx.strokeStyle=`rgba(255,80,20,${ap})`;
+    ctx.lineWidth=1;
+    ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(player.x,player.y,player.attackRange,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+  }
+  // 2) 아이템 획득 범위: 더 희미하게
+  {
+    const pp=0.10+0.04*Math.sin(_now/480);
+    ctx.save();
+    ctx.shadowBlur=0;
+    ctx.strokeStyle=`rgba(0,220,255,${pp})`;
+    ctx.lineWidth=0.8;
+    ctx.setLineDash([5,7]);
+    ctx.beginPath();ctx.arc(player.x,player.y,player.pickupRadius,0,Math.PI*2);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
   // v1.0.9→v1.1.0: 플레이어 머리 위 공속 게이지 제거 → 좌측 세로 바로 이동
   // v1.0.3: 건설 완료된 시설 공속 게이지 바 + 마법진 범위 원
   for(const s of state.facilitySlots){
