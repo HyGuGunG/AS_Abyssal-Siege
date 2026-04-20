@@ -1039,7 +1039,7 @@ footer{
           <div class="flow-node fn-a">3</div>
           <div class="flow-text">
             <div class="t">1시간 응전 제한</div>
-            <div class="d">알림 발생 후 1시간 내 [습격 대응] 버튼을 눌러야 함.<br>미응전 시 자동 패배 → 수문 HP -10%</div>
+            <div class="d">알림 발생 후 1시간 내 [습격 대응] 버튼을 눌러야 함.<br>미응전 시 자동 패배 → 수문 내구도 -10%</div>
             <div class="mt8"><span class="badge b-amber">⏱ 1H 타이머</span> <span class="badge b-coral">미응전 패널티</span></div>
           </div>
         </div>
@@ -1061,7 +1061,7 @@ footer{
           <tbody>
             <tr><td><strong>재출현 주기</strong></td><td>종료 시점 기준 4시간 후</td></tr>
             <tr><td><strong>응전 제한</strong></td><td>알림 후 1시간</td></tr>
-            <tr><td><strong>미응전 패널티</strong></td><td>수문 HP -10%</td></tr>
+            <tr><td><strong>미응전 패널티</strong></td><td>수문 내구도 -10%</td></tr>
             <tr><td><strong>강도 연동</strong></td><td>수문 레벨 비례</td></tr>
           </tbody>
         </table>
@@ -1511,7 +1511,7 @@ footer{
       <div class="gs4 glass" style="padding:18px;">
         <div class="card-label mb10" style="color:var(--cyan);font-size:10px;">🏰 수문 방어</div>
         <div class="card-body">
-          <strong>수문은 넉넉하지만 방치하면 급격히 무너집니다.</strong> 가호 게이지가 0%가 되면 수문 HP가 빠르게 줄어 위기감을 조성합니다.<br><br>
+          <strong>수문은 넉넉하지만 방치하면 급격히 무너집니다.</strong> 가호 게이지가 0%가 되면 수문 내구도가 빠르게 줄어 위기감을 조성합니다.<br><br>
           <strong>보주 수집이 핵심 루프</strong> — 적을 처치하고 보주를 주워 가호를 유지하는 것이 게임의 기본 흐름입니다. 보주를 놓치면 수문이 위험해지는 긴장 구조.<br><br>
           <strong>수문은 HP에 따라 외형이 변합니다.</strong> 건강한 상태에서 서서히 붕괴되는 모습이 시각적으로 위기감을 전달합니다. (아래 상세)
         </div>
@@ -1577,7 +1577,7 @@ footer{
   <div class="glass accent-top accent-cyan" style="padding:28px;margin-bottom:12px;">
     <div class="card-label mb4" style="color:var(--cyan)">GAUGE SYSTEM</div>
     <div class="card-title mb4">가호 게이지 — 발키리의 생명선</div>
-    <div class="card-sub mb16">가호가 0이 되면 발키리가 무력화 → <strong>수문이 무방비 상태</strong>가 되어 수문 HP 초당 자동 감소. 가호의 보주(orb) 수집으로 즉시 회복.</div>
+    <div class="card-sub mb16">가호가 0이 되면 발키리가 무력화 → <strong>수문이 무방비 상태</strong>가 되어 수문 내구도 초당 자동 감소. 가호의 보주(orb) 수집으로 즉시 회복.</div>
 
     <!-- 가호 게이지 데모 (전체 너비) -->
     <div class="mb16">
@@ -1598,7 +1598,7 @@ footer{
         var stages = [
           { pct:82, color:'#00e5ff', dotColor:'#00c9a7', label:'안전 — 게이지가 천천히 줄어드는 정상 상태', bg:'linear-gradient(90deg,#00c9a7,#00e5ff)', shadow:'0 0 8px rgba(0,229,255,.5)', hold:2400 },
           { pct:26, color:'#ffb830', dotColor:'#ffb830', label:'경고 — 화면이 빨갛게 깜빡이며 위험 신호', bg:'linear-gradient(90deg,#ff8c00,#ffb830)', shadow:'0 0 8px rgba(255,184,48,.6)', hold:2400 },
-          { pct:2,  color:'#ff5e5b', dotColor:'#ff5e5b', label:'위험 — 수문 HP가 초당 자동으로 깎임', bg:'linear-gradient(90deg,#c0392b,#ff5e5b)', shadow:'0 0 10px rgba(255,94,91,.7)', hold:2400 }
+          { pct:2,  color:'#ff5e5b', dotColor:'#ff5e5b', label:'위험 — 수문 내구도가 초당 자동으로 깎임', bg:'linear-gradient(90deg,#c0392b,#ff5e5b)', shadow:'0 0 10px rgba(255,94,91,.7)', hold:2400 }
         ];
         var i = 0;
         var inner = document.getElementById('gaugeDemoInner');
@@ -1642,7 +1642,7 @@ footer{
         <tr><td><strong>기본 감소 속도</strong></td><td>Wave 1: -3%/초 · Wave마다 +0.5%씩 증가 (Wave 7 최대 -6%/초)</td></tr>
         <tr><td><strong>가호의 보주 회복</strong></td><td>+25 즉시 회복 (근접 자동 수집, 가호 부족 시 드랍률 최대 2.2배)</td></tr>
         <tr><td><strong>경고 구간</strong></td><td>30% 이하 — 화면 테두리가 빨갛게 깜빡임</td></tr>
-        <tr><td><strong>0% 도달 시</strong></td><td>수문 HP -2%/초 (보주 수집 시 즉시 중단)</td></tr>
+        <tr><td><strong>0% 도달 시</strong></td><td>수문 내구도 -2%/초 (보주 수집 시 즉시 중단)</td></tr>
       </tbody>
     </table>
     <div class="callout">
@@ -1706,7 +1706,7 @@ footer{
         <tr style="background:rgba(76,175,80,.04)"><td><strong>⚔️ 원거리 망루</strong></td><td><span class="badge b-green">고급</span></td><td>고위력 관통탄 발사</td><td>110</td><td>2.2s</td><td>420</td><td style="color:#81c784;">공격(관통)</td></tr>
         <tr style="background:rgba(76,175,80,.04)"><td><strong>❄️ 빙결 탑</strong></td><td><span class="badge b-green">고급</span></td><td>범위 내 적 이동속도 감소</td><td>감속 -25%</td><td>2.5s</td><td>300</td><td style="color:#81c784;">군중제어</td></tr>
         <tr style="background:rgba(33,150,243,.04)"><td><strong>💥 마법구 포탑</strong></td><td><span class="badge b-blue">희귀</span></td><td>밀집 지점 포탄 → 광역 폭발</td><td>85 (광역)</td><td>1.8s</td><td>380</td><td style="color:#64b5f6;">공격(범위)</td></tr>
-        <tr style="background:rgba(33,150,243,.04)"><td><strong>🛡️ 수호 요새</strong></td><td><span class="badge b-blue">희귀</span></td><td>수문 HP 주기적 회복</td><td>수문 +15</td><td>5.0s</td><td>전체</td><td style="color:#64b5f6;">회복(수문)</td></tr>
+        <tr style="background:rgba(33,150,243,.04)"><td><strong>🛡️ 수호 요새</strong></td><td><span class="badge b-blue">희귀</span></td><td>수문 내구도 주기적 회복</td><td>수문 +15</td><td>5.0s</td><td>전체</td><td style="color:#64b5f6;">회복(수문)</td></tr>
         <tr style="background:rgba(156,39,176,.05)"><td><strong>⚡ 뇌전 요새</strong></td><td><span class="badge b-violet">고유</span></td><td>최대 3명에게 번개 연쇄 공격</td><td>55 ×3연쇄</td><td>2.0s</td><td>340</td><td style="color:#b0a8ff;">공격(연쇄)</td></tr>
         <tr style="background:rgba(156,39,176,.05)"><td><strong>✨ 성광 첨탑</strong></td><td><span class="badge b-violet">고유</span></td><td>인근 시설 공격력 +30% 증폭</td><td>공격 ×1.30</td><td>패시브</td><td>200</td><td style="color:#b0a8ff;">버프</td></tr>
         <tr style="background:rgba(255,152,0,.05)"><td><strong>🔥 발키리 망루</strong></td><td><span class="badge b-orange">전설</span></td><td>신성 포격 → 강력한 광역 폭발</td><td>180 (광역)</td><td>3.5s</td><td>전체</td><td style="color:#ffb74d;">공격(전체)</td></tr>
@@ -2026,7 +2026,7 @@ footer{
           수문 피해 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong style="color:var(--coral)">-15%</strong>
         </div>
         <hr class="r-sep">
-        <div style="font-size:12px;color:var(--coral);">⚠ 수문 HP가 감소했습니다.<br>수리 재료로 복구하세요.</div>
+        <div style="font-size:12px;color:var(--coral);">⚠ 수문 내구도가 감소했습니다.<br>수리 재료로 복구하세요.</div>
       </div>
     </div>
     <div class="gs4 mb12">
@@ -2036,7 +2036,7 @@ footer{
           알림 발생 후 <strong style="color:#ffb3b1;">1시간 이내</strong> 미응전 시<br>자동 패배 처리.
         </div>
         <div style="background:rgba(255,40,40,.14);border:1px solid rgba(255,80,80,.4);border-radius:8px;padding:10px 14px;font-size:14px;text-align:center;">
-          <strong style="color:#ff3b38;font-size:16px;letter-spacing:.04em;">수문 HP -10%</strong><br>
+          <strong style="color:#ff3b38;font-size:16px;letter-spacing:.04em;">수문 내구도 -10%</strong><br>
           <span style="color:rgba(255,160,160,.6);font-size:11px;">즉시 적용 · 복구 불가</span>
         </div>
       </div>
@@ -2113,8 +2113,8 @@ footer{
       <table class="tbl">
         <thead><tr><th colspan="2" style="color:var(--coral)">❌ 패배 조건</th></tr></thead>
         <tbody>
-          <tr><td><strong>수문 HP 0</strong></td><td>적이 수문을 파괴</td></tr>
-          <tr><td><strong>가호 게이지 0% 지속</strong></td><td>수문 HP -2%/초 자동 감소</td></tr>
+          <tr><td><strong>수문 내구도 0</strong></td><td>적이 수문을 파괴</td></tr>
+          <tr><td><strong>가호 게이지 0% 지속</strong></td><td>수문 내구도 -2%/초 자동 감소</td></tr>
           <tr><td><strong>1시간 미응전</strong></td><td>자동 패배 처리</td></tr>
         </tbody>
       </table>

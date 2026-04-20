@@ -76,9 +76,8 @@
   .obj img{display:block;width:100%;height:100%;object-fit:contain}
   /* v0.9.8: 스프라이트 배경감 완화 — 원형 소프트 마스크 + 대비 강화로 사각 배경 체감 제거 */
   .enemy img, .item img{
-    -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 50%, rgba(0,0,0,.5) 65%, transparent 75%);
-            mask-image: radial-gradient(circle at 50% 50%, #000 50%, rgba(0,0,0,.5) 65%, transparent 75%);
-    filter:contrast(1.12) brightness(1.06) saturate(1.08) drop-shadow(0 0 6px rgba(0,0,0,.55));
+    /* mask-image 제거 — filter 충돌로 검은 박스 렌더링 버그 발생 */
+    filter:contrast(1.12) brightness(1.06) saturate(1.08);
     border-radius:50%;
   }
 
@@ -1050,73 +1049,137 @@
   .panel,.btn,.draft-card,.skill-btn,.fslot .slot-ring,.dmg,.fly-rsc{transition-timing-function:cubic-bezier(.2,.8,.2,1)}
 
   /* ═══ 결과 화면 — v2.4 컴팩트 리디자인 (스크롤 없이 720px 내 전체 표시) ═══ */
-  #resultScreen{flex-direction:column!important;align-items:center!important;justify-content:center!important;
-    position:relative;overflow:hidden;padding:14px 12px;gap:0}
-  #resultScreen::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0}
-  #resultScreen.defeat::before{background:radial-gradient(ellipse at center,transparent 25%,rgba(180,20,40,.28) 100%)}
-  #resultScreen.victory::before{background:radial-gradient(ellipse at center,rgba(255,216,107,.08) 0%,transparent 60%)}
-  #resultScreen>*{position:relative;z-index:1}
-  /* ── 타이틀 + 서브 ── */
-  #resultScreen h1{font-family:'Outfit',sans-serif;font-size:34px;font-weight:900;letter-spacing:.14em;
-    margin:0 0 2px;text-shadow:0 0 36px currentColor,0 3px 16px rgba(0,0,0,.8);line-height:1}
-  #resultScreen .sub{font-size:11px;color:#9cd8ff;margin:0 0 6px;opacity:.8}
-  /* ── 등급 + 점수 가로 배치 ── */
-  .result-top-row{display:flex;align-items:center;justify-content:center;gap:20px;width:100%;max-width:540px;margin:0 0 6px}
-  .result-grade{font-family:'Outfit',sans-serif;font-size:86px;font-weight:900;letter-spacing:.04em;line-height:1;
-    text-shadow:0 0 50px currentColor,0 0 100px currentColor,0 4px 20px rgba(0,0,0,.7);
-    opacity:0;transform:scale(.3);transition:none;flex-shrink:0}
-  .result-grade.reveal{opacity:1;transform:scale(1);animation:gradeReveal .5s cubic-bezier(.2,.8,.2,1) forwards}
+  /* ═══════════════════════════════════
+     풀스크린 결과창 — 좌우 분할 레이아웃
+  ═══════════════════════════════════ */
+  #resultScreen{
+    flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;
+    padding:0!important;gap:0;overflow:hidden;
+  }
+  /* 좌우 패널 래퍼 */
+  .rs-panels{flex:1;display:flex;flex-direction:row;align-items:stretch;overflow:hidden}
+  /* 하단 버튼 영역 */
+  .rs-bottom{display:flex;justify-content:center;align-items:center;padding:14px 0;
+    background:rgba(0,3,14,.7);border-top:1px solid rgba(0,229,255,.08)}
+  #resultScreen::before{display:none!important}
+
+  /* ── 좌 패널: 등급 쇼케이스 ── */
+  .rs-left{
+    flex:0 0 44%;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    position:relative;padding:32px 36px;gap:6px;
+  }
+  #resultScreen.victory .rs-left{
+    background:radial-gradient(ellipse at 48% 52%,rgba(255,216,107,.14) 0%,rgba(5,12,28,.97) 62%)}
+  #resultScreen.defeat .rs-left{
+    background:radial-gradient(ellipse at 48% 52%,rgba(200,20,50,.2) 0%,rgba(5,12,28,.97) 62%)}
+  /* 좌 패널 세로 구분선 */
+  .rs-left::after{content:'';position:absolute;right:0;top:8%;height:84%;
+    width:1px;background:linear-gradient(to bottom,transparent,rgba(0,229,255,.15) 30%,rgba(0,229,255,.15) 70%,transparent)}
+  /* 결과 제목 (VICTORY / DEFEAT) */
+  .rs-result-title{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;
+    letter-spacing:.3em;text-transform:uppercase;
+    opacity:0;animation:fadeSlideUp .4s .1s forwards}
+  #resultScreen.victory .rs-result-title{color:rgba(255,216,107,.7)}
+  #resultScreen.defeat .rs-result-title{color:rgba(255,80,100,.7)}
+  /* 서브 텍스트 */
+  .rs-sub-text{font-size:12px;color:#9cd8ff;letter-spacing:.04em;margin-top:2px;
+    opacity:0;animation:fadeSlideUp .4s .25s forwards}
+  /* 등급 문자 (초대형) */
+  .result-grade{
+    font-family:'Outfit',sans-serif;font-size:190px;font-weight:900;letter-spacing:-.02em;line-height:.82;
+    text-shadow:0 0 80px currentColor,0 0 180px currentColor,0 8px 40px rgba(0,0,0,.9);
+    opacity:0;transform:scale(.15);transition:none;user-select:none;
+    margin:8px 0 4px;
+  }
+  .result-grade.reveal{animation:gradeReveal .7s cubic-bezier(.17,.67,.2,1.4) forwards}
   @keyframes gradeReveal{
-    0%{opacity:0;transform:scale(.3);filter:blur(10px)}
-    50%{opacity:1;transform:scale(1.12);filter:blur(0)}
+    0%{opacity:0;transform:scale(.1);filter:blur(22px)}
+    55%{opacity:1;transform:scale(1.08);filter:blur(0)}
     100%{opacity:1;transform:scale(1);filter:blur(0)}
   }
-  .grade-S{color:#ffd86b;animation:gradeGlow 2s ease-in-out infinite alternate}
-  .grade-A{color:#9d7bff} .grade-B{color:#26ffe9} .grade-C{color:#ffb830} .grade-D{color:#ff4d6d}
-  @keyframes gradeGlow{0%{text-shadow:0 0 50px #ffd86b,0 0 100px #ffd86b}100%{text-shadow:0 0 70px #ffe88c,0 0 140px #ffd86b,0 0 200px rgba(255,216,107,.3)}}
-  .result-score-block{display:flex;flex-direction:column;align-items:flex-start}
-  .result-score{font-family:'Outfit',sans-serif;font-size:32px;font-weight:900;color:#fff;
-    text-shadow:0 0 14px rgba(255,255,255,.3);letter-spacing:.06em;line-height:1;margin:0}
-  .result-score .label{font-size:9px;color:rgba(156,216,255,.6);letter-spacing:.2em;display:block;margin-bottom:2px;font-weight:700}
+  .grade-S{color:#ffd86b;animation:gradeGlowS 2.2s ease-in-out infinite alternate}
+  .grade-A{color:#9d7bff;animation:gradeGlowA 2.2s ease-in-out infinite alternate}
+  .grade-B{color:#26ffe9} .grade-C{color:#ffb830} .grade-D{color:#ff4d6d}
+  @keyframes gradeGlowS{0%{text-shadow:0 0 70px #ffd86b,0 0 140px rgba(255,216,107,.5)}100%{text-shadow:0 0 100px #ffe88c,0 0 220px rgba(255,216,107,.4),0 0 320px rgba(255,180,0,.15)}}
+  @keyframes gradeGlowA{0%{text-shadow:0 0 60px #9d7bff,0 0 120px rgba(157,123,255,.4)}100%{text-shadow:0 0 90px #b8a0ff,0 0 200px rgba(157,123,255,.3)}}
+  /* 점수 블록 */
+  .rs-score-block{display:flex;flex-direction:column;align-items:center;gap:0;
+    opacity:0;animation:fadeSlideUp .5s .55s forwards}
+  .rs-score-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
+    letter-spacing:.22em;color:rgba(156,216,255,.5);text-transform:uppercase}
+  .rs-score-num{font-family:'Outfit',sans-serif;font-size:38px;font-weight:900;color:#fff;
+    letter-spacing:.06em;line-height:1;text-shadow:0 0 18px rgba(255,255,255,.3)}
   .result-best{font-family:'Outfit',sans-serif;font-size:10px;color:var(--gold);font-weight:700;
-    letter-spacing:.08em;margin-top:3px;opacity:0;animation:fadeSlideUp .4s .9s forwards}
+    letter-spacing:.08em;margin-top:4px;opacity:0;animation:fadeSlideUp .4s .9s forwards}
   .result-best.new-record{color:#ffd86b;animation:fadeSlideUp .4s .9s forwards,pulseGold 1.5s 1.3s ease-in-out infinite}
-  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes pulseGold{0%,100%{opacity:1}50%{opacity:.6}}
-  /* ── 스탯 — 가로 6칸 한 줄 ── */
-  .result-stats{display:flex;gap:6px;width:100%;max-width:560px;margin:0 0 8px;justify-content:center}
-  .result-stats .it{flex:1;background:rgba(5,18,34,.55);border:1px solid rgba(0,229,255,.18);
-    border-radius:8px;padding:7px 4px;text-align:center;min-width:0}
-  .result-stats .it .v{font-family:'Outfit',sans-serif;font-size:16px;color:#fff;font-weight:900;
-    text-shadow:0 0 8px rgba(0,229,255,.35);line-height:1}
-  .result-stats .it .l{font-size:8px;color:#7cb8d8;margin-top:3px;letter-spacing:.05em;white-space:nowrap}
-  /* ── 보상 ── */
-  .result-reward{display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;max-width:540px;margin:0 0 10px;
-    opacity:0;animation:fadeSlideUp .4s 1.1s forwards}
-  .result-reward-label{font-size:9px;color:rgba(156,216,255,.45);letter-spacing:.2em;font-weight:700}
-  .result-reward-items{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-  .result-reward-item{display:flex;flex-direction:column;align-items:center;gap:3px;
-    background:rgba(5,18,34,.6);border:1px solid rgba(255,216,107,.22);border-radius:8px;
-    padding:7px 12px;min-width:72px}
-  .result-reward-item.soulstone{border-color:rgba(0,229,255,.32);box-shadow:0 0 10px rgba(0,229,255,.12) inset}
-  .result-reward-item img{width:32px;height:32px;object-fit:contain}
-  .result-reward-item .ri-name{font-size:9px;color:rgba(156,216,255,.7);letter-spacing:.04em;white-space:nowrap}
-  .result-reward-item .ri-qty{font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:#ffd86b;
-    text-shadow:0 0 7px rgba(255,216,107,.5)}
-  .result-reward-item.soulstone .ri-qty{color:#00e5ff;text-shadow:0 0 7px rgba(0,229,255,.5)}
-  .result-reward-note{font-size:9px;color:rgba(255,255,255,.3);text-align:center}
-  /* ── 재도전 버튼 ── */
-  #resultScreen .btn{margin:0;padding:11px 44px;font-size:15px;font-weight:900;letter-spacing:.08em;
-    border-radius:10px;border:none;cursor:pointer;position:relative;overflow:hidden;
+  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulseGold{0%,100%{opacity:1}50%{opacity:.55}}
+
+  /* ── 우 패널: 배틀 리포트 ── */
+  .rs-right{
+    flex:1;display:flex;flex-direction:column;
+    align-items:flex-start;justify-content:center;
+    padding:36px 48px;gap:0;
+    background:rgba(0,3,14,.55);position:relative;
+  }
+  /* 배틀 리포트 라벨 */
+  .rs-report-label{
+    font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.2em;color:rgba(156,216,255,.35);text-transform:uppercase;
+    margin-bottom:12px;
+    opacity:0;animation:fadeSlideUp .4s .35s forwards;
+  }
+  /* 스탯 2×3 그리드 */
+  .rs-stats-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+    width:100%;max-width:480px;margin-bottom:18px;
+    opacity:0;animation:fadeSlideUp .5s .5s forwards;
+  }
+  .rs-stat{
+    background:rgba(5,18,34,.65);border:1px solid rgba(0,229,255,.14);
+    border-radius:12px;padding:15px 12px;text-align:center;
+    transition:border-color .2s;
+  }
+  .rs-stat:hover{border-color:rgba(0,229,255,.3)}
+  .rs-sv{font-family:'Outfit',sans-serif;font-size:26px;font-weight:900;color:#fff;
+    text-shadow:0 0 10px rgba(0,229,255,.25);line-height:1}
+  .rs-sl{font-size:10px;color:#7cb8d8;margin-top:5px;letter-spacing:.04em;white-space:nowrap}
+  /* 보상 */
+  .result-reward{
+    display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+    width:100%;max-width:480px;margin-bottom:18px;
+    opacity:0;animation:fadeSlideUp .5s .75s forwards;
+  }
+  .result-reward-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.2em;color:rgba(156,216,255,.35);text-transform:uppercase}
+  .result-reward-items{display:flex;gap:10px;flex-wrap:wrap}
+  .result-reward-item{display:flex;flex-direction:column;align-items:center;gap:4px;
+    background:rgba(5,18,34,.7);border:1px solid rgba(255,216,107,.2);border-radius:10px;
+    padding:10px 14px;min-width:80px;transition:border-color .2s}
+  .result-reward-item:hover{border-color:rgba(255,216,107,.45)}
+  .result-reward-item.soulstone{border-color:rgba(0,229,255,.3);box-shadow:0 0 12px rgba(0,229,255,.1) inset}
+  .result-reward-item img{width:36px;height:36px;object-fit:contain}
+  .result-reward-item .ri-name{font-size:9px;color:rgba(156,216,255,.65);letter-spacing:.04em;white-space:nowrap}
+  .result-reward-item .ri-qty{font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:#ffd86b;
+    text-shadow:0 0 8px rgba(255,216,107,.5)}
+  .result-reward-item.soulstone .ri-qty{color:#00e5ff;text-shadow:0 0 8px rgba(0,229,255,.55)}
+  .result-reward-note{font-size:9px;color:rgba(255,255,255,.28);margin-top:2px}
+  /* 다시 도전 버튼 */
+  #resultScreen .btn{
+    margin:0;padding:13px 80px;font-size:16px;font-weight:900;letter-spacing:.1em;
+    border-radius:12px;border:none;cursor:pointer;position:relative;overflow:hidden;
     background:linear-gradient(135deg,#f5b942,#e8960a);color:#1a1410;
-    box-shadow:0 6px 24px rgba(245,185,66,.4),0 2px 8px rgba(0,0,0,.5);
-    transition:transform .15s,box-shadow .15s}
-  #resultScreen .btn:hover{transform:translateY(-2px) scale(1.02);
-    box-shadow:0 10px 32px rgba(245,185,66,.5),0 4px 12px rgba(0,0,0,.6)}
+    box-shadow:0 6px 28px rgba(245,185,66,.45),0 2px 10px rgba(0,0,0,.6);
+    transition:transform .15s,box-shadow .15s;
+    opacity:0;animation:fadeSlideUp .5s .8s forwards;
+  }
+  #resultScreen .btn:hover{transform:translateY(-2px) scale(1.03);
+    box-shadow:0 12px 36px rgba(245,185,66,.55),0 4px 14px rgba(0,0,0,.7)}
   #resultScreen .btn::after{content:'';position:absolute;inset:0;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
-    transform:translateX(-100%);animation:btnShine 3s 1.5s infinite}
-  @keyframes btnShine{0%{transform:translateX(-100%)}30%{transform:translateX(100%)}100%{transform:translateX(100%)}}
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+    transform:translateX(-100%);animation:btnShine 3.5s 1.8s infinite}
+  @keyframes btnShine{0%{transform:translateX(-100%)}25%{transform:translateX(100%)}100%{transform:translateX(100%)}}
 
   /* ═══ v1.0.2: 인월드 수문 HP 바 ═══ */
   #gateHpBar{position:absolute;left:50%;transform:translateX(-50%);bottom:148px;width:130px;z-index:6;pointer-events:none;text-align:center}
@@ -1297,10 +1360,7 @@
   /* v1.6: 히트스톱 */
   #stage.hitstop{animation:none!important}
 
-  /* v1.6: 결과 카운트업 */
-  .result-stats .it .v{transition:color .3s}
-  .result-grade:not(.reveal){opacity:0;transform:scale(0)}
-  .result-grade.reveal{opacity:1;transform:scale(1);transition:opacity .5s,transform .5s cubic-bezier(.17,.67,.2,1.3)}
+  /* v2.0: 결과 카운트업 (구버전 CSS 제거됨) */
 
   /* ═══ IN-APP BROWSER WARNING ═══ */
   #inappWarn{display:none;position:fixed;z-index:999999;top:0;left:0;right:0;bottom:0;
@@ -1696,7 +1756,7 @@
   <div id="gateHpBar">
     <div class="ghp-val"><span class="ghp-icons" style="font-size:12px;margin-right:2px"><span class="ghp-fixed-ico">🏰</span></span><span id="gateHpText">1,500</span>/<span id="gateHpMaxText">1,500</span></div>
     <div class="ghp-track tier-blue"><div class="ghp-fill" id="gateHpFill" style="width:100%"></div></div>
-    <div class="ghp-warn">⚠ 가호 부족 — HP 감소 중</div>
+    <div class="ghp-warn">⚠ 가호 부족 — 내구도 감소 중</div>
   </div>
   <!-- v1.0.9: 가호 게이지 → 발키리 머리 위 별도 요소 -->
   <div id="playerGaugeTop">
@@ -1904,32 +1964,40 @@
 
   <!-- 결과 화면 -->
   <div class="screen hidden" id="resultScreen">
-    <h1 id="resultTitle">VICTORY</h1>
-    <div class="sub" id="resultSub"></div>
-    <!-- 등급 + 점수 가로 배치 -->
-    <div class="result-top-row">
-      <div class="result-grade" id="rsGrade">S</div>
-      <div class="result-score-block">
-        <div class="result-score"><span class="label">SCORE</span><span id="rsScore">0</span></div>
-        <div class="result-best" id="rsBest"></div>
+    <div class="rs-panels">
+      <!-- LEFT: 등급 쇼케이스 -->
+      <div class="rs-left">
+        <div class="rs-result-title" id="resultTitle">VICTORY</div>
+        <div class="rs-sub-text" id="resultSub"></div>
+        <div class="result-grade" id="rsGrade">S</div>
+        <div class="rs-score-block">
+          <div class="rs-score-label">SCORE</div>
+          <div class="rs-score-num" id="rsScore">0</div>
+          <div class="result-best" id="rsBest"></div>
+        </div>
+      </div>
+      <!-- RIGHT: 배틀 리포트 -->
+      <div class="rs-right">
+        <div class="rs-report-label">BATTLE REPORT</div>
+        <div class="rs-stats-grid">
+          <div class="rs-stat"><div class="rs-sv" id="rsKill">0</div><div class="rs-sl">처치 수</div></div>
+          <div class="rs-stat"><div class="rs-sv" id="rsWave">0/7</div><div class="rs-sl">Wave 달성</div></div>
+          <div class="rs-stat"><div class="rs-sv" id="rsOrb">0</div><div class="rs-sl">보주 획득</div></div>
+          <div class="rs-stat"><div class="rs-sv" id="rsHp">0%</div><div class="rs-sl">수문 잔여 내구도</div></div>
+          <div class="rs-stat"><div class="rs-sv" id="rsTime">00:00</div><div class="rs-sl">플레이 시간</div></div>
+          <div class="rs-stat"><div class="rs-sv" id="rsCrit">0</div><div class="rs-sl">크리티컬</div></div>
+        </div>
+        <div class="result-reward" id="resultReward">
+          <div class="result-reward-label">REWARD</div>
+          <div class="result-reward-items" id="rewardItems"></div>
+          <div class="result-reward-note" id="rewardNote"></div>
+        </div>
       </div>
     </div>
-    <!-- 스탯 6칸 한 줄 -->
-    <div class="result-stats">
-      <div class="it"><div class="v" id="rsKill">0</div><div class="l">처치</div></div>
-      <div class="it"><div class="v" id="rsWave">0/7</div><div class="l">웨이브</div></div>
-      <div class="it"><div class="v" id="rsOrb">0</div><div class="l">보주</div></div>
-      <div class="it"><div class="v" id="rsHp">0%</div><div class="l">수문</div></div>
-      <div class="it"><div class="v" id="rsTime">00:00</div><div class="l">시간</div></div>
-      <div class="it"><div class="v" id="rsCrit">0</div><div class="l">크리티컬</div></div>
+    <!-- BOTTOM: 다시 도전 버튼 가운데 -->
+    <div class="rs-bottom">
+      <button class="btn" id="btnRetry">다시 도전</button>
     </div>
-    <!-- 보상 -->
-    <div class="result-reward" id="resultReward">
-      <div class="result-reward-label">REWARD</div>
-      <div class="result-reward-items" id="rewardItems"></div>
-      <div class="result-reward-note" id="rewardNote"></div>
-    </div>
-    <button class="btn" id="btnRetry">다시 도전</button>
   </div>
 
   <!-- v1.0.2: 카드 툴팁 -->
@@ -2553,7 +2621,7 @@ const TIER_CLASS={ normal:'normal', rare:'rare', epic:'epic' };
 const TIER_IMG={ normal:'items/resource_normal.png', rare:'items/resource_rare.png', epic:'items/resource_epic.png' };
 
 const ENEMY_DEFS={
-  sogari:{name:'피라냐 고블린', hp:35, speed:160, r:34, img:'enemies/sogari.png', ai:'rush',     touchDmg:40, orbRate:0.28, size:68,
+  sogari:{name:'피라냐 고블린', hp:29, speed:160, r:34, img:'enemies/sogari.png', ai:'rush',     touchDmg:40, orbRate:0.28, size:68,
           drops:[{tier:'normal',w:75},{tier:'rare',w:22},{tier:'epic',w:3}]},
   bangeo:{name:'어인 기사',     hp:80, speed:90,  r:40, img:'enemies/bangeo.png', ai:'straight', touchDmg:70, orbRate:0.22, size:80,
           drops:[{tier:'normal',w:40},{tier:'rare',w:45},{tier:'epic',w:15}]},
@@ -2598,8 +2666,8 @@ const FACILITY_POOL=[
     stats:[{icon:'💥',label:'피해',val:'85 (광역)'},{icon:'⏱',label:'공속',val:'1.8초'},{icon:'📐',label:'사거리',val:'380'}],
     range:380, cooldown:1.8, dmg:85, type:'mortar', splashR:130, shellSpeed:320, projColor:'#ffb347'},
   {id:'barrier', name:'수호 요새', rarity:'희귀', kind:'facility', icon:'AS_Assets/facilities/facility_barrier.png',
-    desc:'방패 결계를 펼쳐 주기적으로 수문 HP를 회복하고 보호한다.',
-    stats:[{icon:'🏰',label:'회복량',val:'수문 +15'},{icon:'⏱',label:'주기',val:'5.0초'}],
+    desc:'방패 결계를 펼쳐 주기적으로 수문 내구도를 회복하고 보호한다.',
+    stats:[{icon:'🏰',label:'회복량',val:'내구도 +15'},{icon:'⏱',label:'주기',val:'5.0초'}],
     range:0, cooldown:5.0, healAmount:15, type:'gate_heal', projColor:'#26ffe9'},
 
   /* ── 고유 (보라) ── */
@@ -2608,9 +2676,9 @@ const FACILITY_POOL=[
     stats:[{icon:'⚡',label:'피해',val:'55 ×3연쇄'},{icon:'⏱',label:'공속',val:'2.0초'},{icon:'📐',label:'사거리',val:'340'}],
     range:340, cooldown:2.0, dmg:55, type:'chain', chainCount:3, projColor:'#e040fb'},
   {id:'holy_amplifier', name:'성광 첨탑', rarity:'고유', kind:'facility', icon:'AS_Assets/facilities/facility_amplifier.png',
-    desc:'황금 첨탑에서 성스러운 빛을 발산해 인근 방어 시설의 공격력을 강화한다.',
-    stats:[{icon:'⬆',label:'강화',val:'인근 시설 공격력 +30%'},{icon:'📐',label:'반경',val:'200'}],
-    range:200, cooldown:99999, type:'buff', buffAmount:0.30, projColor:'#e040fb'},
+    desc:'황금 첨탑에서 성스러운 빛을 발산해 건설된 모든 방어 시설의 공격력을 강화한다. 1기만 건설 가능.',
+    stats:[{icon:'⬆',label:'강화',val:'전체 시설 공격력 +30%'},{icon:'🔒',label:'제한',val:'최대 1기'}],
+    range:99999, cooldown:99999, type:'buff', buffAmount:0.30, projColor:'#e040fb', maxCount:1},
 
   /* ── 전설 (주황) ── */
   {id:'valk_wrath', name:'발키리 망루', rarity:'전설', kind:'facility', icon:'AS_Assets/facilities/facility_wrath.png',
@@ -2692,6 +2760,7 @@ function startGame(){
   // 모바일: 게임 시작 시 가로 전환 시도
   if(typeof tryLockLandscape==='function') tryLockLandscape();
   state.running=true; state.phase='playing';
+  state._resultPending=false;
   state.wave=1;
   state.gameStartTime=performance.now(); state.playElapsed=0;
   state.gateDamageStage=0; state.gateCracks.length=0; state.prevGateHp=state.gateHpMax;
@@ -2832,9 +2901,9 @@ function updateBossProjectiles(dt){
     if(bp.el){bp.el.style.left=bp.x+'px';bp.el.style.top=bp.y+'px';}
     // 발키리 충돌
     if(Math.hypot(bp.x-player.x,bp.y-player.y)<bp.r+player.r-4 && player.invul<=0){
-      damagePlayer(bp.dmg);
+      const _isGate=damagePlayer(bp.dmg);
       player.invul=0.4;
-      spawnPlayerDamageNumber(player.x,player.y-40,bp.dmg);
+      spawnPlayerDamageNumber(player.x,player.y-40,bp.dmg,_isGate);
       playerEl.classList.add('hit');
       setTimeout(()=>playerEl.classList.remove('hit'),180);
       if(bp.el&&bp.el.parentNode)bp.el.parentNode.removeChild(bp.el);
@@ -2864,6 +2933,7 @@ function endWave(){
   pushBattleLog(`WAVE ${state.wave} 클리어 — 스킬 선택`);
   waveClearCelebration(); // A3: 색종이 파티클
   vibrate([40,30,60]); // A4: 모바일 진동
+  slowMo(0.5, 0.15); // 0.5초 슬로우모션
   setTimeout(()=>openCardDraft(), 900);
 }
 
@@ -3124,7 +3194,13 @@ function flyResourceToSlot(s){
   requestAnimationFrame(step);
 }
 function openFacilityDraft(slotIdx){
-  const picks=[...FACILITY_POOL].sort(()=>Math.random()-0.5).slice(0,3);
+  // maxCount 제한 시설 필터 (예: 성광 첨탑은 1기 이상 건설 불가)
+  const builtIds={};
+  for(const s of state.facilitySlots){
+    if(s.unlocked&&s.facility) builtIds[s.facility.id]=(builtIds[s.facility.id]||0)+1;
+  }
+  const available=FACILITY_POOL.filter(f=>!f.maxCount||((builtIds[f.id]||0)<f.maxCount));
+  const picks=[...available].sort(()=>Math.random()-0.5).slice(0,3);
   state.pendingSlotIdx=slotIdx;
   state.facilityDraftPicks=picks;
   state.phase='facilitydraft';
@@ -3206,7 +3282,7 @@ function selectFacility(f, el){
   }, 550);
 }
 function applyBuffFacilities(){
-  // 성스러운 방벽 버프 적용: 인근 시설의 dmg*1.30
+  // 성광 첨탑 버프 적용: 건설된 모든 시설의 dmg*1.30 (범위 무제한)
   for(const s of state.facilitySlots){
     if(!s.unlocked||!s.facility) continue;
     const f=s.facility;
@@ -3214,9 +3290,7 @@ function applyBuffFacilities(){
     for(const s2 of state.facilitySlots){
       if(!s2.unlocked||!s2.facility||s2===s) continue;
       const f2=s2.facility;
-      if(Math.hypot(s.x-s2.x,s.y-s2.y)<(f.range||200)){
-        if(!f2._buffApplied){ f2._buffApplied=true; f2.dmg=(f2.dmg||0)*(1+f.buffAmount); }
-      }
+      if(!f2._buffApplied){ f2._buffApplied=true; f2.dmg=(f2.dmg||0)*(1+f.buffAmount); }
     }
   }
 }
@@ -3609,8 +3683,20 @@ function hideCardTooltip(){
   document.getElementById('cardTooltip').classList.remove('show');
 }
 
-function victory(){ state.running=false; state.phase='result'; stopBGM(); playSound('victory'); showResult(true); }
-function gameOver(){ state.running=false; state.phase='result'; stopBGM(); playSound('defeat'); showResult(false); }
+function victory(){
+  if(state._resultPending) return;
+  state._resultPending=true;
+  stopBGM(); playSound('victory');
+  slowMo(0.5, 0.15); // 0.5초 슬로우모션
+  setTimeout(()=>{ state.running=false; state.phase='result'; showResult(true); }, 500);
+}
+function gameOver(){
+  if(state._resultPending) return;
+  state._resultPending=true;
+  stopBGM(); playSound('defeat');
+  slowMo(0.5, 0.15); // 0.5초 슬로우모션
+  setTimeout(()=>{ state.running=false; state.phase='result'; showResult(false); }, 500);
+}
 
 // === 점수/등급 시스템 ===
 function calcScore(win){
@@ -4066,9 +4152,9 @@ function killEnemy(e){
       playSound('explode');
       // 발키리 피해 (원형 판정)
       if(Math.hypot(player.x-bx,player.y-by)<R && player.invul<=0){
-        damagePlayer(18);
+        const _isGateBk=damagePlayer(18);
         player.invul=0.5;
-        spawnPlayerDamageNumber(player.x,player.y-40,18);
+        spawnPlayerDamageNumber(player.x,player.y-40,18,_isGateBk);
       }
       // 수문 피해 (원형 판정으로 통일 — 수문 중앙 기준)
       const gateX=W/2, gateY=H-95;
@@ -4421,37 +4507,34 @@ function renderGateCracks(){
 }
 
 // 발키리 피격 공통 처리 — 가호 0 시 수문 HP 직접 감소
+// damagePlayer returns true if gate was hit (gauge=0), false otherwise
 function damagePlayer(dmg){
   // 가호의 각인: 가호가 있을 때 aegisChance 확률로 가호 소모 무시
   if(state.gauge>0 && player.aegisChance && Math.random()<player.aegisChance){
-    // 가호 소모 무시 (피해 차단) — 이펙트 강화
     spawnFacilityFloat(player.x, player.y-30, '🛡 각인 발동!','#9d7bff');
-    // 발키리 주변 보라색 플래시
     const aegisFlash=document.createElement('div');
     aegisFlash.style.cssText=`position:absolute;left:${player.x}px;top:${player.y}px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(157,123,255,.55),transparent);transform:translate(-50%,-50%);pointer-events:none;z-index:15;animation:aegisPulse .45s ease-out forwards`;
     stage.appendChild(aegisFlash);
     setTimeout(()=>{if(aegisFlash.parentNode)aegisFlash.parentNode.removeChild(aegisFlash)},500);
-    // 파티클
     for(let k=0;k<10;k++) particles.push({x:player.x+(Math.random()-.5)*40,y:player.y+(Math.random()-.5)*40,vx:(Math.random()-.5)*180,vy:(Math.random()-.5)*180,life:.5,size:4+Math.random()*3,color:'rgba(157,123,255,'});
-    return;
+    return false;
   }
   if(state.gauge>0){
     const prev=state.gauge;
     state.gauge=Math.max(0,state.gauge-dmg);
-    // 가호 감소 표시 (✨ 아이콘 + 감소량)
     spawnPickupFloat('✨', -Math.round(prev-state.gauge), '#7cc4ff', ((document.getElementById('playerGaugeTop')?.offsetWidth||70)/2)+30, -90);
+    return false;
   } else {
-    // 가호가 없으면 수문에 직접 피해
+    // 가호가 없으면 수문 내구도 직접 감소 (스폰은 호출부에서 처리)
     state.gateHp=Math.max(0,state.gateHp-dmg);
-    spawnGateDmgFloat(dmg);
+    return true; // 수문 피격
   }
 }
 
-// v1.0.2: 발키리 피해 넘버 (빨간색, 아래로 떨어지는 모션)
+// v2.0: 발키리 피해 넘버 (isGate=true면 🏰 수문 내구도 감소 표시)
 const _playerHitStack=[];
-function spawnPlayerDamageNumber(px,py,amount){
+function spawnPlayerDamageNumber(px,py,amount,isGate=false){
   playSound('player_hit');
-  // 가호 게이지(playerGaugeTop) 중앙 상단 기준 표시
   const gauge=document.getElementById('playerGaugeTop');
   let gx,gy;
   if(gauge){
@@ -4461,15 +4544,14 @@ function spawnPlayerDamageNumber(px,py,amount){
     gx=(gr.left+gr.width/2-sr.left)/scale;
     gy=(gr.top-sr.top)/scale - 6;
   } else { gx=px; gy=py-40; }
-  // 연속 피격: 이전 숫자보다 위로 쌓기 (24px 간격)
   const now=performance.now();
-  // 0.8초 이내 히트들만 유효
   while(_playerHitStack.length && now-_playerHitStack[0]>800) _playerHitStack.shift();
   const stackOff=_playerHitStack.length*22;
   _playerHitStack.push(now);
   const el=document.createElement('div');
   el.className='dmg player-hit';
-  el.textContent='-'+Math.round(amount);
+  // 수문 피격: 발키리에 🏰 아이콘과 함께 표시
+  el.textContent=(isGate?'🏰 ':'')+'-'+Math.round(amount);
   el.style.left=gx+'px'; el.style.top=(gy-stackOff)+'px';
   stage.appendChild(el);
   setTimeout(()=>{if(el.parentNode)el.parentNode.removeChild(el)},900);
@@ -5137,9 +5219,9 @@ function update(dt){
         setTimeout(()=>{
           if(warn.parentNode) warn.parentNode.removeChild(warn);
           if(Math.hypot(player.x-tx,player.y-ty)<slamR && player.invul<=0){
-            damagePlayer(18);
+            const _isGateS=damagePlayer(18);
             player.invul=0.6;
-            spawnPlayerDamageNumber(player.x,player.y-40,18);
+            spawnPlayerDamageNumber(player.x,player.y-40,18,_isGateS);
           }
           playSound('boss_slam');
           shockwaveBig(tx,ty,slamR);
@@ -5292,12 +5374,12 @@ function update(dt){
     }
     const pd=Math.hypot(e.x-player.x,e.y-player.y);
     if(pd < e.r+player.r-8 && player.invul<=0){
-      damagePlayer(12);
+      const _isGateE=damagePlayer(12);
       player.invul=0.5;
       const nx=(player.x-e.x)/Math.max(1,pd), ny=(player.y-e.y)/Math.max(1,pd);
       player.x+=nx*30; player.y+=ny*30;
       // v1.0.2: 빨간색 피해 넘버
-      spawnPlayerDamageNumber(player.x,player.y-40,12);
+      spawnPlayerDamageNumber(player.x,player.y-40,12,_isGateE);
       playerEl.classList.add('hit');
       setTimeout(()=>playerEl.classList.remove('hit'),180);
     }
@@ -5353,8 +5435,8 @@ function update(dt){
     if(rp.el){ rp.el.style.left=rp.x+'px'; rp.el.style.top=rp.y+'px'; }
     const pdx=rp.x-player.x, pdy=rp.y-player.y;
     if(Math.hypot(pdx,pdy)<22+rp.r){
-      damagePlayer(rp.dmg);
-      spawnPlayerDamageNumber(player.x,player.y-40,rp.dmg);
+      const _isGateR=damagePlayer(rp.dmg);
+      spawnPlayerDamageNumber(player.x,player.y-40,rp.dmg,_isGateR);
       playerEl.classList.add('hit'); setTimeout(()=>playerEl.classList.remove('hit'),180);
       triggerHitVignette();
       // 투사체 피격 이펙트 (작은 파티클)
@@ -5442,8 +5524,8 @@ function update(dt){
     state.gateHp=Math.max(0,state.gateHp - state.gaugeEmptyDamageRate*state.gateHpMax/100*dt);
     updateGateDamage();
     if(!wasDepleted){
-      showToast('⚠ 가호 부족! 수문 HP 감소 중');
-      pushBattleLog('⚠ 가호 고갈 — 수문 HP 감소 중');
+      showToast('⚠ 가호 부족! 수문 내구도 감소 중');
+      pushBattleLog('⚠ 가호 고갈 — 수문 내구도 감소 중');
     }
   }
   vignetteEl.classList.toggle('warn', state.gaugeDepleted);
@@ -5748,10 +5830,9 @@ function renderFx(dt){
       ctx.setLineDash([]);
       ctx.restore();
     }
-    // 공속 게이지 — deposit-ring SVG 재활용
-    const cdMax=Math.max(0.001,f.cooldown);
-    const cdRem=Math.max(0,Math.min(1, f.attackCD/cdMax));
-    const prog=1-cdRem;
+    // 공속 게이지 — deposit-ring SVG 재활용 (debuff/buff 타입은 항상 가득)
+    const prog=(f.type==='debuff'||f.type==='buff')?1:
+      (1-Math.max(0,Math.min(1, f.attackCD/Math.max(0.001,f.cooldown))));
     const drFill=s.el.querySelector('.dr-fill');
     if(drFill){ drFill.style.strokeDashoffset=267*(1-prog); }
   }
