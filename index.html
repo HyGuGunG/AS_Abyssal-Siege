@@ -6321,6 +6321,68 @@ if(AUTOPLAY){
       }catch(e){}
     },80);
   }
+
+  // ?showtitle : 타이틀 화면 스크린샷용 — 애니메이션 즉시 완료
+  if(p.includes('showtitle')){
+    const _ssCss=document.createElement('style');
+    _ssCss.textContent='*{animation-duration:0.001ms!important;animation-delay:0ms!important;transition-duration:0.001ms!important;transition-delay:0ms!important}';
+    document.head.appendChild(_ssCss);
+    // opacity:0으로 시작하는 타이틀 요소 모두 즉시 표시
+    document.querySelectorAll('.title-anim').forEach(el=>{
+      el.style.opacity='1';
+      el.style.transform='translateY(0)';
+    });
+  }
+
+  // ?showgameplay : Wave 3 전투 장면 강제 세팅 (게임플레이 스크린샷용)
+  if(p.includes('showgameplay')){
+    setTimeout(()=>{
+      try{
+        startGame();
+        setTimeout(()=>{
+          // 1) Wave 3 상태 세팅
+          state.wave=3; state.waveMax=7;
+          state.phase='playing'; state.running=true;
+          _paused=true; // render()는 유지, update()는 정지
+          state.stats={kill:23,orb:7,crit:4,maxCombo:18};
+          state.combo=12; state.maxCombo=18;
+          state.enemiesToSpawn=[]; state.waveSpawned=99; state.currentWaveTotal=99;
+          document.getElementById('titleScreen').classList.add('hidden');
+          // 2) 기존 적 제거
+          enemies.forEach(e=>{ if(e.el&&e.el.parentNode) e.el.parentNode.removeChild(e.el); });
+          enemies.length=0;
+          // 3) 적 수동 배치 — 화면 전체 분산 (8마리)
+          const pl=[
+            // 후방 (멀리서 접근 중)
+            {type:'sogari', x:150,  y: 90},
+            {type:'agwi',   x:760,  y:130},
+            {type:'bangeo', x:1090, y:150},
+            // 중거리
+            {type:'gaori',  x:990,  y:250},
+            {type:'bokeo',  x:255,  y:275},
+            {type:'bangeo', x:420,  y:300},
+            {type:'sogari', x:820,  y:280},
+            // 근접 (전투 중)
+            {type:'sogari', x:560,  y:390},
+            {type:'bangeo', x:730,  y:380},
+          ];
+          pl.forEach(({type,x,y})=>{
+            spawnEnemy(type);
+            const e=enemies[enemies.length-1];
+            e.x=x; e.y=y; e._alive=true;
+            if(e.el){ e.el.style.left=(x-e.r)+'px'; e.el.style.top=(y-e.r)+'px'; }
+          });
+          // 4) 발키리 중앙 배치
+          player.x=640; player.y=490;
+          // 5) HUD 갱신
+          try{ updateHud(); }catch(ex){}
+          // 6) Wave 배너 숨기기
+          const wb=document.getElementById('waveBanner');
+          if(wb){ wb.classList.remove('show'); wb.style.opacity='0'; }
+        },300);
+      }catch(e){ console.error('showgameplay err',e); }
+    },80);
+  }
 })();
 
 // ═══════════════════════════════════════
