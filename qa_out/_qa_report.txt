@@ -1,8 +1,8 @@
 ============================================================
-Abyssal Siege QA 리포트  2026-04-21 21:37
+Abyssal Siege QA 리포트  2026-04-21 21:38
 URL: https://hygugung.github.io/AS_Abyssal-Siege/
 ============================================================
-총 45항목  |  ✅ PASS 41  |  ❌ FAIL 1  |  ⚠️  WARN 3
+총 45항목  |  ✅ PASS 42  |  ❌ FAIL 0  |  ⚠️  WARN 3
 
 ── 타이틀 화면 ──
   ✅ [T01] 게임 시작 버튼(#btnStart) 노출
@@ -23,9 +23,9 @@ URL: https://hygugung.github.io/AS_Abyssal-Siege/
   ✅ [G02] state.running == true
        └ True
   ✅ [G03] 성문 HP 정상
-       └ 1493.001/1500
-  ❌ [G04] 가호 게이지 0 이하
-       └ gauge=0
+       └ 1431.5039999999995/1500
+  ✅ [G04] 가호 게이지 정상
+       └ gauge=16.5/100
   ✅ [G05] 웨이브 카운터 정상
        └ wave=1/7
   ✅ [G06] 시설 슬롯 배정됨 (드래프트 결과)
@@ -50,7 +50,7 @@ URL: https://hygugung.github.io/AS_Abyssal-Siege/
        └ pixelCount=12477
   ✅ [V02] 발키리: 정식 스프라이트 애니메이션 모드
   ✅ [V03] 발키리 캐릭터 화면 노출
-       └ 비검정=48400, std=33.7
+       └ 비검정=48399, std=34.7
   ✅ [V04] 발키리 attack_r 화면 노출
   ✅ [V05] 발키리 attack_l 화면 노출
   ✅ [V06] GC 공격 이펙트 이미지 로드됨
@@ -60,7 +60,7 @@ URL: https://hygugung.github.io/AS_Abyssal-Siege/
   ✅ [E01] 적 5종 스폰
        └ 생존=5
   ✅ [E02] 적 스프라이트 색상 다양성 정상
-       └ std=37.6
+       └ std=38.7
   ✅ [E03] 적 스프라이트 배경 제거 정상 (검은 박스 없음)
   ✅ [E04] 모든 적 이미지 경로 정의됨
        └ []
@@ -73,18 +73,18 @@ URL: https://hygugung.github.io/AS_Abyssal-Siege/
   ✅ [W03] state.running == true (게임 루프 동작)
        └ True
   ✅ [W04] 웨이브 진행 중 게임 화면 정상
-       └ 비검정픽셀=448333
+       └ 비검정픽셀=448448
 
 ── 피격·치명타 이펙트 ──
   ✅ [H01] 일반 피격 데미지 이펙트 노출
-       └ 밝은픽셀=13084
+       └ 밝은픽셀=13146
   ✅ [H02] 치명타 피격 이펙트 노출
-       └ 밝은픽셀=12998, 오렌지=0.007
+       └ 밝은픽셀=12868, 오렌지=0.006
   ⚠️  [H03] _particles 변수 미감지 (전역 노출 안됨)
 
 ── E스킬(성검 폭풍) ──
   ✅ [S01] E스킬(성검 폭풍) 이펙트 노출
-       └ 밝은픽셀=12871, 골드=0.002
+       └ 밝은픽셀=12379, 골드=0.001
   ✅ [S02] spawnESkillFx 함수 존재
        └ True
   ✅ [S03] E스킬 쿨다운 설정 정상
@@ -94,13 +94,13 @@ URL: https://hygugung.github.io/AS_Abyssal-Siege/
   ✅ [F01] 5초 후 성문 HP 잔존 (게임 지속)
        └ True
   ✅ [F02] 5초 후 게임 정상 지속 (gameover 아님)
-       └ gateHp=1431, phase=carddraft
+       └ gateHp=1416, phase=carddraft
   ✅ [F03] 캐시 버스팅 _VER 적용됨
        └ True
   ✅ [F04] 게임 통계 객체 존재
        └ kill=8, orb=1, crit=3
   ✅ [F05] 최종 화면 정상 렌더링 (크래시/프리즈 없음)
-       └ std=29.7
+       └ std=30.6
 
 ── JS 런타임 ──
   ✅ [J01] JS 런타임 에러 없음
