@@ -4370,19 +4370,36 @@ function dealDamage(e,dmg,crit=false){
   e.hp-=dmg;
   if(e._hpFill) e._hpFill.style.width=Math.max(0,(e.hp/e.hpMax)*100)+'%';
   spawnDamageNumber(e.x,e.y-e.r,dmg,crit);
-  // GC 피격 이펙트 — shine_splash 스프라이트
+
+  // 적 타입별 피격 이펙트
+  const isFish = e.type==='sogari'||e.type==='bangeo'||e.type==='gaori'||e.type==='agwi'||e.type==='bokeo';
   if(crit){
-    spawnGCShineFx(e.x, e.y, 90);          // 치명타: 큰 shine
-    spawnGCGlowFx(e.x, e.y, 70, 0.6);      // glow 오버레이
+    spawnGCShineFx(e.x, e.y, 100);
+    spawnGCGlowFx(e.x, e.y, 80, 0.7);
+    spawnGCLightFx(e.x, e.y, 70);           // 치명타: 번개 섬광 추가
+    // 치명타 파티클 burst (타입별 색상)
+    const _hitColors={sogari:'rgba(255,140,60,',bangeo:'rgba(80,200,255,',gaori:'rgba(0,229,255,',agwi:'rgba(100,220,110,',bokeo:'rgba(255,90,60,'};
+    const hc=(_hitColors[e.type]||'rgba(255,255,200,')+')';
+    for(let i=0;i<8;i++){
+      const ang=Math.random()*Math.PI*2, spd=120+Math.random()*160;
+      particles.push({x:e.x,y:e.y,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd-40,life:.35+Math.random()*.2,size:3+Math.random()*2.5,color:hc});
+    }
   } else {
-    spawnGCShineFx(e.x, e.y, 52);          // 일반: 작은 shine
+    spawnGCShineFx(e.x, e.y, 56);
+    // 물 속성 몬스터: 수면 파문 효과 (추가 glow)
+    if(isFish) spawnGCGlowFx(e.x, e.y, 44, 0.35);
+    // 어인 기사/가오리: 번개 틱 효과
+    if(e.type==='bangeo'||e.type==='gaori') spawnGCLightFx(e.x, e.y, 38);
   }
-  // 피격 연출: 백색 플래시 + 미세 흔들림
+
+  // 피격 CSS 연출 (물고기 타입은 fish 클래스 추가)
   if(e.el){
-    e.el.classList.remove('e-hit'); void e.el.offsetWidth; e.el.classList.add('e-hit');
-    setTimeout(()=>{ if(e.el) e.el.classList.remove('e-hit'); }, 150);
+    e.el.classList.remove('e-hit'); void e.el.offsetWidth;
+    e.el.classList.add('e-hit');
+    if(isFish) e.el.classList.add('fish');
+    setTimeout(()=>{ if(e.el){ e.el.classList.remove('e-hit'); e.el.classList.remove('fish'); } }, 180);
   }
-  if(crit){ state.stats.crit++; playSound('crit'); hitStop(35); }
+  if(crit){ state.stats.crit++; playSound('crit'); hitStop(40); }
   else if(!dealDamage._lastT||performance.now()-dealDamage._lastT>80){ dealDamage._lastT=performance.now(); playSound('hit'); }
   if(e.hp<=0 && e._alive){ e._alive=false; killEnemy(e); }
 }
@@ -4498,7 +4515,13 @@ function killEnemy(e){
   // B13: 적 유형별 처치 파티클 색상
   const _killColors={sogari:'rgba(255,120,80,',bangeo:'rgba(60,180,255,',gaori:'rgba(0,229,255,',agwi:'rgba(80,200,100,',bokeo:'rgba(255,80,80,',kraken:'rgba(157,123,255,'};
   const _kc=_killColors[e.type]||'rgba(255,200,120,';
-  for(let i=0;i<14;i++) particles.push({x:e.x,y:e.y,vx:(Math.random()-.5)*260,vy:(Math.random()-.5)*260,life:.5,size:4+Math.random()*4,color:_kc});
+  const _killCnt = e.boss ? 40 : (e.type==='agwi' ? 22 : 16);
+  const _killSpd = e.boss ? 400 : (e.type==='agwi' ? 320 : 280);
+  for(let i=0;i<_killCnt;i++) particles.push({x:e.x,y:e.y,vx:(Math.random()-.5)*_killSpd,vy:(Math.random()-.5)*_killSpd,life:.5+Math.random()*.25,size:3+Math.random()*5,color:_kc});
+  // GC shine + glow 사망 이펙트
+  spawnGCShineFx(e.x, e.y, e.boss?130:(e.type==='agwi'?100:72));
+  spawnGCGlowFx(e.x, e.y, e.boss?110:(e.type==='agwi'?80:55), 0.8);
+  if(e.type==='bangeo'||e.type==='gaori') spawnGCLightFx(e.x, e.y, e.boss?120:60);
   // v0.9.8: 드롭 통합 — 가호 / 재료 / 무드롭 택1 (중복 드롭 방지)
   // 기존 orbRate(예 0.28) + rscRate(암묵 1.0) 겹침 → 단독 분기로 정리.
   // 단독 드롭이므로 체감 향상 반영: orb ≒ 기존*0.55, rsc ≒ 기존의 가중치 재배분.
