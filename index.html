@@ -2409,21 +2409,23 @@ function spawnESkillFx(x, y){
     _spawnESkillLayer('body',   x, y);
     _spawnESkillLayer('weapon', x, y);
   }
-  // DOM 폴백 이펙트 (시트 없을 때 또는 보조 연출)
-  const sz1 = Math.round(player.shockwaveRadius * 1.4);
-  const sw = document.createElement('div');
-  sw.className = 'e-skill-fx swords';
-  sw.style.cssText = `left:${x}px;top:${y}px;width:${sz1}px;height:${sz1}px;`
-    + `background:url('AS_Assets/skills/gc_valk_swords.png') center/contain no-repeat;`;
-  stage.appendChild(sw);
-  setTimeout(()=>{ if(sw.parentNode) sw.parentNode.removeChild(sw); }, 600);
-  const sz2 = Math.round(player.shockwaveRadius * 2.0);
-  const wg = document.createElement('div');
-  wg.className = 'e-skill-fx wings';
-  wg.style.cssText = `left:${x}px;top:${y}px;width:${sz2}px;height:${sz2}px;`
-    + `background:url('AS_Assets/skills/gc_valk_wings.png') center/contain no-repeat;`;
-  stage.appendChild(wg);
-  setTimeout(()=>{ if(wg.parentNode) wg.parentNode.removeChild(wg); }, 450);
+  // DOM 폴백 이펙트 (시트 없을 때만 사용)
+  if(!hasSheets){
+    const sz1 = Math.round(player.shockwaveRadius * 1.4);
+    const sw = document.createElement('div');
+    sw.className = 'e-skill-fx swords';
+    sw.style.cssText = `left:${x}px;top:${y}px;width:${sz1}px;height:${sz1}px;`
+      + `background:url('AS_Assets/skills/gc_valk_swords.png') center/contain no-repeat;`;
+    stage.appendChild(sw);
+    setTimeout(()=>{ if(sw.parentNode) sw.parentNode.removeChild(sw); }, 600);
+    const sz2 = Math.round(player.shockwaveRadius * 2.0);
+    const wg = document.createElement('div');
+    wg.className = 'e-skill-fx wings';
+    wg.style.cssText = `left:${x}px;top:${y}px;width:${sz2}px;height:${sz2}px;`
+      + `background:url('AS_Assets/skills/gc_valk_wings.png') center/contain no-repeat;`;
+    stage.appendChild(wg);
+    setTimeout(()=>{ if(wg.parentNode) wg.parentNode.removeChild(wg); }, 450);
+  }
 }
 
 function spawnShockwaveRing(x, y, radius){
