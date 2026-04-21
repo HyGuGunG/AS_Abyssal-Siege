@@ -135,10 +135,15 @@
   @keyframes bokeoWarn{0%{opacity:.6;transform:translate(-50%,-50%) scale(.92)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}}
   @keyframes bokeoHuskPulse{0%{opacity:.7;transform:translate(-50%,-50%) scale(.9)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}
   /* 몬스터 피격 연출 */
-  .enemy.e-hit img{animation:enemyHitFlash .15s ease-out}
-  @keyframes enemyHitFlash{0%{filter:contrast(1.12) brightness(2.2) saturate(0.2)}100%{filter:contrast(1.12) brightness(1.06) saturate(1.08)}}
-  .enemy.e-hit{animation:enemyHitShake .12s ease-out}
-  @keyframes enemyHitShake{0%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% + 4px),calc(-50% - 2px))}50%{transform:translate(calc(-50% - 3px),calc(-50% + 2px))}75%{transform:translate(calc(-50% + 2px),calc(-50% + 1px))}100%{transform:translate(-50%,-50%)}}
+  .enemy.e-hit img{animation:enemyHitFlash .18s ease-out}
+  @keyframes enemyHitFlash{0%{filter:contrast(1.2) brightness(3.2) saturate(0)}40%{filter:contrast(1.18) brightness(2.0) saturate(0.15)}100%{filter:contrast(1.12) brightness(1.06) saturate(1.08)}}
+  .enemy.e-hit{animation:enemyHitShake .15s ease-out}
+  @keyframes enemyHitShake{0%{transform:translate(-50%,-50%)}15%{transform:translate(calc(-50% + 6px),calc(-50% - 3px))}35%{transform:translate(calc(-50% - 5px),calc(-50% + 3px))}55%{transform:translate(calc(-50% + 4px),calc(-50% + 1px))}75%{transform:translate(calc(-50% - 2px),calc(-50% - 1px))}100%{transform:translate(-50%,-50%)}}
+  /* 물고기 피격 전용 (물 파장 추가) */
+  .enemy.e-hit.fish img{animation:fishHitFlash .18s ease-out}
+  @keyframes fishHitFlash{0%{filter:contrast(1.3) brightness(3.0) saturate(0) hue-rotate(180deg)}40%{filter:contrast(1.2) brightness(2.0) saturate(0.3) hue-rotate(90deg)}100%{filter:contrast(1.1) brightness(1.05) saturate(1.1) hue-rotate(0deg)}}
+  /* 성광 첨탑 버프 활성 표시 */
+  .ft-holy-badge{display:inline-block;font-size:9px;background:rgba(200,160,255,.18);color:#c8a0ff;border:1px solid rgba(200,160,255,.4);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;letter-spacing:.05em}
   /* 잉크 감속 지대 */
   .boss-ink-zone{position:absolute;width:160px;height:160px;transform:translate(-50%,-50%);pointer-events:none;z-index:1;
     border-radius:50%;background:radial-gradient(circle,rgba(60,0,80,.45),rgba(30,0,50,.15));
@@ -2167,8 +2172,8 @@ function _updateESkillPool(ctx2, dt){
 const VALK_ANIMS = {
   idle:     { src:'AS_Assets/valk2_idle_sheet.png',     fw:340, fh:420, cols:6, frames:34, fps:30, loop:true  },
   attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:147 },
-  attack_r: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:720, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:160, dispW:300 },
-  attack_l: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:720, fh:580, cols:6, frames:36, fps:30, loop:false, dispH:160, dispW:300 },
+  attack_r: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:160, dispW:420 },
+  attack_l: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false, dispH:160, dispW:420 },
   skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500, fh:560, cols:6, frames:60, fps:30, loop:false, dispH:140 },
   move_r:   { src:'AS_Assets/valk2_move_l_sheet.png',  fw:260, fh:500, cols:6, frames:40, fps:30, loop:true  },
   move_l:   { src:'AS_Assets/valk2_move_r_sheet.png',  fw:260, fh:460, cols:6, frames:40, fps:30, loop:true  },
@@ -2534,11 +2539,21 @@ function showFacilityTooltip(slot, el){
   const rarityColor=f ? (RARITY_LABEL_COLOR[f.rarity]||'#aaa') : '#aaa';
   const rarityTxt=f ? `<div style="font-size:10px;color:${rarityColor};margin-bottom:6px;letter-spacing:.08em">${f.rarity} 시설</div>` : '';
   const descTxt=f ? `<div style="font-size:11px;opacity:.7;margin-bottom:7px;line-height:1.4">${f.desc}</div>` : '';
+  // 성광 첨탑 버프 활성 여부 확인
+  const holyActive = f && f._buffApplied && f._baseDmg!=null;
   let statsTxt='';
   if(f && f.stats && f.stats.length){
     statsTxt='<div style="border-top:1px dashed rgba(0,229,255,.2);padding-top:5px;margin-top:3px">';
     statsTxt+=f.stats.map(s=>`<div class="ft-row"><span class="lbl">${s.icon} ${s.label}</span><span class="val">${s.val}</span></div>`).join('');
     statsTxt+='</div>';
+  }
+  // 성광 버프 공격력 상세 표시
+  if(holyActive){
+    const base=Math.round(f._baseDmg), buffed=Math.round(f.dmg), diff=buffed-base;
+    statsTxt+=`<div style="border-top:1px dashed rgba(200,160,255,.3);padding-top:5px;margin-top:4px">`;
+    statsTxt+=`<div class="ft-row"><span class="lbl">✦ 공격력</span><span class="val" style="color:#c8a0ff">${buffed}<span style="color:#9dffb0;font-size:10px">(+${diff})</span></span></div>`;
+    statsTxt+=`<div style="font-size:9.5px;color:#c8a0ff;opacity:.75;margin-top:2px">✦ 성광 첨탑 버프 적용 중</div>`;
+    statsTxt+=`</div>`;
   }
   const costTxt=slot.unlocked ? '' : `<div class="ft-row"><span class="lbl">건설 비용</span><span class="val">${slot.cost} 자원</span></div>`;
   const depositTxt=(!slot.unlocked && slot.cost>0) ? `<div class="ft-row"><span class="lbl">예치된 자원</span><span class="val">${Math.round(slot.deposited)}/${slot.cost}</span></div>` : '';
@@ -3561,7 +3576,7 @@ function applyBuffFacilities(){
     for(const s2 of state.facilitySlots){
       if(!s2.unlocked||!s2.facility||s2===s) continue;
       const f2=s2.facility;
-      if(!f2._buffApplied){ f2._buffApplied=true; f2.dmg=(f2.dmg||0)*(1+f.buffAmount); }
+      if(!f2._buffApplied){ f2._buffApplied=true; f2._baseDmg=f2.dmg||0; f2.dmg=(f2.dmg||0)*(1+f.buffAmount); }
     }
   }
 }
