@@ -1,0 +1,8 @@
+=== ValkyrieCapture2 QA 결과 ===
+  [FAIL(투명)] valk2_idle: 비마젠타 평균=214/142800 (0.1%)
+  [FAIL(투명)] valk2_attack_f: 비마젠타 평균=305/280000 (0.1%)
+  [FAIL(투명)] valk2_attack_l: 비마젠타 평균=305/403200 (0.1%)
+  [FAIL(투명)] valk2_attack_r: 비마젠타 평균=324/417600 (0.1%)
+  [FAIL(투명)] valk2_skill: 비마젠타 평균=316/280000 (0.1%)
+  [FAIL(투명)] valk2_move_l: 비마젠타 평균=274/130000 (0.2%)
+  [FAIL(투명)] valk2_move_r: 비마젠타 평균=234/119600 (0.2%)
