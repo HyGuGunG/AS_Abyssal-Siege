@@ -2892,19 +2892,34 @@ function valkPlayAnim(name,onEnd){
     playerSpriteEl.style.backgroundPosition=`-${col*spriteW}px -${row2*spriteH}px`;
   },ms);
 }
-// 스프라이트 시트 존재 여부 확인 → 없으면 SD 이미지 폴백
+// 스프라이트 시트 존재 여부 + 픽셀 내용 확인 → 빈 이미지면 SD 폴백
 let _valkFallbackMode = false;
+function _activateFallback(){
+  _valkFallbackMode = true;
+  const fi = document.createElement('img');
+  fi.src = GC_VALKYRIE+_VER;
+  fi.style.cssText = 'position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:112px;height:auto;pointer-events:none;filter:drop-shadow(0 0 12px rgba(0,229,255,.6))';
+  fi.id = '_valkFallbackImg';
+  playerEl.appendChild(fi);
+}
 {
   const _t = new Image();
-  _t.onload = () => { valkPlayAnim('idle'); };
-  _t.onerror = () => {
-    _valkFallbackMode = true;
-    const fi = document.createElement('img');
-    fi.src = GC_VALKYRIE;
-    fi.style.cssText = 'position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:80px;height:auto;pointer-events:none;filter:drop-shadow(0 0 12px rgba(0,229,255,.6))';
-    fi.id = '_valkFallbackImg';
-    playerEl.appendChild(fi);
+  _t.crossOrigin = 'anonymous';
+  _t.onload = () => {
+    // 픽셀 내용 검증 — 투명 이미지는 sprite가 없는 것과 동일하게 처리
+    try {
+      const tc = document.createElement('canvas');
+      tc.width = 340; tc.height = 420;
+      const ctx2 = tc.getContext('2d');
+      ctx2.drawImage(_t, 0, 0, 340, 420, 0, 0, 340, 420);
+      const d = ctx2.getImageData(0, 0, 340, 420).data;
+      let hasPixel = false;
+      for(let i = 3; i < d.length; i += 4){ if(d[i] > 10){ hasPixel = true; break; } }
+      if(!hasPixel){ _activateFallback(); return; }
+    } catch(e){ /* CORS 차단 시 그냥 사용 */ }
+    valkPlayAnim('idle');
   };
+  _t.onerror = () => { _activateFallback(); };
   _t.src = 'AS_Assets/valk2_idle_sheet.png'+_VER;
 }
 

@@ -62,8 +62,8 @@ def run(mode="pages"):
         page.wait_for_timeout(1000)
         saved.append(shot(page, "03_after_draft"))
 
-        # ── 발키리 스프라이트 시트 로드 대기 ──
-        page.evaluate("""
+        # ── 발키리 스프라이트 시트 로드 대기 + 픽셀 내용 검증 ──
+        valk_pixel_check = page.evaluate("""
             (async () => {
                 const srcs = Object.values(VALK_ANIMS || {}).map(a => a.src);
                 await Promise.all(srcs.map(src => new Promise(res => {
@@ -71,8 +71,30 @@ def run(mode="pages"):
                     img.onload = img.onerror = res;
                     img.src = src;
                 })));
+                // 픽셀 내용 검증: idle 스프라이트 첫 프레임 영역 체크
+                try {
+                    const a = VALK_ANIMS['idle'];
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    await new Promise(res => { img.onload = img.onerror = res; img.src = a.src; });
+                    const c = document.createElement('canvas');
+                    c.width = a.fw; c.height = a.fh;
+                    const ctx = c.getContext('2d');
+                    ctx.drawImage(img, 0, 0, a.fw, a.fh, 0, 0, a.fw, a.fh);
+                    const d = ctx.getImageData(0, 0, a.fw, a.fh).data;
+                    let cnt = 0;
+                    for(let i = 3; i < d.length; i += 4) if(d[i] > 10) cnt++;
+                    return {hasPixels: cnt > 100, pixelCount: cnt};
+                } catch(e) {
+                    return {hasPixels: null, error: String(e)};
+                }
             })()
         """)
+        if valk_pixel_check.get('hasPixels') is False:
+            errors.append(f"[QA_FAIL] 발키리 스프라이트 픽셀 없음 (투명 이미지) — pixelCount={valk_pixel_check.get('pixelCount')}")
+            print(f"  [경고] 발키리 스프라이트 픽셀 없음! pixelCount={valk_pixel_check.get('pixelCount')}")
+        else:
+            print(f"  [확인] 발키리 픽셀 확인: {valk_pixel_check}")
         page.wait_for_timeout(1500)
 
         # ── 발키리 idle ──
