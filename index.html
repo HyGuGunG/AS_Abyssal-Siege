@@ -2090,6 +2090,12 @@ const flashEl=document.getElementById('flash');
 const vignetteEl=document.getElementById('vignette');
 
 const ASSET='AS_Assets/';
+const _VER='?v='+Date.now();
+// 정적 <img> 태그들에 캐시 버스터 일괄 적용
+document.querySelectorAll('img[src*="AS_Assets"]').forEach(img=>{
+  const s=img.getAttribute('src');
+  if(s && !s.includes('?v=')) img.src=s+_VER;
+});
 
 // v1.7: 타이틀 파티클 생성
 (function initTitleParticles(){
@@ -2120,7 +2126,7 @@ const VALK_SK1_ANIMS = {
 const _eskillImgs = {};
 let _eskillWarmedUp = false;
 Object.entries(VALK_SK1_ANIMS).forEach(([k,a])=>{
-  const img = new Image(); img.src = a.src; _eskillImgs[k] = img;
+  const img = new Image(); img.src = a.src+_VER; _eskillImgs[k] = img;
   img.onload = ()=>{
     if(Object.values(_eskillImgs).every(i=>i.complete)){
       if(!_eskillWarmedUp){
@@ -2195,7 +2201,7 @@ const GC_FX={};
   ['shine2',  'AS_Assets/effects/fx_shine.png'],
   ['shine3',  'AS_Assets/effects/fx_shine2.png'],
   ['circle',  'AS_Assets/effects/fx_circle.png'],
-].forEach(([k,src])=>{ const img=new Image(); img.src=src; GC_FX[k]=img; });
+].forEach(([k,src])=>{ const img=new Image(); img.src=src+_VER; GC_FX[k]=img; });
 
 // === 사운드 시스템 (Web Audio API 합성) ===
 let _audioCtx=null;
@@ -2862,7 +2868,7 @@ function valkPlayAnim(name,onEnd){
     playerSpriteEl.style.height=spriteH+'px';
   }
 
-  playerSpriteEl.style.backgroundImage   =`url('${a.src}')`;
+  playerSpriteEl.style.backgroundImage   =`url('${a.src}${_VER}')`;
   playerSpriteEl.style.backgroundSize    =`${a.cols*spriteW}px ${rows*spriteH}px`;
   playerSpriteEl.style.backgroundPosition='0 0';
   let frame=0;
@@ -2899,7 +2905,7 @@ let _valkFallbackMode = false;
     fi.id = '_valkFallbackImg';
     playerEl.appendChild(fi);
   };
-  _t.src = 'AS_Assets/valk2_idle_sheet.png';
+  _t.src = 'AS_Assets/valk2_idle_sheet.png'+_VER;
 }
 
 // 자원 드랍 정의 (몬스터별 등급 확률)
@@ -3284,7 +3290,7 @@ function openCardDraft(){
     const statsHtml=c.stats?c.stats.map(s=>`<div class="card-stat"><span class="stat-icon">${s.icon}</span><span class="stat-val">${s.val}</span><span class="stat-lbl">${s.label}</span></div>`).join(''):'';
     const stackLabel=stack>0?`${romanStr} (${stack}/${maxStack})`:`NEW`;
     const iconHtml = c.icon && (c.icon.startsWith('AS_') || c.icon.includes('/'))
-      ? `<img class="card-icon-img" src="${c.icon}" onerror="this.style.opacity='.3'">`
+      ? `<img class="card-icon-img" src="${c.icon}${_VER}" onerror="this.style.opacity='.3'">`
       : `<div class="card-icon">${c.icon}</div>`;
     el.innerHTML=`
       <div class="rarity-tag">${c.rarity}</div>
@@ -4226,8 +4232,8 @@ function spawnEnemy(type){
   el.style.width=def.size+'px'; el.style.height=def.size+'px';
   // 보스는 큰 이모지 + 이름, HP바는 HUD에서 표시
   const imgHtml=def.boss
-    ?`<img src="${ASSET+def.img}" alt="" style="filter:drop-shadow(0 0 12px rgba(157,123,255,.6))">`
-    :`<img src="${ASSET+def.img}" alt="">`;
+    ?`<img src="${ASSET+def.img}${_VER}" alt="" style="filter:drop-shadow(0 0 12px rgba(157,123,255,.6))">`
+    :`<img src="${ASSET+def.img}${_VER}" alt="">`;
   const nameHtml=def.boss?`<div class="boss-name">${def.name}</div>`:'';
   const hpbarHtml=def.boss?'':`<div class="hpbar"><div class="fill" style="width:100%"></div></div>`;
   const shootbarHtml=(def.ai==='hover_shoot')?`<div class="shootbar"><div class="sfill"></div></div>`:'';
@@ -6301,7 +6307,7 @@ function renderWaveEnemyList(){
     const remain=c.total-c.killed;
     const row=document.createElement('div');
     row.className='e-row'+(remain<=0?' done':'');
-    row.innerHTML=`<img src="${ASSET+def.img}" alt=""><span class="name">${def.name}</span><span class="cnt">${remain}/${c.total}</span>`;
+    row.innerHTML=`<img src="${ASSET+def.img}${_VER}" alt=""><span class="name">${def.name}</span><span class="cnt">${remain}/${c.total}</span>`;
     host.appendChild(row);
   }
 }
