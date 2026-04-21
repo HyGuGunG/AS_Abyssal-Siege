@@ -88,12 +88,14 @@ def make_sheet(spec: dict) -> bool:
         fpath = os.path.join(folder_path, fname)
         frame = Image.open(fpath).convert("RGBA")
 
-        # 크기 불일치 시 리사이즈 (캡처 해상도와 스펙이 다른 경우 대비)
+        # 크로마키 제거 먼저 (리사이즈 전에 해야 함)
+        # 리사이즈를 먼저 하면 PIL이 alpha=0 상태에서 premultiplied 블렌딩을 해
+        # RGB까지 0으로 만들어버려 크로마키 조건(R>130)을 통과 못함 → 100% fill 버그
+        frame = remove_chroma(frame)
+
+        # 크기 불일치 시 리사이즈 (크로마키 후 리사이즈해야 엣지 블렌딩 정상)
         if frame.size != (fw, fh):
             frame = frame.resize((fw, fh), Image.LANCZOS)
-
-        # 크로마키 제거
-        frame = remove_chroma(frame)
 
         col = i % cols
         row = i // cols
