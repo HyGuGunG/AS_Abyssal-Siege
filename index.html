@@ -102,6 +102,34 @@
     0%,100%{transform:scale(1)}
     50%     {transform:scale(1.04)}
   }
+  /* 발키리 SD 폴백 애니메이션 */
+  @keyframes valkIdle{
+    0%,100%{transform:translate(-50%,-50%) scaleY(1) translateY(0px)}
+    40%{transform:translate(-50%,-50%) scaleY(0.97) translateY(3px)}
+    70%{transform:translate(-50%,-50%) scaleY(1.01) translateY(-2px)}
+  }
+  @keyframes valkAttackR{
+    0%{transform:translate(-50%,-50%) scaleX(1) translateX(0)}
+    20%{transform:translate(-50%,-50%) scaleX(1.12) translateX(18px)}
+    50%{transform:translate(-50%,-50%) scaleX(0.9) translateX(-8px)}
+    80%{transform:translate(-50%,-50%) scaleX(1.03) translateX(4px)}
+    100%{transform:translate(-50%,-50%) scaleX(1) translateX(0)}
+  }
+  @keyframes valkAttackL{
+    0%{transform:translate(-50%,-50%) scaleX(1) translateX(0)}
+    20%{transform:translate(-50%,-50%) scaleX(-1.12) translateX(-18px)}
+    50%{transform:translate(-50%,-50%) scaleX(-0.9) translateX(8px)}
+    80%{transform:translate(-50%,-50%) scaleX(-1.03) translateX(-4px)}
+    100%{transform:translate(-50%,-50%) scaleX(-1) translateX(0)}
+  }
+  @keyframes valkSkill{
+    0%{transform:translate(-50%,-50%) scale(1)}
+    15%{transform:translate(-50%,-50%) scale(1.3) rotate(-5deg)}
+    30%{transform:translate(-50%,-50%) scale(0.85) rotate(3deg)}
+    60%{transform:translate(-50%,-50%) scale(1.1) rotate(-2deg)}
+    100%{transform:translate(-50%,-50%) scale(1) rotate(0deg)}
+  }
+  #_valkFallbackImg{animation:valkIdle 2s ease-in-out infinite}
   /* 경고 ≤30%: 주황으로 변색 */
   #player .aura.warn{
     background:radial-gradient(circle,rgba(255,100,20,.09) 45%,transparent 72%);
@@ -136,13 +164,15 @@
   @keyframes bokeoWarn{0%{opacity:.6;transform:translate(-50%,-50%) scale(.92)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}}
   @keyframes bokeoHuskPulse{0%{opacity:.7;transform:translate(-50%,-50%) scale(.9)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}
   /* 몬스터 피격 연출 */
-  .enemy.e-hit img{animation:enemyHitFlash .18s ease-out}
-  @keyframes enemyHitFlash{0%{filter:contrast(1.2) brightness(3.2) saturate(0)}40%{filter:contrast(1.18) brightness(2.0) saturate(0.15)}100%{filter:contrast(1.12) brightness(1.06) saturate(1.08)}}
+  /* 피격 플래시: img filter 애니메이션 → ::before 오버레이로 교체
+     (img filter 애니메이션 시 will-change:transform 부모와 GPU 합성 충돌 → 검은 박스 버그) */
+  .enemy{position:absolute;transform:translate(-50%,-50%);overflow:hidden;border-radius:50%}
+  .enemy::before{content:'';position:absolute;inset:0;border-radius:50%;opacity:0;pointer-events:none;z-index:2}
   .enemy.e-hit{animation:enemyHitShake .15s ease-out}
+  .enemy.e-hit::before{background:rgba(255,255,255,0.85);animation:hitOverlay .2s ease-out forwards}
+  .enemy.e-hit.fish::before{background:rgba(120,230,255,0.7);animation:hitOverlay .2s ease-out forwards}
+  @keyframes hitOverlay{0%{opacity:1}60%{opacity:.4}100%{opacity:0}}
   @keyframes enemyHitShake{0%{transform:translate(-50%,-50%)}15%{transform:translate(calc(-50% + 6px),calc(-50% - 3px))}35%{transform:translate(calc(-50% - 5px),calc(-50% + 3px))}55%{transform:translate(calc(-50% + 4px),calc(-50% + 1px))}75%{transform:translate(calc(-50% - 2px),calc(-50% - 1px))}100%{transform:translate(-50%,-50%)}}
-  /* 물고기 피격 전용 (물 파장 추가) */
-  .enemy.e-hit.fish img{animation:fishHitFlash .18s ease-out}
-  @keyframes fishHitFlash{0%{filter:contrast(1.3) brightness(3.0) saturate(0) hue-rotate(180deg)}40%{filter:contrast(1.2) brightness(2.0) saturate(0.3) hue-rotate(90deg)}100%{filter:contrast(1.1) brightness(1.05) saturate(1.1) hue-rotate(0deg)}}
   /* 성광 첨탑 버프 활성 표시 */
   .ft-holy-badge{display:inline-block;font-size:9px;background:rgba(200,160,255,.18);color:#c8a0ff;border:1px solid rgba(200,160,255,.4);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;letter-spacing:.05em}
   /* 잉크 감속 지대 */
@@ -2829,6 +2859,29 @@ playerSpriteEl.style.cssText='position:absolute;left:50%;top:50%;transform:trans
 playerEl.appendChild(playerSpriteEl);
 
 function valkPlayAnim(name,onEnd){
+  // SD 폴백 모드: CSS 애니메이션으로 대응
+  if(_valkFallbackMode){
+    const fi=document.getElementById('_valkFallbackImg');
+    if(fi){
+      const animMap={
+        idle:'valkIdle 2s ease-in-out infinite',
+        attack_r:'valkAttackR 0.5s ease-out forwards',
+        attack_l:'valkAttackL 0.5s ease-out forwards',
+        attack_f:'valkAttackR 0.5s ease-out forwards',
+        skill:'valkSkill 0.6s ease-out forwards',
+        move_r:'valkIdle 0.7s ease-in-out infinite',
+        move_l:'valkIdle 0.7s ease-in-out infinite',
+      };
+      fi.style.animation=animMap[name]||animMap.idle;
+      if(onEnd && !['idle','move_r','move_l'].includes(name)){
+        setTimeout(()=>{
+          if(fi) fi.style.animation=animMap.idle;
+          if(onEnd) onEnd();
+        }, name==='skill'?600:500);
+      }
+    }
+    return;
+  }
   if(_valkTimer){ clearInterval(_valkTimer); _valkTimer=null; }
   const a=VALK_ANIMS[name];
   if(!a){ console.warn('[Valk] 애니 없음:',name); return; }
