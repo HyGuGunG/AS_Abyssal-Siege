@@ -2105,6 +2105,64 @@ const ASSET='AS_Assets/';
 })();
 const GC_VALKYRIE='AS_Assets/characters/valkyrie_sd.png';
 
+// ── 발키리 E스킬 Canvas 이펙트 (3레이어 스프라이트) ──
+const VALK_SK1_ANIMS = {
+  main:   { src:'AS_Assets/fx_sheets/fx_valk_sk1_main_sheet.png',   fw:512, fh:512, cols:8, frames:75, fps:30 },
+  body:   { src:'AS_Assets/fx_sheets/fx_valk_sk1_body_sheet.png',   fw:512, fh:512, cols:8, frames:60, fps:30 },
+  weapon: { src:'AS_Assets/fx_sheets/fx_valk_sk1_weapon_sheet.png', fw:512, fh:512, cols:8, frames:60, fps:30 },
+};
+const _eskillImgs = {};
+let _eskillWarmedUp = false;
+Object.entries(VALK_SK1_ANIMS).forEach(([k,a])=>{
+  const img = new Image(); img.src = a.src; _eskillImgs[k] = img;
+  img.onload = ()=>{
+    if(Object.values(_eskillImgs).every(i=>i.complete)){
+      if(!_eskillWarmedUp){
+        _eskillWarmedUp = true;
+        const tmp = document.createElement('canvas'); tmp.width=tmp.height=1;
+        const c2 = tmp.getContext('2d');
+        Object.values(_eskillImgs).forEach(i=>{ try{ c2.drawImage(i,0,0,1,1); }catch(e){} });
+      }
+    }
+  };
+});
+
+// E스킬 Canvas 이펙트 풀
+const _eskillPool = [];  // [{key, frame, startTime, x, y, playing, fading}]
+function _spawnESkillLayer(key, x, y){
+  _eskillPool.push({ key, frame:0, startTime:performance.now(), x, y, playing:true, fading:false });
+}
+function _updateESkillPool(ctx2, dt){
+  const now = performance.now();
+  for(let i=_eskillPool.length-1; i>=0; i--){
+    const p = _eskillPool[i];
+    if(!p.playing){ _eskillPool.splice(i,1); continue; }
+    const a = VALK_SK1_ANIMS[p.key];
+    const img = _eskillImgs[p.key];
+    if(!img || !img.complete){ continue; }
+    const elapsed = (now - p.startTime) / 1000;
+    const frame = Math.min(Math.floor(elapsed * a.fps), a.frames-1);
+    if(frame >= a.frames-1) p.playing = false;
+    const col = frame % a.cols, row = Math.floor(frame / a.cols);
+    const rows = Math.ceil(a.frames / a.cols);
+    const dw = a.fw * 0.7, dh = a.fh * 0.7;
+    const dx = p.x - dw/2, dy = p.y - dh/2;
+    const sx = col*a.fw, sy = row*a.fh;
+    ctx2.save();
+    // 외곽 글로우 패스
+    ctx2.filter = 'brightness(1.8) saturate(1.6)';
+    ctx2.globalAlpha = 0.45;
+    ctx2.globalCompositeOperation = 'screen';
+    ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx-dw*0.05, dy-dh*0.05, dw*1.10, dh*1.10);
+    // 코어 패스
+    ctx2.filter = 'none';
+    ctx2.globalAlpha = 1;
+    ctx2.globalCompositeOperation = 'screen';
+    ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx, dy, dw, dh);
+    ctx2.restore();
+  }
+}
+
 // === 발키리 스프라이트 애니메이션 정의 ===
 const VALK_ANIMS = {
   idle:     { src:'AS_Assets/valk2_idle_sheet.png',     fw:340, fh:420, cols:6, frames:34, fps:30, loop:true  },
@@ -2339,18 +2397,24 @@ function spawnAtkFlash(px, py, tx, ty){
 
 // ── GC 발키리 E 스킬 이펙트 ──
 function spawnESkillFx(x, y){
-  // 1) gc_valk_swords: 검폭풍 메인
+  // Canvas 기반 스프라이트 이펙트 (시트 있을 때)
+  const hasSheets = Object.values(_eskillImgs).every(i=>i.complete && i.naturalWidth>0);
+  if(hasSheets){
+    _spawnESkillLayer('main',   x, y);
+    _spawnESkillLayer('body',   x, y);
+    _spawnESkillLayer('weapon', x, y);
+  }
+  // DOM 폴백 이펙트 (시트 없을 때 또는 보조 연출)
+  const sz1 = Math.round(player.shockwaveRadius * 1.4);
   const sw = document.createElement('div');
   sw.className = 'e-skill-fx swords';
-  const sz1 = Math.round(player.shockwaveRadius * 1.4);
   sw.style.cssText = `left:${x}px;top:${y}px;width:${sz1}px;height:${sz1}px;`
     + `background:url('AS_Assets/skills/gc_valk_swords.png') center/contain no-repeat;`;
   stage.appendChild(sw);
   setTimeout(()=>{ if(sw.parentNode) sw.parentNode.removeChild(sw); }, 600);
-  // 2) gc_valk_wings: 날개 배경 플래시
+  const sz2 = Math.round(player.shockwaveRadius * 2.0);
   const wg = document.createElement('div');
   wg.className = 'e-skill-fx wings';
-  const sz2 = Math.round(player.shockwaveRadius * 2.0);
   wg.style.cssText = `left:${x}px;top:${y}px;width:${sz2}px;height:${sz2}px;`
     + `background:url('AS_Assets/skills/gc_valk_wings.png') center/contain no-repeat;`;
   stage.appendChild(wg);
@@ -5864,6 +5928,8 @@ function spawnGCGlowFx(x,y,sz,alpha){
 let _bossAimBeam=null; // {x1,y1,x2,y2,life,maxLife}
 function renderFx(dt){
   ctx.clearRect(0,0,W,H);
+  // E스킬 Canvas 이펙트 풀 업데이트
+  if(_eskillPool.length > 0) _updateESkillPool(ctx, dt);
   // ── 보스 조준선 (발사 전 텔레그래프) ──
   if(_bossAimBeam && _bossAimBeam.life>0){
     _bossAimBeam.life-=dt;
