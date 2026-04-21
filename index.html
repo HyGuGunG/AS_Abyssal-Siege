@@ -2909,19 +2909,19 @@ const TIER_CLASS={ normal:'normal', rare:'rare', epic:'epic' };
 const TIER_IMG={ normal:'items/resource_normal.png', rare:'items/resource_rare.png', epic:'items/resource_epic.png' };
 
 const ENEMY_DEFS={
-  sogari:{name:'피라냐 고블린', hp:29, speed:160, r:34, img:'enemies/sogari.png', ai:'rush',     touchDmg:40, orbRate:0.28, size:68,
+  sogari:{name:'피라냐 고블린', hp:29, speed:160, r:34, img:'enemies_nobg/sogari.png', ai:'rush',     touchDmg:40, orbRate:0.28, size:68,
           drops:[{tier:'normal',w:75},{tier:'rare',w:22},{tier:'epic',w:3}]},
-  bangeo:{name:'어인 기사',     hp:80, speed:90,  r:40, img:'enemies/bangeo.png', ai:'straight', touchDmg:70, orbRate:0.22, size:80,
+  bangeo:{name:'어인 기사',     hp:80, speed:90,  r:40, img:'enemies_nobg/bangeo.png', ai:'straight', touchDmg:70, orbRate:0.22, size:80,
           drops:[{tier:'normal',w:40},{tier:'rare',w:45},{tier:'epic',w:15}]},
-  gaori: {name:'투척 가오리', hp:45, speed:140, r:38, img:'enemies/gaori.png', ai:'hover_shoot', touchDmg:0, orbRate:0.30, size:76,
+  gaori: {name:'투척 가오리', hp:45, speed:140, r:38, img:'enemies_nobg/gaori.png', ai:'hover_shoot', touchDmg:0, orbRate:0.30, size:76,
           hoverY:300, shootInterval:3.0, projDmg:18, projSpeed:320,
           drops:[{tier:'normal',w:55},{tier:'rare',w:37},{tier:'epic',w:8}]},
-  agwi:  {name:'심해 오우거',  hp:180, speed:55,  r:48, img:'enemies/agwi.png',   ai:'straight', touchDmg:120, orbRate:0.18, size:96,
+  agwi:  {name:'심해 오우거',  hp:180, speed:55,  r:48, img:'enemies_nobg/agwi.png',   ai:'straight', touchDmg:120, orbRate:0.18, size:96,
           drops:[{tier:'normal',w:20},{tier:'rare',w:50},{tier:'epic',w:30}]},
-  bokeo: {name:'폭발 슬라임',  hp:45,  speed:100, r:32, img:'enemies/bokeo.png',  ai:'rush',     touchDmg:35,  orbRate:0.35, size:64,
+  bokeo: {name:'폭발 슬라임',  hp:45,  speed:100, r:32, img:'enemies_nobg/bokeo.png',  ai:'rush',     touchDmg:35,  orbRate:0.35, size:64,
           explode:true, explodeR:100, explodeDmg:60,
           drops:[{tier:'normal',w:60},{tier:'rare',w:30},{tier:'epic',w:10}]},
-  kraken:{name:'해양 크라켄',  hp:1200, speed:30, r:70, img:'enemies/kraken.png',  ai:'boss',     touchDmg:200, orbRate:0, size:140,
+  kraken:{name:'해양 크라켄',  hp:1200, speed:30, r:70, img:'enemies_nobg/kraken.png',  ai:'boss',     touchDmg:200, orbRate:0, size:140,
           boss:true, phases:3,
           drops:[]},
 };
@@ -2929,47 +2929,47 @@ const ENEMY_DEFS={
 // 방어 시설 풀
 const FACILITY_POOL=[
   /* ── 일반 (회색) ── */
-  {id:'crossbow', name:'석궁 망루', rarity:'일반', kind:'facility', icon:'AS_Assets/facilities/facility_crossbow.png',
+  {id:'crossbow', name:'석궁 망루', rarity:'일반', kind:'facility', icon:'AS_Assets/facilities_nobg/facility_crossbow.png',
     desc:'적에게 빠르게 화살을 연사하는 공격 망루.',
     stats:[{icon:'⚔',label:'피해',val:'30'},{icon:'⏱',label:'공속',val:'0.8초'},{icon:'📐',label:'사거리',val:'280'}],
     range:280, cooldown:0.8, dmg:30, type:'projectile', projSpeed:520, projColor:'#aef'},
-  {id:'holy_well', name:'치유 야영지', rarity:'일반', kind:'facility', icon:'AS_Assets/facilities/facility_holywell.png',
+  {id:'holy_well', name:'치유 야영지', rarity:'일반', kind:'facility', icon:'AS_Assets/facilities_nobg/facility_holywell.png',
     desc:'주기적으로 발키리의 가호 게이지를 회복하는 야전 치유소.',
     stats:[{icon:'✨',label:'회복량',val:'가호 +10'},{icon:'⏱',label:'주기',val:'4.0초'}],
     range:0, cooldown:4.0, healAmount:10, type:'heal', projColor:'#7cc4ff'},
 
   /* ── 고급 (녹색) ── */
-  {id:'ballista', name:'원거리 망루', rarity:'고급', kind:'facility', icon:'AS_Assets/facilities/facility_ballista.png',
+  {id:'ballista', name:'원거리 망루', rarity:'고급', kind:'facility', icon:'AS_Assets/facilities_nobg/facility_ballista.png',
     desc:'마법 볼트를 발사해 경로상의 모든 적을 관통한다.',
     stats:[{icon:'⚔',label:'피해',val:'110'},{icon:'⏱',label:'공속',val:'2.2초'},{icon:'📐',label:'사거리',val:'420'}],
     range:420, cooldown:2.2, dmg:110, type:'pierce', projSpeed:580, projColor:'#81c784'},
-  {id:'frost_spirit', name:'빙결 탑', rarity:'고급', kind:'facility', icon:'AS_Assets/facilities/facility_frost.png',
+  {id:'frost_spirit', name:'빙결 탑', rarity:'고급', kind:'facility', icon:'AS_Assets/facilities_nobg/facility_frost.png',
     desc:'얼음 마법으로 범위 내 모든 적의 이동속도를 감소시킨다.',
     stats:[{icon:'❄',label:'감속',val:'-25%'},{icon:'⏱',label:'주기',val:'2.5초'},{icon:'📐',label:'사거리',val:'300'}],
     range:300, cooldown:2.5, slowDur:3.0, type:'debuff', projColor:'#90caf9'},
 
   /* ── 희귀 (파란) ── */
-  {id:'mortar', name:'마법구 포탑', rarity:'희귀', kind:'facility', icon:'AS_Assets/facilities/facility_mortar.png',
+  {id:'mortar', name:'마법구 포탑', rarity:'희귀', kind:'facility', icon:'AS_Assets/facilities_nobg/facility_mortar.png',
     desc:'마법 구체를 발사해 착탄 지점에 광역 폭발을 일으킨다.',
     stats:[{icon:'💥',label:'피해',val:'85 (광역)'},{icon:'⏱',label:'공속',val:'1.8초'},{icon:'📐',label:'사거리',val:'380'}],
     range:380, cooldown:1.8, dmg:85, type:'mortar', splashR:130, shellSpeed:320, projColor:'#ffb347'},
-  {id:'barrier', name:'수호 요새', rarity:'희귀', kind:'facility', icon:'AS_Assets/facilities/facility_barrier.png',
+  {id:'barrier', name:'수호 요새', rarity:'희귀', kind:'facility', icon:'AS_Assets/facilities_nobg/facility_barrier.png',
     desc:'방패 결계를 펼쳐 주기적으로 수문 내구도를 회복하고 보호한다.',
     stats:[{icon:'🏰',label:'회복량',val:'내구도 +15'},{icon:'⏱',label:'주기',val:'5.0초'}],
     range:0, cooldown:5.0, healAmount:15, type:'gate_heal', projColor:'#26ffe9'},
 
   /* ── 고유 (보라) ── */
-  {id:'lightning_orb', name:'뇌전 요새', rarity:'고유', kind:'facility', icon:'AS_Assets/facilities/facility_lightning.png',
+  {id:'lightning_orb', name:'뇌전 요새', rarity:'고유', kind:'facility', icon:'AS_Assets/facilities_nobg/facility_lightning.png',
     desc:'요새의 마법진에서 번개를 방출해 최대 3명의 적에게 연쇄 공격한다.',
     stats:[{icon:'⚡',label:'피해',val:'55 ×3연쇄'},{icon:'⏱',label:'공속',val:'2.0초'},{icon:'📐',label:'사거리',val:'340'}],
     range:340, cooldown:2.0, dmg:55, type:'chain', chainCount:3, projColor:'#e040fb'},
-  {id:'holy_amplifier', name:'성광 첨탑', rarity:'고유', kind:'facility', icon:'AS_Assets/facilities/facility_amplifier.png',
+  {id:'holy_amplifier', name:'성광 첨탑', rarity:'고유', kind:'facility', icon:'AS_Assets/facilities_nobg/facility_amplifier.png',
     desc:'황금 첨탑에서 성스러운 빛을 발산해 건설된 모든 방어 시설의 공격력을 강화한다. 1기만 건설 가능.',
     stats:[{icon:'⬆',label:'강화',val:'전체 시설 공격력 +30%'},{icon:'🔒',label:'제한',val:'최대 1기'}],
     range:99999, cooldown:99999, type:'buff', buffAmount:0.30, projColor:'#e040fb', maxCount:1},
 
   /* ── 전설 (주황) ── */
-  {id:'valk_wrath', name:'발키리 망루', rarity:'전설', kind:'facility', icon:'AS_Assets/facilities/facility_wrath.png',
+  {id:'valk_wrath', name:'발키리 망루', rarity:'전설', kind:'facility', icon:'AS_Assets/facilities_nobg/facility_wrath.png',
     desc:'발키리의 날개가 깃든 망루에서 신성한 포격으로 전장 전체에 강력한 광역 폭발을 일으킨다.',
     stats:[{icon:'💥',label:'피해',val:'180 (광역)'},{icon:'⏱',label:'공속',val:'3.5초'},{icon:'📐',label:'사거리',val:'전체'}],
     range:1280, cooldown:3.5, dmg:180, type:'siege', splashR:200, shellSpeed:280, projColor:'#ff9800'},
