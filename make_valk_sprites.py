@@ -49,7 +49,7 @@ SPECS = [
 
 
 def remove_chroma(img: Image.Image) -> Image.Image:
-    """마젠타 배경을 알파 투명으로 변환"""
+    """마젠타 배경을 알파 투명으로 변환 (URP alpha=0 보정 포함)"""
     img = img.convert("RGBA")
     pixels = img.load()
     w, h = img.size
@@ -58,6 +58,8 @@ def remove_chroma(img: Image.Image) -> Image.Image:
             r, g, b, a = pixels[x, y]
             if r > CHROMA_THRESHOLD and g < 120 and b > CHROMA_THRESHOLD:
                 pixels[x, y] = (0, 0, 0, 0)
+            else:
+                pixels[x, y] = (r, g, b, 255)  # URP가 alpha=0으로 클리어하므로 강제 복구
     return img
 
 
