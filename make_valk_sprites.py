@@ -40,8 +40,8 @@ CHROMA_THRESHOLD = 130
 SPECS = [
     dict(folder="valk2_idle",     output="valk2_idle_sheet.png",     fw=340, fh=420, cols=6),
     dict(folder="valk2_attack_f", output="valk2_attack_f_sheet.png", fw=500, fh=560, cols=6),
-    dict(folder="valk2_attack_l", output="valk2_attack_l_sheet.png", fw=720, fh=560, cols=6),  # 시각 우향
-    dict(folder="valk2_attack_r", output="valk2_attack_r_sheet.png", fw=720, fh=580, cols=6),  # 시각 좌향
+    dict(folder="valk2_attack_l", output="valk2_attack_l_sheet.png", fw=1024, fh=560, cols=6),  # 시각 우향
+    dict(folder="valk2_attack_r", output="valk2_attack_r_sheet.png", fw=1024, fh=580, cols=6),  # 시각 좌향
     dict(folder="valk2_skill",    output="valk2_skill_sheet.png",    fw=500, fh=560, cols=6),
     dict(folder="valk2_move_l",   output="valk2_move_l_sheet.png",   fw=260, fh=500, cols=6),  # 시각 우향
     dict(folder="valk2_move_r",   output="valk2_move_r_sheet.png",   fw=260, fh=460, cols=6),  # 시각 좌향
