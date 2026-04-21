@@ -81,18 +81,18 @@
     border-radius:50%;
   }
 
-  #player{width:100px;height:100px;filter:drop-shadow(0 0 12px rgba(0,229,255,.6))}
-  #player.dashing{filter:drop-shadow(0 0 22px var(--cyan)) brightness(1.35)}
-  #player.hit{filter:drop-shadow(0 0 14px var(--red)) brightness(1.6)}
+  #player{width:100px;height:100px;position:absolute;z-index:18;overflow:visible}
+  #player .valk-sprite{filter:drop-shadow(0 0 12px rgba(0,229,255,.6))}
+  #player.dashing .valk-sprite{filter:drop-shadow(0 0 22px var(--cyan)) brightness(1.35)}
+  #player.hit .valk-sprite{filter:drop-shadow(0 0 14px var(--red)) brightness(1.6)}
   /* 가호 실드 아우라 (v2.3 — canvas 버블 보완 ambient glow) */
   #player .aura{
     position:absolute;
-    inset:-34px;
+    inset:-160px;
     border-radius:50%;
     pointer-events:none;
-    /* 캔버스 버블의 ambient 보완 — 파란 환경광 */
-    background:radial-gradient(circle,rgba(60,180,255,.07) 45%,transparent 72%);
-    box-shadow:0 0 22px 5px rgba(60,190,255,.10);
+    background:radial-gradient(circle,rgba(60,180,255,.04) 30%,rgba(60,180,255,.12) 55%,rgba(60,200,255,.06) 68%,transparent 82%);
+    box-shadow:0 0 48px 24px rgba(60,190,255,.13);
     animation:auraPulse 2.5s ease-in-out infinite;
     transition:opacity .4s;
     opacity:var(--aura-o,1);
@@ -113,13 +113,6 @@
   }
   /* 가호 소진: 완전 숨김 */
   #player .aura.depleted{opacity:0!important;animation:none;transition:none!important}
-  /* 발키리 공격 스윙 모션 (v0.9.6) */
-  #player.attacking img{animation:valkSwing .14s cubic-bezier(.2,.8,.2,1)}
-  @keyframes valkSwing{
-    0%{transform:translateX(0) rotate(0deg)}
-    45%{transform:translateX(8px) rotate(8deg) scale(1.04)}
-    100%{transform:translateX(0) rotate(0deg)}
-  }
 
   .enemy{filter:drop-shadow(0 0 8px rgba(255,80,80,.4))}
   .enemy .hpbar{position:absolute;left:50%;top:-8px;transform:translateX(-50%);
@@ -2061,6 +2054,32 @@ const stage=document.getElementById('stage');
 const world=document.getElementById('world');
 const fx=document.getElementById('fx');
 const ctx=fx.getContext('2d');
+
+// ── graceOrb canvas (가호 게이지 타원형 아크) ──
+const _graceOrbEl=document.createElement('canvas');
+_graceOrbEl.id='graceOrb';
+_graceOrbEl.width=_graceOrbEl.height=175;
+_graceOrbEl.style.cssText='position:absolute;pointer-events:none;z-index:17;transform:translate(-50%,-50%);display:none;';
+stage.appendChild(_graceOrbEl);
+const _graceCtx=_graceOrbEl.getContext('2d');
+function _drawGraceOrb(ratio){
+  const S=175,cx=S/2,cy=S/2,RX=48,RY=68;
+  _graceCtx.clearRect(0,0,S,S);
+  // 트랙
+  _graceCtx.beginPath();_graceCtx.ellipse(cx,cy,RX,RY,0,0,Math.PI*2);
+  _graceCtx.strokeStyle='rgba(255,255,255,0.08)';_graceCtx.lineWidth=4;_graceCtx.stroke();
+  if(ratio<=0) return;
+  const color=ratio>0.75?'#3ea7ff':ratio>0.5?'#26ffa8':ratio>0.25?'#ffd24d':ratio>0.1?'#ff4d6d':'#ff1a4d';
+  const start=-Math.PI/2,end=start+Math.PI*2*Math.min(ratio,1);
+  _graceCtx.beginPath();_graceCtx.ellipse(cx,cy,RX,RY,0,start,end);
+  _graceCtx.strokeStyle=color;_graceCtx.lineWidth=5;_graceCtx.lineCap='round';
+  _graceCtx.shadowColor=color;_graceCtx.shadowBlur=10;_graceCtx.stroke();_graceCtx.shadowBlur=0;
+  // 끝점 dot
+  const ex=cx+RX*Math.cos(end),ey=cy+RY*Math.sin(end);
+  _graceCtx.beginPath();_graceCtx.arc(ex,ey,4,0,Math.PI*2);
+  _graceCtx.fillStyle=color;_graceCtx.shadowColor=color;_graceCtx.shadowBlur=12;
+  _graceCtx.fill();_graceCtx.shadowBlur=0;
+}
 const flashEl=document.getElementById('flash');
 const vignetteEl=document.getElementById('vignette');
 
@@ -2085,6 +2104,18 @@ const ASSET='AS_Assets/';
   }
 })();
 const GC_VALKYRIE='AS_Assets/characters/valkyrie_sd.png';
+
+// === 발키리 스프라이트 애니메이션 정의 ===
+const VALK_ANIMS = {
+  idle:     { src:'AS_Assets/valk2_idle_sheet.png',     fw:340, fh:420, cols:6, frames:34, fps:30, loop:true  },
+  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:147 },
+  attack_r: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:720, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:160, dispW:300 },
+  attack_l: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:720, fh:580, cols:6, frames:36, fps:30, loop:false, dispH:160, dispW:300 },
+  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500, fh:560, cols:6, frames:60, fps:30, loop:false, dispH:140 },
+  move_r:   { src:'AS_Assets/valk2_move_l_sheet.png',  fw:260, fh:500, cols:6, frames:40, fps:30, loop:true  },
+  move_l:   { src:'AS_Assets/valk2_move_r_sheet.png',  fw:260, fh:460, cols:6, frames:40, fps:30, loop:true  },
+};
+const VALK_DISP_H = 112;  // idle/move 기본 표시 높이
 
 // === GC 리소스 프리로드 ===
 const GC_FX={};
@@ -2585,7 +2616,7 @@ const particles=[];
 const joystick={active:false,input:{x:0,y:0}};
 
 const player={
-  x:W/2, y:H-180, r:24,
+  x:W/2, y:H-180, r:17,
   vx:0, vy:0,           // 현재 입력 속도(정규화 방향)
   moving:false,
   speed:220,
@@ -2699,8 +2730,95 @@ document.getElementById('skillE').addEventListener('click',()=>useSkill('E'));
 const playerEl=document.createElement('div');
 playerEl.id='player';
 playerEl.className='obj';
-playerEl.innerHTML=`<div class="aura" id="playerAura"></div><img src="${GC_VALKYRIE}" alt="">`;
+playerEl.innerHTML=`<div class="aura" id="playerAura"></div>`;
 world.appendChild(playerEl);
+
+// 발키리 스프라이트 엘리먼트
+let _valkTimer=null, _valkState='idle', _valkBlocking=false;
+const playerSpriteEl=document.createElement('div');
+playerSpriteEl.className='valk-sprite';
+playerSpriteEl.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;background-repeat:no-repeat;';
+playerEl.appendChild(playerSpriteEl);
+
+function valkPlayAnim(name,onEnd){
+  if(_valkTimer){ clearInterval(_valkTimer); _valkTimer=null; }
+  const a=VALK_ANIMS[name];
+  if(!a){ console.warn('[Valk] 애니 없음:',name); return; }
+  _valkState=name;
+  _valkBlocking=!a.loop;
+
+  // skill만 단방향 캡처 → 좌향 시 CSS 반전
+  const needsFlip=(name==='skill' && typeof player!=='undefined' && player.facing<0);
+  playerSpriteEl.style.transform=`translate(-50%,-50%)${needsFlip?' scaleX(-1)':''}`;
+
+  const dispH=a.dispH||VALK_DISP_H;
+  const uniformScale=dispH/a.fh;
+  const spriteW=Math.round(a.fw*uniformScale);
+  const spriteH=dispH;
+  const rows=Math.ceil(a.frames/a.cols);
+
+  if(a.dispW && a.dispW>spriteW){
+    // dispW 지정 시: border-box 렌더 후 clip-path:inset으로 padding 영역 숨김
+    // CLIP_EXP=3: 프레임 경계 픽셀 3px 여유 (칼 끝 완전 노출)
+    const extra=a.dispW-spriteW;
+    const padL=Math.round(extra/2);
+    const padR=extra-padL;
+    const CLIP_EXP=3;
+    playerSpriteEl.style.padding        =`0 ${padR}px 0 ${padL}px`;
+    playerSpriteEl.style.boxSizing      ='content-box';
+    playerSpriteEl.style.backgroundClip ='border-box';
+    playerSpriteEl.style.backgroundOrigin='content-box';
+    playerSpriteEl.style.clipPath       =`inset(0px ${padR-CLIP_EXP}px 0px ${padL-CLIP_EXP}px)`;
+    playerSpriteEl.style.width =spriteW+'px';
+    playerSpriteEl.style.height=spriteH+'px';
+  } else {
+    playerSpriteEl.style.padding        ='0';
+    playerSpriteEl.style.backgroundClip ='border-box';
+    playerSpriteEl.style.backgroundOrigin='padding-box';
+    playerSpriteEl.style.clipPath       ='none';
+    playerSpriteEl.style.width =spriteW+'px';
+    playerSpriteEl.style.height=spriteH+'px';
+  }
+
+  playerSpriteEl.style.backgroundImage   =`url('${a.src}')`;
+  playerSpriteEl.style.backgroundSize    =`${a.cols*spriteW}px ${rows*spriteH}px`;
+  playerSpriteEl.style.backgroundPosition='0 0';
+  let frame=0;
+  const ms=Math.round(1000/a.fps);
+  _valkTimer=setInterval(()=>{
+    frame++;
+    if(frame>=a.frames){
+      if(a.loop){ frame=0; }
+      else{
+        clearInterval(_valkTimer); _valkTimer=null;
+        _valkBlocking=false;
+        if(onEnd) onEnd();
+        const ret=(typeof player!=='undefined' && player.moving)
+          ?(player.facing>=0?'move_r':'move_l')
+          :'idle';
+        valkPlayAnim(ret);
+        return;
+      }
+    }
+    const col=frame%a.cols, row2=Math.floor(frame/a.cols);
+    playerSpriteEl.style.backgroundPosition=`-${col*spriteW}px -${row2*spriteH}px`;
+  },ms);
+}
+// 스프라이트 시트 존재 여부 확인 → 없으면 SD 이미지 폴백
+let _valkFallbackMode = false;
+{
+  const _t = new Image();
+  _t.onload = () => { valkPlayAnim('idle'); };
+  _t.onerror = () => {
+    _valkFallbackMode = true;
+    const fi = document.createElement('img');
+    fi.src = GC_VALKYRIE;
+    fi.style.cssText = 'position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:80px;height:auto;pointer-events:none;filter:drop-shadow(0 0 12px rgba(0,229,255,.6))';
+    fi.id = '_valkFallbackImg';
+    playerEl.appendChild(fi);
+  };
+  _t.src = 'AS_Assets/valk2_idle_sheet.png';
+}
 
 // 자원 드랍 정의 (몬스터별 등급 확률)
 // tier: normal(소량) / rare(중량) / epic(대량)
@@ -4088,6 +4206,7 @@ function useSkill(key){
     // B10: 충격파 링 DOM 연출
     spawnShockwaveRing(player.x, player.y, R);
     spawnESkillFx(player.x, player.y); // GC 발키리 E 스킬 이펙트
+    valkPlayAnim('skill'); // 발키리 E스킬 애니메이션
     vibrate([20,10,40]); // A4: 진동
     s.cd=s.max;
   }
@@ -4825,6 +4944,15 @@ function updatePlayerGaugeTop(){
   const urgent=gp<=30;
   if(!urgent && now-_pgtGaugeChangeT>3000) pgt.style.opacity='0.3';
   else pgt.style.opacity='1';
+  // graceOrb canvas 업데이트
+  if(_graceOrbEl){
+    _graceOrbEl.style.display=show?'block':'none';
+    if(show){
+      _graceOrbEl.style.left=player.x+'px';
+      _graceOrbEl.style.top=(player.y-20)+'px';
+      _drawGraceOrb(state.gauge/state.gaugeMax);
+    }
+  }
 }
 
 // v1.0.9: playerInfoBar (자원만) — 발키리 하단
@@ -4949,6 +5077,11 @@ function update(dt){
     if(dx>0.1) player.facing=1; else if(dx<-0.1) player.facing=-1;
   }
   player.moving=(Math.abs(dx)>0.05||Math.abs(dy)>0.05);
+  // 이동 상태 애니메이션 동기화
+  if(!_valkBlocking){
+    const nextAnim=player.moving?(player.facing>=0?'move_r':'move_l'):'idle';
+    if(_valkState!==nextAnim) valkPlayAnim(nextAnim);
+  }
   if(player.moving){
     const l=Math.hypot(dx,dy)||1;
     player.vx=dx/l; player.vy=dy/l;
@@ -4992,9 +5125,12 @@ function update(dt){
       fireSword(player.x,player.y-20,tgt);
       player.attackCD=player.attackInterval;
       player._atkJustFired=true; // v1.1.2: 발사 직후 게이지 즉시 리셋 플래그
-      // 스윙 애니메이션 트리거 (v0.9.6)
-      playerEl.classList.remove('attacking'); void playerEl.offsetWidth; playerEl.classList.add('attacking');
-      setTimeout(()=>playerEl.classList.remove('attacking'), 150);
+      // 발키리 방향별 공격 애니메이션 트리거
+      if(!_valkBlocking){
+        const adx=tgt.x-player.x, ady=tgt.y-player.y;
+        const atkAnim=Math.abs(ady)>Math.abs(adx)?'attack_f':(adx>=0?'attack_r':'attack_l');
+        valkPlayAnim(atkAnim);
+      }
       // GC 발키리 공격 플래시 이펙트
       spawnAtkFlash(player.x, player.y-20, tgt.x, tgt.y);
     } else {
@@ -5690,7 +5826,7 @@ function fireSword(x,y,tgt){
 function render(){
   playerEl.style.left=player.x+'px';
   playerEl.style.top=(player.y-20)+'px';
-  playerEl.style.transform=`translate(-50%,-50%) scaleX(${player.facing})`;
+  playerEl.style.transform=_valkFallbackMode?`translate(-50%,-50%) scaleX(${player.facing})`:'translate(-50%,-50%)';
   for(const e of enemies){
     e.el.style.left=e.x+'px'; e.el.style.top=e.y+'px';
     const dirX=(W/2-e.x);
@@ -5972,28 +6108,45 @@ function renderFx(dt){
       ctx.restore();
     }
   }
-  // ── 발키리 범위 표시 (v2.3 — 최소화, 인지 가능 수준) ──
-  // 1) 공격 범위: 매우 얇고 희미하게 (정보용 최소 표시)
+  // ── 발키리 범위 표시 (v2.5 — dashOffset 애니메이션) ──
+  // 1) 공격 범위: 오렌지 점선 + 내부 그라디언트 + 움직이는 dashOffset
   {
-    const ap=0.14+0.05*Math.sin(_now/650);
+    const dashOff=(_now*0.04)%(10+6);
+    const ap=0.5+0.08*Math.sin(_now/650);
     ctx.save();
-    ctx.shadowBlur=0;
-    ctx.strokeStyle=`rgba(255,80,20,${ap})`;
-    ctx.lineWidth=1;
-    ctx.setLineDash([]);
+    // 내부 그라디언트 채우기
+    const grad=ctx.createRadialGradient(player.x,player.y,player.attackRange*0.7,player.x,player.y,player.attackRange);
+    grad.addColorStop(0,'rgba(255,140,0,0)');
+    grad.addColorStop(1,`rgba(255,140,0,${ap*0.12})`);
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.arc(player.x,player.y,player.attackRange,0,Math.PI*2);ctx.fill();
+    // 외곽 점선
+    ctx.strokeStyle=`rgba(255,150,0,${ap})`;
+    ctx.lineWidth=2;
+    ctx.setLineDash([8,5]);
+    ctx.lineDashOffset=-dashOff;
+    ctx.shadowColor='rgba(255,140,0,0.4)';ctx.shadowBlur=6;
     ctx.beginPath();ctx.arc(player.x,player.y,player.attackRange,0,Math.PI*2);ctx.stroke();
+    ctx.setLineDash([]);ctx.shadowBlur=0;
     ctx.restore();
   }
-  // 2) 아이템 획득 범위: 더 희미하게
+  // 2) 아이템 획득 범위: 시안 점선 + 내부 그라디언트 + 반대방향 dashOffset
   {
-    const pp=0.10+0.04*Math.sin(_now/480);
+    const dashOff=(_now*0.03)%(6+4);
+    const pp=0.35+0.06*Math.sin(_now/480);
     ctx.save();
-    ctx.shadowBlur=0;
-    ctx.strokeStyle=`rgba(0,220,255,${pp})`;
-    ctx.lineWidth=0.8;
-    ctx.setLineDash([5,7]);
+    const grad2=ctx.createRadialGradient(player.x,player.y,player.pickupRadius*0.7,player.x,player.y,player.pickupRadius);
+    grad2.addColorStop(0,'rgba(0,229,255,0)');
+    grad2.addColorStop(1,`rgba(0,229,255,${pp*0.1})`);
+    ctx.fillStyle=grad2;
+    ctx.beginPath();ctx.arc(player.x,player.y,player.pickupRadius,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=`rgba(0,229,255,${pp})`;
+    ctx.lineWidth=1.5;
+    ctx.setLineDash([6,4]);
+    ctx.lineDashOffset=dashOff;
+    ctx.shadowColor='rgba(0,220,255,0.35)';ctx.shadowBlur=5;
     ctx.beginPath();ctx.arc(player.x,player.y,player.pickupRadius,0,Math.PI*2);ctx.stroke();
-    ctx.setLineDash([]);
+    ctx.setLineDash([]);ctx.shadowBlur=0;
     ctx.restore();
   }
   // v1.0.9→v1.1.0: 플레이어 머리 위 공속 게이지 제거 → 좌측 세로 바로 이동
