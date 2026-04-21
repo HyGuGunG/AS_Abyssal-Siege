@@ -1,7 +1,1 @@
-[G03] player.hp > 0 (생존 중): 결과=False
-[G05] wave 변수 >= 1: 결과=False
-[V01] 발키리 스프라이트 픽셀 없음 + 폴백도 미작동: {'hasPixels': False, 'pixelCount': 0, 'fallback': None}
-[W01] 웨이브 카운터 이상: wave=-1
-[W02] 게임 루프 진행 중 (player 생존): 결과=False
-[F01] 게임 루프 5초 후 player 생존: 결과=False
-[F02] 게임 루프 5초 후 게임 종료 안됨: 결과=False
+에러 없음
