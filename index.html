@@ -2214,14 +2214,17 @@ function _updateESkillPool(ctx2, dt){
     const dw  = a.fw * 0.72, dh  = a.fh * 0.72;
     const dx  = p.x - dw / 2, dy = p.y - dh / 2;
 
-    // 글로우 패스: 1.18배 스케일, 낮은 알파 — filter 없이 스택 블렌딩으로 glow 연출
-    ctx2.globalAlpha = 0.38;
+    // 외곽 글로우 패스: 1.22배 확산 halo
+    ctx2.globalAlpha = 0.35;
     ctx2.drawImage(img, sx, sy, a.fw, a.fh,
-                   dx - dw*0.09, dy - dh*0.09, dw*1.18, dh*1.18);
+                   dx - dw*0.11, dy - dh*0.11, dw*1.22, dh*1.22);
 
-    // 코어 패스
+    // 코어 패스: shadowBlur로 CSS filter 없이 네이티브 tight glow
     ctx2.globalAlpha = 1;
+    ctx2.shadowColor = 'rgba(160, 215, 255, 0.8)';
+    ctx2.shadowBlur  = 28;
     ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx, dy, dw, dh);
+    ctx2.shadowBlur  = 0;
 
     // main 히트 임팩트 플래시 (초기 0.25초)
     if(p.key === 'main') _drawImpactFlash(ctx2, p.x, p.y, elapsed);
@@ -4367,7 +4370,7 @@ function useSkill(key){
     const R=player.shockwaveRadius, DMG=player.shockwaveDmg;
     shockwaveBig(player.x,player.y,R);
     const hitEnemies=[];
-    for(const e of enemies){
+    for(const e of enemies.slice()){  // .slice() 스냅샷: killEnemy가 배열 splice 해도 skip 방지
       const d=Math.hypot(e.x-player.x,e.y-player.y)-(e.r||0);
       if(d<R){
         hitEnemies.push({x:e.x, y:e.y});
@@ -4567,7 +4570,7 @@ function killEnemy(e){
       shockwaveBig(bx,by,R);
       for(let i=0;i<20;i++) particles.push({x:bx,y:by,vx:(Math.random()-.5)*350,vy:(Math.random()-.5)*350,life:.7,size:5+Math.random()*5,color:'rgba(255,120,40,'});
       // 범위 내 다른 적에게도 피해 (연쇄 폭발 느낌)
-      for(const en of enemies){
+      for(const en of enemies.slice()){  // .slice() 스냅샷: splice 도중 skip 방지
         if(en._alive && Math.hypot(en.x-bx,en.y-by)<R){
           dealDamage(en, Math.round(D*0.3), false);
         }
