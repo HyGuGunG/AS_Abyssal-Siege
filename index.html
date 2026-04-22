@@ -2170,47 +2170,64 @@ Object.entries(VALK_SK1_ANIMS).forEach(([k,a])=>{
 });
 
 // E스킬 Canvas 이펙트 풀
-const _eskillPool = [];  // [{key, frame, startTime, x, y, playing, fading}]
+const _eskillPool = [];
 function _spawnESkillLayer(key, x, y){
-  _eskillPool.push({ key, frame:0, startTime:performance.now(), x, y, playing:true, fading:false });
+  _eskillPool.push({ key, startTime:performance.now(), x, y, playing:true });
 }
+
+// 임팩트 플래시: main 히트 순간 방사형 발광 (canvas gradient — filter 불필요)
+function _drawImpactFlash(ctx2, x, y, elapsed){
+  if(elapsed > 0.25) return;
+  const t  = elapsed / 0.25;           // 0→1 (등장→소멸)
+  const r  = 20 + 90 * t;              // 확산 반경
+  const a  = (1 - t) * 0.85;
+  const g  = ctx2.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0,   `rgba(230, 240, 255, ${a})`);
+  g.addColorStop(0.3, `rgba(140, 190, 255, ${a * 0.7})`);
+  g.addColorStop(1,   `rgba(80,  130, 220, 0)`);
+  ctx2.save();
+  ctx2.globalCompositeOperation = 'screen';
+  ctx2.fillStyle = g;
+  ctx2.fillRect(x - r, y - r, r * 2, r * 2);
+  ctx2.restore();
+}
+
 function _updateESkillPool(ctx2, dt){
   const now = performance.now();
-  for(let i=_eskillPool.length-1; i>=0; i--){
-    const p = _eskillPool[i];
-    if(!p.playing){ _eskillPool.splice(i,1); continue; }
-    const a = VALK_SK1_ANIMS[p.key];
+  ctx2.save();
+  ctx2.globalCompositeOperation = 'screen';
+
+  for(let i = _eskillPool.length - 1; i >= 0; i--){
+    const p   = _eskillPool[i];
+    if(!p.playing){ _eskillPool.splice(i, 1); continue; }
+    const a   = VALK_SK1_ANIMS[p.key];
     const img = _eskillImgs[p.key];
-    if(!img || !img.complete){ continue; }
+    if(!img || !img.complete) continue;
+
     const elapsed = (now - p.startTime) / 1000;
-    const frame = Math.min(Math.floor(elapsed * a.fps), a.frames-1);
-    if(frame >= a.frames-1) p.playing = false;
-    const col = frame % a.cols, row = Math.floor(frame / a.cols);
-    const rows = Math.ceil(a.frames / a.cols);
-    const dw = a.fw * 0.7, dh = a.fh * 0.7;
-    const dx = p.x - dw/2, dy = p.y - dh/2;
-    const sx = col*a.fw, sy = row*a.fh;
-    ctx2.save();
-    if(p.key === 'body'){
-      // additive dim 파티클: 'lighter' + 강한 brightness 부스트로 가시화
-      ctx2.filter = 'brightness(120) saturate(3)';
-      ctx2.globalAlpha = 1;
-      ctx2.globalCompositeOperation = 'lighter';
-      ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx-dw*0.1, dy-dh*0.1, dw*1.2, dh*1.2);
-    } else {
-      // 외곽 글로우 패스
-      ctx2.filter = 'brightness(1.8) saturate(1.6)';
-      ctx2.globalAlpha = 0.45;
-      ctx2.globalCompositeOperation = 'screen';
-      ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx-dw*0.05, dy-dh*0.05, dw*1.10, dh*1.10);
-      // 코어 패스
-      ctx2.filter = 'none';
-      ctx2.globalAlpha = 1;
-      ctx2.globalCompositeOperation = 'screen';
-      ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx, dy, dw, dh);
-    }
-    ctx2.restore();
+    const frame   = Math.min(Math.floor(elapsed * a.fps), a.frames - 1);
+    if(frame >= a.frames - 1) p.playing = false;
+
+    const col = frame % a.cols;
+    const row = Math.floor(frame / a.cols);
+    const sx  = col * a.fw,  sy  = row * a.fh;
+    const dw  = a.fw * 0.72, dh  = a.fh * 0.72;
+    const dx  = p.x - dw / 2, dy = p.y - dh / 2;
+
+    // 글로우 패스: 1.18배 스케일, 낮은 알파 — filter 없이 스택 블렌딩으로 glow 연출
+    ctx2.globalAlpha = 0.38;
+    ctx2.drawImage(img, sx, sy, a.fw, a.fh,
+                   dx - dw*0.09, dy - dh*0.09, dw*1.18, dh*1.18);
+
+    // 코어 패스
+    ctx2.globalAlpha = 1;
+    ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx, dy, dw, dh);
+
+    // main 히트 임팩트 플래시 (초기 0.25초)
+    if(p.key === 'main') _drawImpactFlash(ctx2, p.x, p.y, elapsed);
   }
+
+  ctx2.restore();
 }
 
 // === 발키리 스프라이트 애니메이션 정의 ===
