@@ -2238,7 +2238,7 @@ function _updateESkillPool(ctx2, dt){
 
 // === 발키리 스프라이트 애니메이션 정의 ===
 // 정면 촬영 후 src 매핑이 직관적으로 변경됨 (back-facing 때의 L/R 스왑 제거)
-// dispH/dispW 제거 → VALK_DISP_H 단일값으로 모든 애니메이션 크기 통일
+// attack·skill은 개별 dispH 지정 (캡처 화각 차이 보정), 나머지는 VALK_DISP_H 기본값 사용
 const VALK_ANIMS = {
   idle:     { src:'AS_Assets/valk2_idle_sheet.png',     fw:340,  fh:420, cols:6, frames:34, fps:30, loop:true  },
   attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false, dispH:155 },
