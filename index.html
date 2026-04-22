@@ -2238,12 +2238,15 @@ function _updateESkillPool(ctx2, dt){
 // === 발키리 스프라이트 애니메이션 정의 ===
 // 정면 촬영 후 src 매핑이 직관적으로 변경됨 (back-facing 때의 L/R 스왑 제거)
 // attack·skill은 개별 dispH 지정 (캡처 화각 차이 보정), 나머지는 VALK_DISP_H 기본값 사용
+// dispH 보정 근거: idle fh=420에서 캐릭터 비율 75% → 표시 97px 기준
+// attack_f fh=560 캐릭터 65% → 97px 맞추려면 dispH=149
+// attack_r/l fh=580/560 캐릭터 54% → 97px 맞추려면 dispH=180
 const VALK_ANIMS = {
   idle:     { src:'AS_Assets/valk2_idle_sheet.png',     fw:340,  fh:420, cols:6, frames:34, fps:30, loop:true  },
-  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false },
-  attack_r: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false },
-  attack_l: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false },
-  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500,  fh:560, cols:6, frames:60, fps:30, loop:false, dispH:160 },
+  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false, dispH:149 },
+  attack_r: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false, dispH:180 },
+  attack_l: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:180 },
+  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500,  fh:560, cols:6, frames:60, fps:30, loop:false, dispH:149 },
   move_r:   { src:'AS_Assets/valk2_move_r_sheet.png',  fw:260,  fh:460, cols:6, frames:40, fps:30, loop:true  },
   move_l:   { src:'AS_Assets/valk2_move_l_sheet.png',  fw:260,  fh:500, cols:6, frames:40, fps:30, loop:true  },
 };
@@ -6196,51 +6199,6 @@ function renderFx(dt){
     ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
   }
   const _now=performance.now();
-  // ── 가호 실드 버블 ──
-  {
-    const _gp=Math.max(0,Math.min(1,state.gauge/state.gaugeMax));
-    if(_gp>0.005 && !state.gaugeDepleted){
-      const sR=28;
-      const _pulse=0.92+0.08*Math.sin(_now/550);
-      const _alpha=_gp*_pulse;
-      const _edgeW=1.2+4*_gp;
-      ctx.save();
-
-      // 외부 ambient halo
-      ctx.shadowColor=`rgba(60,200,255,${_alpha*0.6})`;
-      ctx.shadowBlur=28*_gp;
-      ctx.strokeStyle=`rgba(80,210,255,${_alpha*0.12})`;
-      ctx.lineWidth=14;
-      ctx.beginPath();ctx.arc(player.x,player.y,sR+4,0,Math.PI*2);ctx.stroke();
-
-      // 내부 채움
-      ctx.shadowBlur=0;
-      const _fgx=player.x-sR*0.26, _fgy=player.y-sR*0.30;
-      const _fg=ctx.createRadialGradient(_fgx,_fgy,0,player.x,player.y,sR);
-      _fg.addColorStop(0,   `rgba(210,245,255,${_alpha*0.14})`);
-      _fg.addColorStop(0.4, `rgba(80,195,255,${_alpha*0.06})`);
-      _fg.addColorStop(0.75,`rgba(30,130,255,${_alpha*0.08})`);
-      _fg.addColorStop(1,   `rgba(10,80,200,${_alpha*0.18})`);
-      ctx.fillStyle=_fg;
-      ctx.beginPath();ctx.arc(player.x,player.y,sR,0,Math.PI*2);ctx.fill();
-
-      // 가장자리 링
-      ctx.shadowColor=`rgba(130,225,255,${_alpha*0.95})`;
-      ctx.shadowBlur=14*_gp;
-      ctx.strokeStyle=`rgba(175,235,255,${_alpha*0.88})`;
-      ctx.lineWidth=_edgeW;
-      ctx.lineCap='butt';
-      ctx.beginPath();ctx.arc(player.x,player.y,sR,0,Math.PI*2);ctx.stroke();
-
-      // 내측 반사 링
-      ctx.shadowBlur=3;
-      ctx.strokeStyle=`rgba(225,250,255,${_alpha*0.45})`;
-      ctx.lineWidth=0.7;
-      ctx.beginPath();ctx.arc(player.x,player.y,sR-_edgeW*0.7,0,Math.PI*2);ctx.stroke();
-
-      ctx.restore();
-    }
-  }
   // ── 발키리 범위 표시 (v2.5 — dashOffset 애니메이션) ──
   // 1) 공격 범위: 오렌지 점선 + 내부 그라디언트 + 움직이는 dashOffset
   {
