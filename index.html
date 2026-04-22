@@ -75,10 +75,9 @@
   #world{position:absolute;inset:0}
   .obj{position:absolute;transform:translate(-50%,-50%);pointer-events:none;will-change:transform,left,top}
   .obj img{display:block;width:100%;height:100%;object-fit:contain}
-  /* v0.9.8: 스프라이트 배경감 완화 — 원형 소프트 마스크 + 대비 강화로 사각 배경 체감 제거 */
+  /* filter 완전 제거 — will-change:transform 부모와 GPU 합성 레이어 충돌로 검은 박스 발생
+     (static filter도 자식 GPU 서브레이어 생성 → 부모 transform 애니메이션 시 배경 black 렌더링) */
   .enemy img, .item img{
-    /* mask-image 제거 — filter 충돌로 검은 박스 렌더링 버그 발생 */
-    filter:contrast(1.12) brightness(1.06) saturate(1.08);
     border-radius:50%;
   }
 
@@ -4503,6 +4502,12 @@ function dealDamage(e,dmg,crit=false){
   }
 
   // 피격 CSS 연출 (물고기 타입은 fish 클래스 추가)
+  // [DBG] e.el의 CSS 상태 확인 — 검은 박스 디버깅용 (확인 후 제거)
+  if(window._dbgHit && e.el){
+    const s=window.getComputedStyle(e.el);
+    const si=window.getComputedStyle(e.el.querySelector('img')||document.body);
+    console.log('[DBG-HIT] enemy el classes:',e.el.className,'filter:',s.filter,'willChange:',s.willChange,'img.filter:',si.filter,'img.willChange:',si.willChange);
+  }
   if(e.el){
     e.el.classList.remove('e-hit'); void e.el.offsetWidth;
     e.el.classList.add('e-hit');
@@ -6151,39 +6156,45 @@ function renderFx(dt){
     ctx.beginPath(); ctx.arc(f.x,f.y,24,0,Math.PI*2); ctx.fill();
     ctx.restore();
   }
-  // ── GC 이펙트: shine_splash (4×2 스프라이트시트) ──
-  if(GC_FX.shine?.complete && GC_FX.shine.naturalWidth>0){
-    const sw4=GC_FX.shine.naturalWidth/4, sh2=GC_FX.shine.naturalHeight/2;
-    for(let i=_gcShineFxs.length-1;i>=0;i--){
-      const f=_gcShineFxs[i];
-      f.life-=dt*5;
-      if(f.life<=0){_gcShineFxs.splice(i,1);continue;}
-      const frame=Math.min(7,Math.floor((1-f.life)*8)+f.col)%8;
-      const sc=frame%4, sr=Math.floor(frame/4);
-      ctx.save();
-      ctx.globalAlpha=f.life*0.88;
-      ctx.globalCompositeOperation='screen';
-      ctx.drawImage(GC_FX.shine,sc*sw4,sr*sh2,sw4,sh2,f.x-f.sz/2,f.y-f.sz/2,f.sz,f.sz);
-      ctx.globalCompositeOperation='source-over';
-      ctx.restore();
-    }
+  // ── GC 이펙트: 피격 섬광 (shine) — canvas primitive로 교체
+  // (fx_shine_splash.png의 별 모양이 아이콘처럼 보이는 문제 해결)
+  for(let i=_gcShineFxs.length-1;i>=0;i--){
+    const f=_gcShineFxs[i];
+    f.life-=dt*5;
+    if(f.life<=0){_gcShineFxs.splice(i,1);continue;}
+    ctx.save();
+    ctx.globalAlpha=f.life*0.75;
+    ctx.globalCompositeOperation='screen';
+    const r1=f.sz*0.5*(1-f.life*0.3); // 확장하며 페이드
+    const gr=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,r1);
+    gr.addColorStop(0,'rgba(255,240,160,1)');
+    gr.addColorStop(0.3,'rgba(255,190,80,0.6)');
+    gr.addColorStop(0.65,'rgba(255,120,40,0.2)');
+    gr.addColorStop(1,'transparent');
+    ctx.fillStyle=gr;
+    ctx.beginPath();ctx.arc(f.x,f.y,r1,0,Math.PI*2);ctx.fill();
+    ctx.globalCompositeOperation='source-over';
+    ctx.restore();
   }
-  // ── GC 이펙트: lightning (4×2 스프라이트시트) ──
-  if(GC_FX.lightning?.complete && GC_FX.lightning.naturalWidth>0){
-    const lw4=GC_FX.lightning.naturalWidth/4, lh2=GC_FX.lightning.naturalHeight/2;
-    for(let i=_gcLightFxs.length-1;i>=0;i--){
-      const f=_gcLightFxs[i];
-      f.life-=dt*6;
-      if(f.life<=0){_gcLightFxs.splice(i,1);continue;}
-      const frame=(f.col+Math.floor((1-f.life)*5))%8;
-      const lc=frame%4, lr=Math.floor(frame/4);
-      ctx.save();
-      ctx.globalAlpha=f.life*0.85;
-      ctx.globalCompositeOperation='screen';
-      ctx.drawImage(GC_FX.lightning,lc*lw4,lr*lh2,lw4,lh2,f.x-f.sz/2,f.y-f.sz*0.75,f.sz,f.sz*1.5);
-      ctx.globalCompositeOperation='source-over';
-      ctx.restore();
-    }
+  // ── GC 이펙트: 번개 섬광 (lightning) — canvas primitive로 교체
+  // (fx_lightning.png의 흰 배경이 screen 모드에서 사각형으로 노출되는 문제 해결)
+  for(let i=_gcLightFxs.length-1;i>=0;i--){
+    const f=_gcLightFxs[i];
+    f.life-=dt*6;
+    if(f.life<=0){_gcLightFxs.splice(i,1);continue;}
+    ctx.save();
+    ctx.globalAlpha=f.life*0.8;
+    ctx.globalCompositeOperation='screen';
+    const r2=f.sz*0.5*(1-f.life*0.25);
+    const gr2=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,r2);
+    gr2.addColorStop(0,'rgba(200,225,255,1)');
+    gr2.addColorStop(0.3,'rgba(100,170,255,0.65)');
+    gr2.addColorStop(0.65,'rgba(40,90,255,0.2)');
+    gr2.addColorStop(1,'transparent');
+    ctx.fillStyle=gr2;
+    ctx.beginPath();ctx.arc(f.x,f.y,r2,0,Math.PI*2);ctx.fill();
+    ctx.globalCompositeOperation='source-over';
+    ctx.restore();
   }
   // ── GC 이펙트: glow 오버레이 ──
   if(GC_FX.glow?.complete && GC_FX.glow.naturalWidth>0){
