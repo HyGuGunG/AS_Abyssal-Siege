@@ -2438,30 +2438,22 @@ function spawnAtkFlash(px, py, tx, ty){
 }
 
 // ── GC 발키리 E 스킬 이펙트 ──
-function spawnESkillFx(x, y){
-  // Canvas 기반 스프라이트 이펙트 (시트 있을 때)
+// px,py: 플레이어 위치 (body/weapon 재생)
+// hitEnemies: 피격된 적 배열 (main 재생 위치)
+function spawnESkillFx(px, py, hitEnemies){
   const hasSheets = Object.values(_eskillImgs).every(i=>i.complete && i.naturalWidth>0);
-  if(hasSheets){
-    _spawnESkillLayer('main',   x, y);
-    _spawnESkillLayer('body',   x, y);
-    _spawnESkillLayer('weapon', x, y);
-  }
-  // DOM 폴백 이펙트 (시트 없을 때만 사용)
-  if(!hasSheets){
-    const sz1 = Math.round(player.shockwaveRadius * 1.4);
-    const sw = document.createElement('div');
-    sw.className = 'e-skill-fx swords';
-    sw.style.cssText = `left:${x}px;top:${y}px;width:${sz1}px;height:${sz1}px;`
-      + `background:url('AS_Assets/skills/gc_valk_swords.png') center/contain no-repeat;`;
-    stage.appendChild(sw);
-    setTimeout(()=>{ if(sw.parentNode) sw.parentNode.removeChild(sw); }, 600);
-    const sz2 = Math.round(player.shockwaveRadius * 2.0);
-    const wg = document.createElement('div');
-    wg.className = 'e-skill-fx wings';
-    wg.style.cssText = `left:${x}px;top:${y}px;width:${sz2}px;height:${sz2}px;`
-      + `background:url('AS_Assets/skills/gc_valk_wings.png') center/contain no-repeat;`;
-    stage.appendChild(wg);
-    setTimeout(()=>{ if(wg.parentNode) wg.parentNode.removeChild(wg); }, 450);
+  if(!hasSheets) return; // 폴백 없음 — shockwaveBig 파티클로 충분
+
+  // 발키리 발동 연출: body + weapon 은 플레이어 위치에 1회
+  _spawnESkillLayer('body',   px, py);
+  _spawnESkillLayer('weapon', px, py);
+
+  // 임팩트 연출: main 은 피격된 각 적 위치에 스폰
+  if(hitEnemies && hitEnemies.length > 0){
+    hitEnemies.forEach(e => _spawnESkillLayer('main', e.x, e.y));
+  } else {
+    // 적이 없으면 플레이어 위치에 폴백
+    _spawnESkillLayer('main', px, py);
   }
 }
 
@@ -4349,9 +4341,11 @@ function useSkill(key){
     playSound('skill_e');
     const R=player.shockwaveRadius, DMG=player.shockwaveDmg;
     shockwaveBig(player.x,player.y,R);
+    const hitEnemies=[];
     for(const e of enemies){
       const d=Math.hypot(e.x-player.x,e.y-player.y)-(e.r||0);
       if(d<R){
+        hitEnemies.push({x:e.x, y:e.y});
         dealDamage(e,DMG,true);
         const dx=(e.x-player.x)/Math.max(1,d), dy=(e.y-player.y)/Math.max(1,d);
         e.x+=dx*60; e.y+=dy*60;
@@ -4361,7 +4355,7 @@ function useSkill(key){
     stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
     // B10: 충격파 링 DOM 연출
     spawnShockwaveRing(player.x, player.y, R);
-    spawnESkillFx(player.x, player.y); // GC 발키리 E 스킬 이펙트
+    spawnESkillFx(player.x, player.y, hitEnemies); // GC 발키리 E 스킬 이펙트
     valkPlayAnim('skill'); // 발키리 E스킬 애니메이션
     vibrate([20,10,40]); // A4: 진동
     s.cd=s.max;
