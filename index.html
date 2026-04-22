@@ -2236,16 +2236,18 @@ function _updateESkillPool(ctx2, dt){
 }
 
 // === 발키리 스프라이트 애니메이션 정의 ===
+// 정면 촬영 후 src 매핑이 직관적으로 변경됨 (back-facing 때의 L/R 스왑 제거)
+// dispH/dispW 제거 → VALK_DISP_H 단일값으로 모든 애니메이션 크기 통일
 const VALK_ANIMS = {
-  idle:     { src:'AS_Assets/valk2_idle_sheet.png',     fw:340, fh:420, cols:6, frames:34, fps:30, loop:true  },
-  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:147 },
-  attack_r: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:160, dispW:420 },
-  attack_l: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false, dispH:160, dispW:420 },
-  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500, fh:560, cols:6, frames:60, fps:30, loop:false, dispH:140 },
-  move_r:   { src:'AS_Assets/valk2_move_l_sheet.png',  fw:260, fh:500, cols:6, frames:40, fps:30, loop:true  },
-  move_l:   { src:'AS_Assets/valk2_move_r_sheet.png',  fw:260, fh:460, cols:6, frames:40, fps:30, loop:true  },
+  idle:     { src:'AS_Assets/valk2_idle_sheet.png',     fw:340,  fh:420, cols:6, frames:34, fps:30, loop:true  },
+  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false },
+  attack_r: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false },
+  attack_l: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false },
+  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500,  fh:560, cols:6, frames:60, fps:30, loop:false },
+  move_r:   { src:'AS_Assets/valk2_move_r_sheet.png',  fw:260,  fh:500, cols:6, frames:40, fps:30, loop:true  },
+  move_l:   { src:'AS_Assets/valk2_move_l_sheet.png',  fw:260,  fh:460, cols:6, frames:40, fps:30, loop:true  },
 };
-const VALK_DISP_H = 112;  // idle/move 기본 표시 높이
+const VALK_DISP_H = 130;  // 모든 애니메이션 통일 표시 높이 (px)
 
 // === GC 리소스 프리로드 ===
 const GC_FX={};
@@ -5330,8 +5332,10 @@ function update(dt){
       player._atkJustFired=true; // v1.1.2: 발사 직후 게이지 즉시 리셋 플래그
       // 발키리 방향별 공격 애니메이션 트리거
       if(!_valkBlocking){
-        const adx=tgt.x-player.x, ady=tgt.y-player.y;
-        const atkAnim=Math.abs(ady)>Math.abs(adx)?'attack_f':(adx>=0?'attack_r':'attack_l');
+        const adx=tgt.x-player.x;
+        // 중앙 존(공격범위의 30% 이내): 정면 공격, 그 외 좌/우
+        const CENTER_ZONE=player.attackRange*0.30;
+        const atkAnim=Math.abs(adx)<CENTER_ZONE?'attack_f':(adx>=0?'attack_r':'attack_l');
         valkPlayAnim(atkAnim);
       }
       // GC 발키리 공격 플래시 이펙트
