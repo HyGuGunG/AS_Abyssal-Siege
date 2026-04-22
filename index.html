@@ -6196,6 +6196,51 @@ function renderFx(dt){
     ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
   }
   const _now=performance.now();
+  // ── 가호 실드 버블 ──
+  {
+    const _gp=Math.max(0,Math.min(1,state.gauge/state.gaugeMax));
+    if(_gp>0.005 && !state.gaugeDepleted){
+      const sR=28;
+      const _pulse=0.92+0.08*Math.sin(_now/550);
+      const _alpha=_gp*_pulse;
+      const _edgeW=1.2+4*_gp;
+      ctx.save();
+
+      // 외부 ambient halo
+      ctx.shadowColor=`rgba(60,200,255,${_alpha*0.6})`;
+      ctx.shadowBlur=28*_gp;
+      ctx.strokeStyle=`rgba(80,210,255,${_alpha*0.12})`;
+      ctx.lineWidth=14;
+      ctx.beginPath();ctx.arc(player.x,player.y,sR+4,0,Math.PI*2);ctx.stroke();
+
+      // 내부 채움
+      ctx.shadowBlur=0;
+      const _fgx=player.x-sR*0.26, _fgy=player.y-sR*0.30;
+      const _fg=ctx.createRadialGradient(_fgx,_fgy,0,player.x,player.y,sR);
+      _fg.addColorStop(0,   `rgba(210,245,255,${_alpha*0.14})`);
+      _fg.addColorStop(0.4, `rgba(80,195,255,${_alpha*0.06})`);
+      _fg.addColorStop(0.75,`rgba(30,130,255,${_alpha*0.08})`);
+      _fg.addColorStop(1,   `rgba(10,80,200,${_alpha*0.18})`);
+      ctx.fillStyle=_fg;
+      ctx.beginPath();ctx.arc(player.x,player.y,sR,0,Math.PI*2);ctx.fill();
+
+      // 가장자리 링
+      ctx.shadowColor=`rgba(130,225,255,${_alpha*0.95})`;
+      ctx.shadowBlur=14*_gp;
+      ctx.strokeStyle=`rgba(175,235,255,${_alpha*0.88})`;
+      ctx.lineWidth=_edgeW;
+      ctx.lineCap='butt';
+      ctx.beginPath();ctx.arc(player.x,player.y,sR,0,Math.PI*2);ctx.stroke();
+
+      // 내측 반사 링
+      ctx.shadowBlur=3;
+      ctx.strokeStyle=`rgba(225,250,255,${_alpha*0.45})`;
+      ctx.lineWidth=0.7;
+      ctx.beginPath();ctx.arc(player.x,player.y,sR-_edgeW*0.7,0,Math.PI*2);ctx.stroke();
+
+      ctx.restore();
+    }
+  }
   // ── 발키리 범위 표시 (v2.5 — dashOffset 애니메이션) ──
   // 1) 공격 범위: 오렌지 점선 + 내부 그라디언트 + 움직이는 dashOffset
   {
