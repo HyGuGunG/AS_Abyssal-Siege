@@ -164,9 +164,9 @@
   @keyframes bokeoWarn{0%{opacity:.6;transform:translate(-50%,-50%) scale(.92)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}}
   @keyframes bokeoHuskPulse{0%{opacity:.7;transform:translate(-50%,-50%) scale(.9)}100%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}
   /* 몬스터 피격 연출 */
-  /* 피격 플래시: img filter 애니메이션 → ::before 오버레이로 교체
-     (img filter 애니메이션 시 will-change:transform 부모와 GPU 합성 충돌 → 검은 박스 버그) */
-  .enemy{position:absolute;transform:translate(-50%,-50%);overflow:hidden;border-radius:50%}
+  /* overflow:hidden 제거 — will-change:transform 과 동일 요소에 존재 시 GPU 합성 레이어 배경이
+     검은색으로 렌더링되는 버그 발생. ::before/img 모두 border-radius:50% 자체 클리핑 사용 */
+  .enemy{position:absolute;transform:translate(-50%,-50%);border-radius:50%;background:transparent}
   .enemy::before{content:'';position:absolute;inset:0;border-radius:50%;opacity:0;pointer-events:none;z-index:2}
   .enemy.e-hit{animation:enemyHitShake .15s ease-out}
   .enemy.e-hit::before{background:rgba(255,255,255,0.85);animation:hitOverlay .2s ease-out forwards}
@@ -209,14 +209,15 @@
   .enemy.boss.boss-p3 .hpbar .fill{background:linear-gradient(90deg,#c0392b,#ff4d6d);}
   @keyframes bossRage{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% + 2.5px),calc(-50% - 2px))}75%{transform:translate(calc(-50% - 2.5px),calc(-50% + 2px))}}
   .enemy.boss.boss-p3{animation:bossRage .12s ease-in-out infinite;}
-  /* 투척 가오리 독침 투사체 */
-  .ray-spine{position:absolute;width:22px;height:5px;border-radius:2px 50% 50% 2px;
-    background:linear-gradient(90deg,#00ffcc 0%,#00e5aa 55%,#004433 100%);
-    box-shadow:0 0 10px rgba(0,255,180,.9),0 0 20px rgba(0,200,120,.35);
+  /* 투척 가오리 독침 투사체 — 글로우 빛 줄기 스타일 */
+  .ray-spine{position:absolute;width:28px;height:4px;border-radius:2px;
+    background:linear-gradient(90deg,rgba(0,255,180,0) 0%,rgba(0,255,200,.5) 30%,#a0fff0 70%,#ffffff 100%);
+    box-shadow:0 0 8px 2px rgba(0,255,180,.7),0 0 18px 4px rgba(0,230,160,.35);
     pointer-events:none;z-index:6;transform-origin:center center;}
-  .ray-spine::after{content:'';position:absolute;right:-3px;top:50%;transform:translateY(-50%);
-    width:4px;height:9px;clip-path:polygon(0 50%,100% 0,100% 100%);
-    background:#00ffcc;}
+  .ray-spine::after{content:'';position:absolute;right:-2px;top:50%;transform:translateY(-50%);
+    width:6px;height:6px;border-radius:50%;
+    background:radial-gradient(circle,#fff 20%,rgba(0,255,200,.8) 55%,transparent 100%);
+    box-shadow:0 0 6px 3px rgba(0,255,180,.6);}
   /* 투척 가오리 발사 게이지 */
   .enemy .shootbar{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
     width:44px;height:3px;background:rgba(0,0,0,.55);border-radius:2px;overflow:hidden;}
@@ -2240,10 +2241,10 @@ function _updateESkillPool(ctx2, dt){
 // dispH/dispW 제거 → VALK_DISP_H 단일값으로 모든 애니메이션 크기 통일
 const VALK_ANIMS = {
   idle:     { src:'AS_Assets/valk2_idle_sheet.png',     fw:340,  fh:420, cols:6, frames:34, fps:30, loop:true  },
-  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false },
-  attack_r: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false },
-  attack_l: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false },
-  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500,  fh:560, cols:6, frames:60, fps:30, loop:false },
+  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false, dispH:155 },
+  attack_r: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false, dispH:155 },
+  attack_l: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:155 },
+  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500,  fh:560, cols:6, frames:60, fps:30, loop:false, dispH:220 },
   move_r:   { src:'AS_Assets/valk2_move_r_sheet.png',  fw:260,  fh:460, cols:6, frames:40, fps:30, loop:true  },
   move_l:   { src:'AS_Assets/valk2_move_l_sheet.png',  fw:260,  fh:500, cols:6, frames:40, fps:30, loop:true  },
 };
@@ -2264,6 +2265,12 @@ const GC_FX={};
   ['shine3',  'AS_Assets/effects/fx_shine2.png'],
   ['circle',  'AS_Assets/effects/fx_circle.png'],
 ].forEach(([k,src])=>{ const img=new Image(); img.src=src+_VER; GC_FX[k]=img; });
+
+// === 발키리 스프라이트 시트 전체 프리로드 (첫 전환 시 깜빡임 방지) ===
+const _valkPreloadImgs={};
+Object.entries(VALK_ANIMS).forEach(([k,a])=>{
+  const img=new Image(); img.src=a.src+_VER; _valkPreloadImgs[k]=img;
+});
 
 // === 사운드 시스템 (Web Audio API 합성) ===
 let _audioCtx=null;
