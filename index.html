@@ -168,7 +168,7 @@
   .enemy{position:absolute;transform:translate(-50%,-50%);border-radius:50%;background:transparent}
   .enemy::before{content:'';position:absolute;inset:0;border-radius:50%;opacity:0;pointer-events:none;z-index:2}
   .enemy.e-hit{animation:enemyHitShake .15s ease-out}
-  .enemy.e-hit::before{background:rgba(255,255,255,0.85);animation:hitOverlay .2s ease-out forwards}
+  .enemy.e-hit::before{background:rgba(255,255,255,1);animation:hitOverlay .2s ease-out forwards}
   .enemy.e-hit.fish::before{background:rgba(120,230,255,0.7);animation:hitOverlay .2s ease-out forwards}
   @keyframes hitOverlay{0%{opacity:1}60%{opacity:.4}100%{opacity:0}}
   @keyframes enemyHitShake{0%{transform:translate(-50%,-50%)}15%{transform:translate(calc(-50% + 6px),calc(-50% - 3px))}35%{transform:translate(calc(-50% - 5px),calc(-50% + 3px))}55%{transform:translate(calc(-50% + 4px),calc(-50% + 1px))}75%{transform:translate(calc(-50% - 2px),calc(-50% - 1px))}100%{transform:translate(-50%,-50%)}}
@@ -2447,7 +2447,7 @@ function vibrate(pattern){
 }
 
 // ── B10: 스킬 임팩트 — 충격파 링 DOM ──
-// ── GC 발키리 공격 플래시 (일반 공격 임팩트) ──
+// ── GC 발키리 공격 플래시 (일반 공격 임팩트 — 슬래시 라인) ──
 function spawnAtkFlash(px, py, tx, ty){
   const angle = Math.atan2(ty-py, tx-px);
   const dist = Math.min(Math.hypot(tx-px, ty-py), 120);
@@ -2455,23 +2455,20 @@ function spawnAtkFlash(px, py, tx, ty){
   const fy = py + Math.sin(angle)*dist*0.6;
   const el = document.createElement('div');
   el.className = 'atk-flash';
-  el.style.cssText = `left:${fx}px;top:${fy}px;width:64px;height:64px;`
-    + `background:url('AS_Assets/skills/gc_valk_spear.png') center/contain no-repeat;`
-    + `transform:translate(-50%,-50%) rotate(${angle}rad) scale(.7)`;
-  // 회전을 위해 animation 내에 translate만 적용, 초기 rotate는 inline으로
-  el.style.animation = 'none';
-  el.style.transform = `translate(-50%,-50%) rotate(${angle + Math.PI/4}rad) scale(.7)`;
-  el.style.transition = 'opacity .18s,transform .18s';
+  el.style.cssText = `left:${fx}px;top:${fy}px;width:54px;height:3px;border-radius:2px;`
+    + `background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.9) 40%,rgba(140,230,255,.85) 70%,transparent 100%);`
+    + `box-shadow:0 0 7px 2px rgba(100,210,255,0.85),0 0 16px 4px rgba(60,180,255,0.4);`
+    + `opacity:0;transition:opacity .06s,transform .16s;`
+    + `transform:translate(-50%,-50%) rotate(${angle}rad) scaleX(0.5)`;
   stage.appendChild(el);
   requestAnimationFrame(()=>{
-    el.style.opacity = '0.9';
-    el.style.transform = `translate(-50%,-50%) rotate(${angle + Math.PI/4}rad) scale(1.3)`;
-    el.style.opacity = '0.85';
+    el.style.opacity = '0.92';
+    el.style.transform = `translate(-50%,-50%) rotate(${angle}rad) scaleX(1.1)`;
   });
   setTimeout(()=>{
     el.style.opacity = '0';
-    el.style.transform = `translate(-50%,-50%) rotate(${angle + Math.PI/4}rad) scale(1.6)`;
-    setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 180);
+    el.style.transform = `translate(-50%,-50%) rotate(${angle}rad) scaleX(1.4)`;
+    setTimeout(()=>{ if(el.parentNode) el.parentNode.removeChild(el); }, 200);
   }, 80);
 }
 
@@ -4502,12 +4499,7 @@ function dealDamage(e,dmg,crit=false){
   }
 
   // 피격 CSS 연출 (물고기 타입은 fish 클래스 추가)
-  // [DBG] e.el의 CSS 상태 확인 — 검은 박스 디버깅용 (확인 후 제거)
-  if(window._dbgHit && e.el){
-    const s=window.getComputedStyle(e.el);
-    const si=window.getComputedStyle(e.el.querySelector('img')||document.body);
-    console.log('[DBG-HIT] enemy el classes:',e.el.className,'filter:',s.filter,'willChange:',s.willChange,'img.filter:',si.filter,'img.willChange:',si.willChange);
-  }
+
   if(e.el){
     e.el.classList.remove('e-hit'); void e.el.offsetWidth;
     e.el.classList.add('e-hit');
@@ -6156,46 +6148,9 @@ function renderFx(dt){
     ctx.beginPath(); ctx.arc(f.x,f.y,24,0,Math.PI*2); ctx.fill();
     ctx.restore();
   }
-  // ── GC 이펙트: 피격 섬광 (shine) — canvas primitive로 교체
-  // (fx_shine_splash.png의 별 모양이 아이콘처럼 보이는 문제 해결)
-  for(let i=_gcShineFxs.length-1;i>=0;i--){
-    const f=_gcShineFxs[i];
-    f.life-=dt*5;
-    if(f.life<=0){_gcShineFxs.splice(i,1);continue;}
-    ctx.save();
-    ctx.globalAlpha=f.life*0.75;
-    ctx.globalCompositeOperation='screen';
-    const r1=f.sz*0.5*(1-f.life*0.3); // 확장하며 페이드
-    const gr=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,r1);
-    gr.addColorStop(0,'rgba(255,240,160,1)');
-    gr.addColorStop(0.3,'rgba(255,190,80,0.6)');
-    gr.addColorStop(0.65,'rgba(255,120,40,0.2)');
-    gr.addColorStop(1,'transparent');
-    ctx.fillStyle=gr;
-    ctx.beginPath();ctx.arc(f.x,f.y,r1,0,Math.PI*2);ctx.fill();
-    ctx.globalCompositeOperation='source-over';
-    ctx.restore();
-  }
-  // ── GC 이펙트: 번개 섬광 (lightning) — canvas primitive로 교체
-  // (fx_lightning.png의 흰 배경이 screen 모드에서 사각형으로 노출되는 문제 해결)
-  for(let i=_gcLightFxs.length-1;i>=0;i--){
-    const f=_gcLightFxs[i];
-    f.life-=dt*6;
-    if(f.life<=0){_gcLightFxs.splice(i,1);continue;}
-    ctx.save();
-    ctx.globalAlpha=f.life*0.8;
-    ctx.globalCompositeOperation='screen';
-    const r2=f.sz*0.5*(1-f.life*0.25);
-    const gr2=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,r2);
-    gr2.addColorStop(0,'rgba(200,225,255,1)');
-    gr2.addColorStop(0.3,'rgba(100,170,255,0.65)');
-    gr2.addColorStop(0.65,'rgba(40,90,255,0.2)');
-    gr2.addColorStop(1,'transparent');
-    ctx.fillStyle=gr2;
-    ctx.beginPath();ctx.arc(f.x,f.y,r2,0,Math.PI*2);ctx.fill();
-    ctx.globalCompositeOperation='source-over';
-    ctx.restore();
-  }
+  // shine/lightning 배열 소거 (원형 잔상 제거 — 렌더링 없이 life만 감산)
+  for(let i=_gcShineFxs.length-1;i>=0;i--){ _gcShineFxs[i].life-=dt*5; if(_gcShineFxs[i].life<=0) _gcShineFxs.splice(i,1); }
+  for(let i=_gcLightFxs.length-1;i>=0;i--){ _gcLightFxs[i].life-=dt*6; if(_gcLightFxs[i].life<=0) _gcLightFxs.splice(i,1); }
   // ── GC 이펙트: glow 오버레이 ──
   if(GC_FX.glow?.complete && GC_FX.glow.naturalWidth>0){
     for(let i=_gcGlowFxs.length-1;i>=0;i--){
@@ -6240,101 +6195,7 @@ function renderFx(dt){
     ctx.fillStyle=p.color+a+')';
     ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
   }
-  // ── 가호 실드 버블 (v2.3 — energy force field, 100%=강력/0%=소멸) ──
   const _now=performance.now();
-  {
-    const _gp=Math.max(0,Math.min(1,state.gauge/state.gaugeMax));
-    if(_gp>0.005 && !state.gaugeDepleted){
-      const sR=40;
-      const _pulse=0.92+0.08*Math.sin(_now/550);
-      const _alpha=_gp*_pulse;
-      const _edgeW=1.5+5.5*_gp; // 100%=7px, 0%=1.5px
-      ctx.save();
-
-      // Layer 1: 외부 ambient halo (넓은 외부 광원)
-      ctx.shadowColor=`rgba(60,200,255,${_alpha*0.6})`;
-      ctx.shadowBlur=42*_gp;
-      ctx.strokeStyle=`rgba(80,210,255,${_alpha*0.12})`;
-      ctx.lineWidth=20;
-      ctx.beginPath();ctx.arc(player.x,player.y,sR+6,0,Math.PI*2);ctx.stroke();
-
-      // Layer 2: 내부 채움 — 3D 구체 느낌의 radial gradient
-      ctx.shadowBlur=0;
-      const _fgx=player.x-sR*0.26, _fgy=player.y-sR*0.30;
-      const _fg=ctx.createRadialGradient(_fgx,_fgy,0,player.x,player.y,sR);
-      _fg.addColorStop(0,   `rgba(210,245,255,${_alpha*0.16})`);
-      _fg.addColorStop(0.38,`rgba(80,195,255,${_alpha*0.07})`);
-      _fg.addColorStop(0.72,`rgba(30,130,255,${_alpha*0.10})`);
-      _fg.addColorStop(1,   `rgba(10,80,200,${_alpha*0.22})`);
-      ctx.fillStyle=_fg;
-      ctx.beginPath();ctx.arc(player.x,player.y,sR,0,Math.PI*2);ctx.fill();
-
-      // Layer 3: 버블 가장자리 링 (두께가 게이지에 비례 — 핵심)
-      ctx.shadowColor=`rgba(130,225,255,${_alpha*0.95})`;
-      ctx.shadowBlur=18*_gp;
-      ctx.strokeStyle=`rgba(175,235,255,${_alpha*0.88})`;
-      ctx.lineWidth=_edgeW;
-      ctx.lineCap='butt';
-      ctx.beginPath();ctx.arc(player.x,player.y,sR,0,Math.PI*2);ctx.stroke();
-
-      // Layer 4: 내측 밝은 링 (유리 안쪽 반사)
-      ctx.shadowBlur=4;
-      ctx.strokeStyle=`rgba(225,250,255,${_alpha*0.50})`;
-      ctx.lineWidth=0.8;
-      ctx.beginPath();ctx.arc(player.x,player.y,sR-_edgeW*0.7,0,Math.PI*2);ctx.stroke();
-
-      // Layer 5: 회전 하이라이트 스팟 (구체 반사광 — 3D 효과)
-      ctx.shadowBlur=0;
-      const _hlAng=(_now/5500)%(Math.PI*2);
-      const _hlX=player.x+Math.cos(_hlAng)*sR*0.58;
-      const _hlY=player.y+Math.sin(_hlAng)*sR*0.58;
-      ctx.save();
-      ctx.beginPath();ctx.arc(player.x,player.y,sR-1,0,Math.PI*2);ctx.clip();
-      const _hlG=ctx.createRadialGradient(_hlX,_hlY,0,_hlX,_hlY,sR*0.30);
-      _hlG.addColorStop(0,`rgba(255,255,255,${_alpha*0.42})`);
-      _hlG.addColorStop(0.55,`rgba(200,242,255,${_alpha*0.14})`);
-      _hlG.addColorStop(1,`rgba(255,255,255,0)`);
-      ctx.fillStyle=_hlG;
-      ctx.fillRect(player.x-sR,player.y-sR,sR*2,sR*2);
-      ctx.restore();
-
-      // Layer 6: 에너지 소용돌이 — 3가닥 (회전 wisps)
-      if(_gp>0.08){
-        ctx.save();
-        ctx.beginPath();ctx.arc(player.x,player.y,sR-2,0,Math.PI*2);ctx.clip();
-        for(let _wi=0;_wi<3;_wi++){
-          const _wt=(_now/3000+_wi/3)*Math.PI*2;
-          const _wR=sR*0.50;
-          const _wx=player.x+Math.cos(_wt)*_wR;
-          const _wy=player.y+Math.sin(_wt)*_wR;
-          ctx.shadowColor=`rgba(100,215,255,${_alpha*0.55})`;
-          ctx.shadowBlur=10;
-          ctx.strokeStyle=`rgba(160,230,255,${_alpha*_gp*0.40})`;
-          ctx.lineWidth=1.2;
-          ctx.beginPath();
-          ctx.arc(_wx,_wy,sR*0.30,_wt+0.4,_wt+2.7);
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      // Layer 7: 하단 파문 (타원형 ripple — 구체 바닥)
-      if(_gp>0.12){
-        const _rp=0.30+0.06*Math.sin(_now/450);
-        ctx.save();
-        ctx.scale(1,0.22);
-        const _ryCanvas=(player.y+sR*0.92)/0.22;
-        ctx.shadowColor=`rgba(80,200,255,${_alpha*0.38})`;
-        ctx.shadowBlur=14;
-        ctx.strokeStyle=`rgba(120,215,255,${_alpha*0.32})`;
-        ctx.lineWidth=2;
-        ctx.beginPath();ctx.arc(player.x,_ryCanvas,sR*_rp,0,Math.PI*2);ctx.stroke();
-        ctx.restore();
-      }
-
-      ctx.restore();
-    }
-  }
   // ── 발키리 범위 표시 (v2.5 — dashOffset 애니메이션) ──
   // 1) 공격 범위: 오렌지 점선 + 내부 그라디언트 + 움직이는 dashOffset
   {
