@@ -2191,16 +2191,24 @@ function _updateESkillPool(ctx2, dt){
     const dx = p.x - dw/2, dy = p.y - dh/2;
     const sx = col*a.fw, sy = row*a.fh;
     ctx2.save();
-    // 외곽 글로우 패스
-    ctx2.filter = 'brightness(1.8) saturate(1.6)';
-    ctx2.globalAlpha = 0.45;
-    ctx2.globalCompositeOperation = 'screen';
-    ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx-dw*0.05, dy-dh*0.05, dw*1.10, dh*1.10);
-    // 코어 패스
-    ctx2.filter = 'none';
-    ctx2.globalAlpha = 1;
-    ctx2.globalCompositeOperation = 'screen';
-    ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx, dy, dw, dh);
+    if(p.key === 'body'){
+      // additive dim 파티클: 'lighter' + 강한 brightness 부스트로 가시화
+      ctx2.filter = 'brightness(120) saturate(3)';
+      ctx2.globalAlpha = 1;
+      ctx2.globalCompositeOperation = 'lighter';
+      ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx-dw*0.1, dy-dh*0.1, dw*1.2, dh*1.2);
+    } else {
+      // 외곽 글로우 패스
+      ctx2.filter = 'brightness(1.8) saturate(1.6)';
+      ctx2.globalAlpha = 0.45;
+      ctx2.globalCompositeOperation = 'screen';
+      ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx-dw*0.05, dy-dh*0.05, dw*1.10, dh*1.10);
+      // 코어 패스
+      ctx2.filter = 'none';
+      ctx2.globalAlpha = 1;
+      ctx2.globalCompositeOperation = 'screen';
+      ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx, dy, dw, dh);
+    }
     ctx2.restore();
   }
 }
