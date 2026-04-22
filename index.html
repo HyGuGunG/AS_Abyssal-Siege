@@ -2175,21 +2175,27 @@ function _spawnESkillLayer(key, x, y){
   _eskillPool.push({ key, startTime:performance.now(), x, y, playing:true });
 }
 
-// 임팩트 플래시: main 히트 순간 방사형 발광 (canvas gradient — filter 불필요)
+// 임팩트 플래시 — 로드 시 1회 OffscreenCanvas에 pre-bake (매 프레임 gradient 생성 0비용화)
+const _impactFlashOC = (() => {
+  const sz = 128, cx = 64;
+  const oc = new OffscreenCanvas(sz, sz);
+  const c  = oc.getContext('2d');
+  const g  = c.createRadialGradient(cx, cx, 0, cx, cx, cx);
+  g.addColorStop(0,   'rgba(230, 245, 255, 1)');
+  g.addColorStop(0.35,'rgba(140, 195, 255, 0.7)');
+  g.addColorStop(1,   'rgba(80,  130, 220, 0)');
+  c.fillStyle = g;
+  c.fillRect(0, 0, sz, sz);
+  return oc;
+})();
+
+// globalCompositeOperation은 호출 측에서 이미 'screen'으로 설정됨
 function _drawImpactFlash(ctx2, x, y, elapsed){
   if(elapsed > 0.25) return;
-  const t  = elapsed / 0.25;           // 0→1 (등장→소멸)
-  const r  = 20 + 90 * t;              // 확산 반경
-  const a  = (1 - t) * 0.85;
-  const g  = ctx2.createRadialGradient(x, y, 0, x, y, r);
-  g.addColorStop(0,   `rgba(230, 240, 255, ${a})`);
-  g.addColorStop(0.3, `rgba(140, 190, 255, ${a * 0.7})`);
-  g.addColorStop(1,   `rgba(80,  130, 220, 0)`);
-  ctx2.save();
-  ctx2.globalCompositeOperation = 'screen';
-  ctx2.fillStyle = g;
-  ctx2.fillRect(x - r, y - r, r * 2, r * 2);
-  ctx2.restore();
+  const t = elapsed / 0.25;
+  const r = 22 + 88 * t;
+  ctx2.globalAlpha = (1 - t) * 0.82;
+  ctx2.drawImage(_impactFlashOC, x - r, y - r, r * 2, r * 2);
 }
 
 function _updateESkillPool(ctx2, dt){
@@ -2214,19 +2220,15 @@ function _updateESkillPool(ctx2, dt){
     const dw  = a.fw * 0.72, dh  = a.fh * 0.72;
     const dx  = p.x - dw / 2, dy = p.y - dh / 2;
 
-    // 외곽 글로우 패스: 1.22배 확산 halo
-    ctx2.globalAlpha = 0.35;
-    ctx2.drawImage(img, sx, sy, a.fw, a.fh,
-                   dx - dw*0.11, dy - dh*0.11, dw*1.22, dh*1.22);
-
-    // 코어 패스: shadowBlur로 CSS filter 없이 네이티브 tight glow
-    ctx2.globalAlpha = 1;
-    ctx2.shadowColor = 'rgba(160, 215, 255, 0.8)';
-    ctx2.shadowBlur  = 28;
+    // 3-pass 스케일 스택 glow — shadowBlur 없이 bloom 연출 (drawImage만 사용 = GPU 최저 비용)
+    ctx2.globalAlpha = 0.14;  // 광역 확산 halo
+    ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx-dw*0.2, dy-dh*0.2, dw*1.4, dh*1.4);
+    ctx2.globalAlpha = 0.30;  // 중간 glow
+    ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx-dw*0.09, dy-dh*0.09, dw*1.18, dh*1.18);
+    ctx2.globalAlpha = 1;     // 선명한 코어
     ctx2.drawImage(img, sx, sy, a.fw, a.fh, dx, dy, dw, dh);
-    ctx2.shadowBlur  = 0;
 
-    // main 히트 임팩트 플래시 (초기 0.25초)
+    // main 히트 임팩트 플래시 (초기 0.25초, pre-baked OffscreenCanvas)
     if(p.key === 'main') _drawImpactFlash(ctx2, p.x, p.y, elapsed);
   }
 
