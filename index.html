@@ -88,11 +88,12 @@
   /* 가호 실드 아우라 (v2.3 — canvas 버블 보완 ambient glow) */
   #player .aura{
     position:absolute;
-    inset:-160px;
+    /* 머리 바로 위~발 아래까지만, 게이지(player.y-90)는 벗어나게 축소 */
+    inset:-22px -38px;
     border-radius:50%;
     pointer-events:none;
     background:radial-gradient(circle,rgba(60,180,255,.04) 30%,rgba(60,180,255,.12) 55%,rgba(60,200,255,.06) 68%,transparent 82%);
-    box-shadow:0 0 48px 24px rgba(60,190,255,.13);
+    box-shadow:0 0 22px 8px rgba(60,190,255,.13);
     animation:auraPulse 2.5s ease-in-out infinite;
     transition:opacity .4s;
     opacity:var(--aura-o,1);
