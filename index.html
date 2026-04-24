@@ -2197,15 +2197,15 @@ function _drawGraceOrb(ratio, gaugeVal){
     _graceCtx.fillStyle=color;_graceCtx.shadowColor=color;_graceCtx.shadowBlur=16;
     _graceCtx.fill();_graceCtx.shadowBlur=0;
   }
-  // 수치 — arc 위 공간에 숫자 표시 (아이콘은 DOM _graceIconEl로 — cx+8 우측 정렬)
+  // 수치 — arc 위 공간에 숫자 표시 (아이콘은 DOM _graceIconEl로 숫자 바로 위)
   const numY=cy-RY-12;
   _graceCtx.font='900 13px Outfit,sans-serif';
-  _graceCtx.textAlign='left';_graceCtx.textBaseline='middle';
+  _graceCtx.textAlign='center';_graceCtx.textBaseline='middle';
   _graceCtx.fillStyle='rgba(0,0,0,0.8)';
-  _graceCtx.fillText(Math.round(gaugeVal||0),cx-6,numY+1);
+  _graceCtx.fillText(Math.round(gaugeVal||0),cx+1,numY+1);
   _graceCtx.fillStyle=color;
   _graceCtx.shadowColor=color;_graceCtx.shadowBlur=8;
-  _graceCtx.fillText(Math.round(gaugeVal||0),cx-7,numY);
+  _graceCtx.fillText(Math.round(gaugeVal||0),cx,numY);
   _graceCtx.shadowBlur=0;
 }
 const flashEl=document.getElementById('flash');
@@ -5481,8 +5481,8 @@ function updatePlayerGaugeTop(){
     if(show){
       _graceOrbEl.style.left=player.x+'px';
       _graceOrbEl.style.top=(player.y-20)+'px';
-      _graceIconEl.style.left=(player.x-10)+'px';
-      _graceIconEl.style.top=(player.y-102)+'px';
+      _graceIconEl.style.left=player.x+'px';
+      _graceIconEl.style.top=(player.y-116)+'px';
       _drawGraceOrb(state.gauge/state.gaugeMax, state.gauge);
     }
   }
