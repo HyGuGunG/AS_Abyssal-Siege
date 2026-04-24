@@ -61,7 +61,13 @@
   #bgFx{position:absolute;inset:0;pointer-events:none;
     background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,.12),transparent 60%),
                radial-gradient(ellipse at 50% 100%,rgba(5,10,30,.6),transparent 70%);
-    mix-blend-mode:screen}
+    mix-blend-mode:screen;
+    animation:bgFxDrift 18s ease-in-out infinite}
+  @keyframes bgFxDrift{
+    0%,100%{background:radial-gradient(ellipse at 45% 0%,rgba(0,229,255,.12),transparent 60%),radial-gradient(ellipse at 50% 100%,rgba(5,10,30,.6),transparent 70%)}
+    33%{background:radial-gradient(ellipse at 55% 0%,rgba(0,200,255,.15),transparent 65%),radial-gradient(ellipse at 50% 100%,rgba(5,10,30,.6),transparent 70%)}
+    66%{background:radial-gradient(ellipse at 48% 0%,rgba(0,180,255,.10),transparent 55%),radial-gradient(ellipse at 50% 100%,rgba(5,10,30,.6),transparent 70%)}
+  }
 
   #world{position:absolute;inset:0}
   .obj{position:absolute;transform:translate(-50%,-50%);pointer-events:none;will-change:transform,left,top}
@@ -342,9 +348,16 @@
   #gate.dmg-3 .gate-img{filter:brightness(0.38) saturate(0.4) hue-rotate(220deg) sepia(0.15) contrast(1.15)}
   #gate.dmg-3 .gate-crack-overlay{opacity:1;animation:crackFlicker 2s ease-in-out infinite}
   @keyframes crackFlicker{0%,100%{opacity:1}50%{opacity:.7}}
-  /* 수문 피격 플래시 */
-  #gate.gate-hit{animation:gateHitFlash .16s ease-out}
+  /* 수문 피격 플래시 + 흔들림 (수문 요소만 — 화면 흔들림 아님) */
+  #gate.gate-hit{animation:gateHitFlash .16s ease-out,gateHitJolt .18s ease-out}
   @keyframes gateHitFlash{0%{filter:brightness(2.5) saturate(0)}50%{filter:brightness(1.6) saturate(0.4)}100%{filter:brightness(1)}}
+  @keyframes gateHitJolt{
+    0%{transform:translateX(0)}
+    20%{transform:translateX(-4px)}
+    45%{transform:translateX(4px)}
+    70%{transform:translateX(-2px)}
+    100%{transform:translateX(0)}
+  }
 
   .item{filter:drop-shadow(0 0 10px var(--cyan));animation:bob 1.2s ease-in-out infinite}
   .item.normal{width:40px;height:40px;filter:drop-shadow(0 0 8px #b4c4d8)}
@@ -603,13 +616,24 @@
     transition:transform .15s,box-shadow .15s}
   #titleScreen .btn:hover{transform:translateY(-3px) scale(1.03);
     box-shadow:0 12px 36px rgba(245,185,66,.55),0 4px 12px rgba(0,0,0,.6)}
+  #titleScreen .btn{animation:btnStartIdle 2.4s ease-in-out infinite!important}
+  @keyframes btnStartIdle{0%,100%{box-shadow:0 8px 28px rgba(245,185,66,.45),0 2px 8px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.4)}50%{box-shadow:0 10px 42px rgba(245,185,66,.72),0 0 60px rgba(245,185,66,.18),0 4px 12px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.4)}}
   #titleScreen .btn::after{content:'';position:absolute;inset:0;
     background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
     transform:translateX(-100%);animation:btnShine 3s 1s infinite}
-  /* 영문 타이틀 스타일 */
+  /* 영문 타이틀 스타일 — 시머 애니메이션 */
   .title-en{font-family:'Outfit',sans-serif;font-size:14px;color:rgba(255,216,107,.7);
-    letter-spacing:.5em;font-weight:900;text-shadow:0 0 12px rgba(255,216,107,.5);
-    position:relative;z-index:2}
+    letter-spacing:.5em;font-weight:900;
+    text-shadow:0 0 12px rgba(255,216,107,.5);
+    position:relative;z-index:2;
+    animation:titleEnShimmer 4s ease-in-out infinite}
+  @keyframes titleEnShimmer{
+    0%,100%{text-shadow:0 0 12px rgba(255,216,107,.5),0 0 24px rgba(255,216,107,.2)}
+    50%{text-shadow:0 0 20px rgba(255,216,107,.9),0 0 40px rgba(255,216,107,.45),0 0 60px rgba(255,180,0,.2)}
+  }
+  /* 심해 부제목 글로우 */
+  #titleScreen h2{animation:titleH2Pulse 3.5s ease-in-out infinite;opacity:.85}
+  @keyframes titleH2Pulse{0%,100%{text-shadow:0 0 8px rgba(0,229,255,.4)}50%{text-shadow:0 0 18px rgba(0,229,255,.7),0 0 32px rgba(0,229,255,.25)}}
   /* 버전 정보 축소 */
   .title-ver{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
     font-size:9px;color:rgba(156,216,255,.25);letter-spacing:.06em;z-index:2}
@@ -1898,6 +1922,47 @@
     35% {opacity:.9; transform:translate(-50%,-50%) scale(1.25)}
     100%{opacity:0;  transform:translate(-50%,-50%) scale(2.0)}
   }
+  /* ── Wave start colored overlay ── */
+  @keyframes waveOverlayFlash{0%{opacity:.38}35%{opacity:.2}100%{opacity:0}}
+  /* ── 가호 위기 경보 애니메이션 ── */
+  @keyframes warnPulseAnim{0%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}60%{opacity:.85;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(.92)}}
+  /* ── Combo HUD dying pulse (pct < 0.15) ── */
+  #comboHud.combo-dying{animation:comboHudDying .28s ease-in-out infinite}
+  @keyframes comboHudDying{0%,100%{filter:drop-shadow(0 0 0px transparent)}50%{filter:drop-shadow(0 0 10px rgba(255,50,50,.95))}}
+  /* ── Bottom danger strip (적 수문 근접 경보) ── */
+  #dangerStrip{position:absolute;left:0;right:0;bottom:0;height:8px;pointer-events:none;z-index:18;
+    background:linear-gradient(to top,rgba(255,60,60,.0),transparent);opacity:0;transition:opacity .2s}
+  #stage.enemy-near-gate #dangerStrip{opacity:1;background:linear-gradient(to top,rgba(255,60,60,.7) 0%,rgba(255,60,60,.3) 40%,transparent 100%);
+    animation:dangerStripPulse .45s ease-in-out infinite}
+  @keyframes dangerStripPulse{0%,100%{opacity:.6}50%{opacity:1}}
+  /* ── Grace orb heal ring ── */
+  .heal-ring{position:absolute;border-radius:50%;pointer-events:none;z-index:19;
+    border:2px solid rgba(38,255,168,.85);
+    box-shadow:0 0 10px rgba(38,255,168,.4);
+    animation:healRingOut .52s ease-out forwards}
+  @keyframes healRingOut{
+    0%{opacity:.95;transform:translate(-50%,-50%) scale(.15)}
+    55%{opacity:.55;transform:translate(-50%,-50%) scale(1.35)}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(2.1)}}
+  /* ── Wave clear scan line ── */
+  .wave-clear-scan{position:absolute;left:0;right:0;height:3px;pointer-events:none;z-index:27;top:-3px;
+    background:linear-gradient(90deg,transparent 0%,rgba(38,255,168,.95) 30%,rgba(38,255,168,.8) 70%,transparent 100%);
+    filter:blur(1.5px);box-shadow:0 0 10px rgba(38,255,168,.6),0 0 4px rgba(38,255,168,.9)}
+  @keyframes scanSweep{0%{top:-3px;opacity:1}100%{top:722px;opacity:.25}}
+  /* ── Deep sea fish shadows ── */
+  .fish-shadow{position:absolute;pointer-events:none;z-index:1;opacity:0;
+    background:rgba(0,8,20,.22);border-radius:60% 40% 50% 50% / 55% 55% 45% 45%;
+    filter:blur(4px)}
+  @keyframes fishSwimRight{
+    0%{left:-220px;opacity:0}7%{opacity:.16}90%{opacity:.12}100%{left:1500px;opacity:0}}
+  @keyframes fishSwimLeft{
+    0%{left:1500px;opacity:0}7%{opacity:.14}90%{opacity:.10}100%{left:-220px;opacity:0}}
+  /* ── Victory result confetti ── */
+  .rs-confetti{position:absolute;width:7px;height:7px;pointer-events:none;border-radius:1px;
+    animation:rsConfettiFall linear forwards;z-index:2}
+  @keyframes rsConfettiFall{
+    0%{transform:translate(0,0) rotate(0deg);opacity:1}
+    100%{transform:translate(var(--cx,0px),740px) rotate(var(--cr,360deg));opacity:0}}
 </style>
 </head>
 <body>
@@ -2009,6 +2074,7 @@
   <div id="flash"></div>
   <div id="waveFlash"></div>
   <div id="vignette"></div>
+  <div id="dangerStrip"></div>
 
   <div id="hud">
     <!-- v1.0.2: hudDefense 삭제 → 인월드 바로 대체 (아래 #gateHpBar, #playerGaugeBar) -->
@@ -2641,6 +2707,25 @@ function stopBGM(){
     }
     _scheduleRipple();
   }, delay);
+})();
+
+// ── 심해 물고기 그림자 (배경 분위기 보강) ──
+(function _initFishShadows(){
+  const fishDefs=[
+    {w:180,h:32,top:12,dur:26,delay:0,dir:'right'},
+    {w:120,h:22,top:28,dur:34,delay:-9,dir:'left'},
+    {w:240,h:42,top:55,dur:44,delay:-18,dir:'right'},
+    {w:90,h:18,top:70,dur:22,delay:-5,dir:'right'},
+    {w:160,h:28,top:38,dur:38,delay:-14,dir:'left'},
+  ];
+  fishDefs.forEach(f=>{
+    const el=document.createElement('div');
+    el.className='fish-shadow';
+    el.style.cssText=`width:${f.w}px;height:${f.h}px;top:${f.top}%;`
+      +`animation:${f.dir==='right'?'fishSwimRight':'fishSwimLeft'} ${f.dur}s linear infinite;`
+      +`animation-delay:${f.delay}s`;
+    stage.appendChild(el);
+  });
 })();
 
 // ═══════════════════════════════════════════════
@@ -3556,6 +3641,31 @@ function beginWave(n){
   playSound('wave_start');
   showBanner(isBossWave?`⚠ FINAL WAVE ${n}`:`WAVE ${n}`, isBossWave?'호위병을 처치하라!':'시작');
   pushBattleLog(isBossWave?`FINAL WAVE ${n} — 호위병 처치 후 크라켄 등장`:`WAVE ${n} 시작 — 총 ${total}마리`);
+  // 웨이브 시작 컬러 오버레이 플래시 + 중앙 시네마틱 카드
+  try{
+    const _wvc=['#00e5ff','#26ffe9','#ffd86b','#ff6a00','#9d7bff','#ff4d6d','#ff4d6d'];
+    const _wov=document.createElement('div');
+    _wov.style.cssText=`position:absolute;inset:0;pointer-events:none;z-index:35;opacity:0;background:${_wvc[(n-1)%_wvc.length]};mix-blend-mode:screen`;
+    stage.appendChild(_wov);
+    requestAnimationFrame(()=>{ _wov.style.animation='waveOverlayFlash .65s ease-out forwards'; });
+    setTimeout(()=>{ if(_wov.parentNode) _wov.parentNode.removeChild(_wov); },750);
+    // 시네마틱 웨이브 번호 카드
+    const _wcard=document.createElement('div');
+    const _isFW2=n===state.waveMax;
+    _wcard.style.cssText='position:absolute;left:50%;top:48%;pointer-events:none;z-index:36;'
+      +'font-family:\'Outfit\',sans-serif;font-weight:900;letter-spacing:.25em;text-align:center;'
+      +'transform:translate(-50%,-50%) scale(.5);opacity:0;'
+      +'transition:transform .22s cubic-bezier(.12,.8,.3,1.4),opacity .18s ease-out;'
+      +'text-shadow:0 0 40px rgba(0,229,255,.7),0 0 80px rgba(0,200,220,.3),0 4px 12px #000;'
+      +(n===state.waveMax?'color:#ff4d6d;font-size:80px;':'color:#fff;font-size:68px;');
+    _wcard.textContent=_isFW2?'FINAL':('WAVE '+n);
+    stage.appendChild(_wcard);
+    requestAnimationFrame(()=>{
+      _wcard.style.transform='translate(-50%,-50%) scale(1)'; _wcard.style.opacity='1';
+      setTimeout(()=>{ _wcard.style.transition='opacity .3s ease-in'; _wcard.style.opacity='0';
+        setTimeout(()=>{ if(_wcard.parentNode) _wcard.parentNode.removeChild(_wcard); },350); },480);
+    });
+  }catch(e){}
   dlog('beginWave', n, 'total', total);
   updateHud();
 }
@@ -3636,6 +3746,14 @@ function endWave(){
   showBanner(`WAVE ${state.wave} CLEAR`, _wSub);
   pushBattleLog(`WAVE ${state.wave} 클리어 — 처치:${_wkill} 최대콤보:${_wcombo}`);
   waveClearCelebration(); // A3: 색종이 파티클
+  // 웨이브 클리어 수평 스캔 라인 스윕
+  try{
+    const _scan=document.createElement('div');
+    _scan.className='wave-clear-scan';
+    _scan.style.animation='scanSweep .55s ease-in forwards';
+    stage.appendChild(_scan);
+    setTimeout(()=>{ if(_scan.parentNode) _scan.parentNode.removeChild(_scan); },620);
+  }catch(e){}
   slowMo(0.5, 0.15); // 0.5초 슬로우모션
   setTimeout(()=>openCardDraft(), 900);
 }
@@ -4859,6 +4977,22 @@ function showResult(win){
         const scoreEl=document.getElementById('rsScore');
         if(scoreEl){ scoreEl.style.transition='transform .2s,text-shadow .2s'; scoreEl.style.transform='scale(1.12)'; scoreEl.style.textShadow='0 0 28px var(--gold),0 0 48px rgba(255,216,107,.5)'; setTimeout(()=>{ scoreEl.style.transform=''; scoreEl.style.textShadow=''; },300); }
         if(win){ gradeEl.classList.add('grade-final-pop'); setTimeout(()=>gradeEl.classList.remove('grade-final-pop'),500); }
+        // 승리 시 결과창 파티클 비
+        if(win){
+          try{
+            const _rcols=['#ffd86b','#00e5ff','#ff4d6d','#26ffa8','#9d7bff','#ffb830','#fff'];
+            for(let ci=0;ci<32;ci++){
+              const cf=document.createElement('div');
+              cf.className='rs-confetti';
+              cf.style.cssText=`left:${Math.random()*100}%;top:-10px;background:${_rcols[ci%_rcols.length]};`
+                +`--cx:${((Math.random()-.5)*130).toFixed(0)}px;--cr:${((Math.random()*720)-360).toFixed(0)}deg;`
+                +`animation-duration:${(1.6+Math.random()*2.4).toFixed(2)}s;animation-delay:${(Math.random()*1.1).toFixed(2)}s;`
+                +`width:${4+Math.random()*6|0}px;height:${4+Math.random()*6|0}px;opacity:.9;border-radius:${Math.random()>.5?'50%':'2px'}`;
+              scr.appendChild(cf);
+              setTimeout(()=>{ if(cf.parentNode) cf.parentNode.removeChild(cf); },4500);
+            }
+          }catch(e){}
+        }
       }
     }
     requestAnimationFrame(tick);
@@ -5171,6 +5305,9 @@ function updateComboTimerGauge(){
   const pct=Math.max(0, Math.min(1, state.stats.comboTimer/maxT));
   fill.style.width=(pct*100).toFixed(1)+'%';
   fill.classList.toggle('urgent', pct<0.35);
+  // HUD 전체 dying 펄스 (15% 이하)
+  const _ch=document.getElementById('comboHud');
+  if(_ch) _ch.classList.toggle('combo-dying', pct<0.15 && pct>0);
 }
 function killEnemy(e){
   // 복어 자폭: 1초 대기 후 폭발 (경고 연출 포함)
@@ -5318,11 +5455,41 @@ function killEnemy(e){
   state.stats.kill++; state.stats.combo++;
   state.stats.comboTimer=2.5;
   if(state.stats.combo>state.stats.maxCombo) state.stats.maxCombo=state.stats.combo;
+  // 킬 마일스톤 팝업
+  const _killMs=[10,30,60,100];
+  if(_killMs.indexOf(state.stats.kill)>=0){
+    try{
+      const _km=document.createElement('div');
+      const _kc2=state.stats.kill>=100?'#ffd86b':state.stats.kill>=60?'#ff6a00':'#00e5ff';
+      _km.style.cssText='position:absolute;left:50%;top:28%;pointer-events:none;z-index:24;'
+        +'font-family:\'Outfit\',sans-serif;font-size:28px;font-weight:900;letter-spacing:.1em;text-align:center;'
+        +`color:${_kc2};text-shadow:0 0 20px ${_kc2},0 2px 4px #000;`
+        +'transform:translate(-50%,-50%) scale(.3);opacity:0;transition:transform .2s cubic-bezier(.12,.8,.3,1.3),opacity .15s';
+      _km.textContent=state.stats.kill+' KILLS!';
+      stage.appendChild(_km);
+      requestAnimationFrame(()=>{
+        _km.style.transform='translate(-50%,-50%) scale(1)'; _km.style.opacity='1';
+        setTimeout(()=>{ _km.style.transition='opacity .3s ease-in'; _km.style.opacity='0';
+          setTimeout(()=>{ if(_km.parentNode)_km.parentNode.removeChild(_km); },350); },550);
+      });
+    }catch(e){}
+  }
   // 콤보 마일스톤 사운드
   const _cm=state.stats.combo;
   if(_cm===5){ playTone(880,.12,'triangle',.12); playTone(1320,.15,'sine',.09); }
   else if(_cm===10){ playTone(660,.1,'triangle',.12); setTimeout(()=>playTone(880,.1,'triangle',.12),90); setTimeout(()=>playTone(1320,.2,'sine',.12),180); }
-  else if(_cm===20){ playTone(440,.1,'sawtooth',.1); setTimeout(()=>playTone(660,.1,'triangle',.12),80); setTimeout(()=>playTone(1100,.15,'sine',.15),160); setTimeout(()=>playTone(1760,.2,'triangle',.12),260); }
+  else if(_cm===20){
+    playTone(440,.1,'sawtooth',.1); setTimeout(()=>playTone(660,.1,'triangle',.12),80); setTimeout(()=>playTone(1100,.15,'sine',.15),160); setTimeout(()=>playTone(1760,.2,'triangle',.12),260);
+    // FEVER! 20콤보 연출
+    const fv=document.createElement('div');
+    fv.style.cssText='position:absolute;left:50%;top:35%;transform:translate(-50%,-50%) scale(.2);pointer-events:none;z-index:25;'
+      +'font-family:\'Outfit\',sans-serif;font-size:52px;font-weight:900;letter-spacing:.15em;'
+      +'color:#fff;text-shadow:0 0 20px #00e5ff,0 0 40px rgba(0,229,255,.6),0 0 80px rgba(0,200,255,.3);'
+      +'transition:transform .25s cubic-bezier(.12,.8,.3,1.3),opacity .25s';
+    fv.textContent='FEVER!';
+    stage.appendChild(fv);
+    requestAnimationFrame(()=>{ fv.style.transform='translate(-50%,-50%) scale(1)'; fv.style.opacity='1'; setTimeout(()=>{ fv.style.transition='opacity .35s ease-in'; fv.style.opacity='0'; setTimeout(()=>{if(fv.parentNode)fv.parentNode.removeChild(fv);},400); },700); });
+  }
   // 콤보 처치 SFX: 콤보수에 따라 피치 상승
   if(!e.boss){
     const _cp=state.stats.combo;
@@ -6651,6 +6818,17 @@ function update(dt){
           // 발키리 회복 글로우 플래시
           playerEl.classList.remove('grace-heal'); void playerEl.offsetWidth; playerEl.classList.add('grace-heal');
           setTimeout(()=>playerEl.classList.remove('grace-heal'),350);
+          // 힐링 링 이펙트 (2단 확장)
+          try{
+            const _hr1=document.createElement('div'); _hr1.className='heal-ring';
+            _hr1.style.cssText=`left:${player.x}px;top:${player.y}px;width:72px;height:72px;`;
+            stage.appendChild(_hr1); setTimeout(()=>{ if(_hr1.parentNode)_hr1.parentNode.removeChild(_hr1); },580);
+            setTimeout(()=>{
+              const _hr2=document.createElement('div'); _hr2.className='heal-ring';
+              _hr2.style.cssText=`left:${player.x}px;top:${player.y}px;width:44px;height:44px;`;
+              stage.appendChild(_hr2); setTimeout(()=>{ if(_hr2.parentNode)_hr2.parentNode.removeChild(_hr2); },580);
+            },120);
+          }catch(e){}
         } else if(it.kind==='rsc'){
           state.resources+=it.amount;
           updateResourceHud();
@@ -6691,6 +6869,27 @@ function update(dt){
     }
   }
   vignetteEl.classList.toggle('warn', state.gaugeDepleted || (state.gauge > 0 && state.gauge < state.gaugeMax * 0.25));
+  // 적 게이트 근접 경보 (y > 550, 즉 하단 170px 내)
+  const _hasNearGateE=enemies.some(e=>e._alive && e.y>550);
+  stage.classList.toggle('enemy-near-gate', _hasNearGateE);
+  // 가호 위기 경보 (10% 미만, 아직 고갈 전, 4초마다 한 번)
+  if(!state.gaugeDepleted && state.gauge>0 && state.gauge<state.gaugeMax*0.1){
+    if(!state._gaugeWarnT) state._gaugeWarnT=0;
+    state._gaugeWarnT-=dt;
+    if(state._gaugeWarnT<=0){
+      state._gaugeWarnT=4;
+      try{
+        const _gw=document.createElement('div');
+        _gw.style.cssText='position:absolute;left:50%;top:42%;pointer-events:none;z-index:25;'
+          +'transform:translate(-50%,-50%);font-family:\'Outfit\',sans-serif;font-size:20px;font-weight:900;'
+          +'color:#ff4d6d;text-shadow:0 0 16px rgba(255,77,109,.8),0 2px 4px #000;letter-spacing:.12em;'
+          +'animation:warnPulseAnim .6s ease-out forwards';
+        _gw.textContent='⚠ 가호 위기';
+        stage.appendChild(_gw);
+        setTimeout(()=>{ if(_gw.parentNode) _gw.parentNode.removeChild(_gw); },700);
+      }catch(e){}
+    }
+  } else { state._gaugeWarnT=0; }
   // HP가 감소한 순간 감지 → 피격 핏빛 글로우
   if(state.gateHp<state.prevGateHp-0.5){
     if(!state.gaugeDepleted) triggerHitVignette();
@@ -6786,6 +6985,12 @@ function render(){
     e.el.style.left=e.x+'px'; e.el.style.top=e.y+'px';
     const dirX=(W/2-e.x);
     e.el.style.transform=`translate(-50%,-50%) scaleX(${dirX<0?-1:1})`;
+    // 저체력 적 불꽃 잔불 파티클 (20% 미만, 랜덤 15% 확률)
+    if(!e.boss && e._alive && e.hp>0 && e.hp/e.hpMax<0.2 && Math.random()<0.15){
+      particles.push({x:e.x+(Math.random()-.5)*e.r,y:e.y+(Math.random()-.5)*e.r,
+        vx:(Math.random()-.5)*45,vy:-25-Math.random()*55,
+        life:0.25+Math.random()*0.18,size:2+Math.random()*2.5,color:'rgba(255,60,40,'});
+    }
   }
   for(const it of items){
     it.el.style.left=it.x+'px'; it.el.style.top=it.y+'px';
