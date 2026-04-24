@@ -57,15 +57,6 @@
     box-shadow:0 0 60px rgba(0,229,255,.3),0 0 120px 40px rgba(10,20,40,.8);overflow:hidden;cursor:crosshair;
     transform-origin:center}
   body.wide-mode #stage{transform-origin:center bottom}
-  #stage.shake{animation:stageShake .25s ease-out}
-  @keyframes stageShake{
-    0%,100%{transform:var(--fit,scale(1)) translate(0,0)}
-    10%{transform:var(--fit,scale(1)) translate(-4px,3px)}
-    25%{transform:var(--fit,scale(1)) translate(3px,-2px)}
-    45%{transform:var(--fit,scale(1)) translate(-3px,-3px)}
-    65%{transform:var(--fit,scale(1)) translate(2px,2px)}
-    85%{transform:var(--fit,scale(1)) translate(-2px,1px)}
-  }
 
   #bgFx{position:absolute;inset:0;pointer-events:none;
     background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,.12),transparent 60%),
@@ -1115,6 +1106,36 @@
 
   .panel,.btn,.draft-card,.skill-btn,.fslot .slot-ring,.dmg,.fly-rsc{transition-timing-function:cubic-bezier(.2,.8,.2,1)}
 
+  /* ── 드래프트 카드 스킬 정보 툴팁 ── */
+  #draftTooltip{
+    display:none;position:absolute;z-index:120;
+    width:200px;
+    background:linear-gradient(160deg,rgba(0,12,28,.97),rgba(0,6,18,.97));
+    border:1px solid rgba(0,229,255,.3);border-radius:14px;
+    box-shadow:0 8px 32px rgba(0,0,0,.7),0 0 20px rgba(0,180,255,.12);
+    padding:14px 14px 12px;
+    pointer-events:none;
+    animation:dtFadeIn .15s ease-out}
+  #draftTooltip.show{display:block}
+  @keyframes dtFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  #draftTooltip .dt-tip-label{font-size:9px;color:rgba(0,229,255,.6);letter-spacing:.18em;font-weight:700;margin-bottom:10px}
+  #draftTooltip .dt-tip-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  #draftTooltip .dt-tip-icon{width:48px;height:48px;border-radius:10px;overflow:hidden;flex-shrink:0;
+    border:1px solid rgba(255,255,255,.12);background:rgba(0,20,45,.6)}
+  #draftTooltip .dt-tip-icon img{width:100%;height:100%;object-fit:cover}
+  #draftTooltip .dt-tip-icon span{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:26px}
+  #draftTooltip .dt-tip-meta{flex:1;min-width:0}
+  #draftTooltip .dt-tip-rarity{font-size:9px;font-weight:900;letter-spacing:.1em;margin-bottom:3px}
+  #draftTooltip .dt-tip-name{font-size:13px;font-weight:900;color:#fff;line-height:1.2}
+  #draftTooltip .dt-tip-stack{font-size:10px;color:rgba(140,180,220,.7);margin-top:3px}
+  #draftTooltip .dt-tip-divider{height:1px;background:rgba(0,229,255,.12);margin:8px 0}
+  #draftTooltip .dt-tip-desc{font-size:11px;color:rgba(200,220,240,.8);line-height:1.5;margin-bottom:8px}
+  #draftTooltip .dt-tip-stats{display:flex;flex-direction:column;gap:4px}
+  #draftTooltip .dt-tip-stat{display:flex;align-items:center;gap:6px;font-size:10px}
+  #draftTooltip .dt-tip-stat .s-icon{font-size:13px;width:18px;text-align:center;flex-shrink:0}
+  #draftTooltip .dt-tip-stat .s-val{color:var(--gold);font-weight:900;font-family:'Outfit',sans-serif}
+  #draftTooltip .dt-tip-stat .s-lbl{color:rgba(160,190,220,.7)}
+
   /* 콤보 30+ 화면 테두리 글로우 */
   #stage.combo-godlike::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:35;
     border-radius:4px;
@@ -2029,6 +2050,20 @@
       <button id="draftRerollBtn" onclick="draftReroll()">🔄 다시 뽑기 <span id="rerollCostTxt">(자원 30)</span></button>
       <div id="draftCurrentBuild"></div>
       <div id="nextWavePreview"></div>
+      <div id="draftTooltip">
+        <div class="dt-tip-label">✦ 스킬 정보</div>
+        <div class="dt-tip-head">
+          <div class="dt-tip-icon"><span id="dtTipIconTxt"></span><img id="dtTipIconImg" src="" alt="" style="display:none"></div>
+          <div class="dt-tip-meta">
+            <div class="dt-tip-rarity" id="dtTipRarity"></div>
+            <div class="dt-tip-name" id="dtTipName"></div>
+            <div class="dt-tip-stack" id="dtTipStack"></div>
+          </div>
+        </div>
+        <div class="dt-tip-divider"></div>
+        <div class="dt-tip-desc" id="dtTipDesc"></div>
+        <div class="dt-tip-stats" id="dtTipStats"></div>
+      </div>
     </div>
   </div>
 
@@ -2539,10 +2574,6 @@ function waveClearCelebration(){
   setTimeout(()=>{ if(wrap.parentNode) wrap.parentNode.removeChild(wrap); }, 2500);
 }
 
-// ── A4: 모바일 진동 ──
-function vibrate(pattern){
-  try{ if(navigator.vibrate) navigator.vibrate(pattern); }catch(e){}
-}
 
 // ── B10: 스킬 임팩트 — 충격파 링 DOM ──
 // ── GC 발키리 공격 플래시 (일반 공격 임팩트 — 슬래시 라인) ──
@@ -2617,7 +2648,6 @@ function checkComboMax(){
     fl.className='combo-max-flash';
     stage.appendChild(fl);
     setTimeout(()=>{ if(fl.parentNode) fl.parentNode.removeChild(fl); }, 550);
-    vibrate([30,20,50]);
   }
   if(c<_prevCombo){ const hud=document.getElementById('comboHud'); if(hud) hud.classList.remove('maxed'); }
   _prevCombo=c;
@@ -3426,7 +3456,6 @@ function endWave(){
   showBanner(`WAVE ${state.wave} CLEAR`, _wSub);
   pushBattleLog(`WAVE ${state.wave} 클리어 — 처치:${_wkill} 최대콤보:${_wcombo}`);
   waveClearCelebration(); // A3: 색종이 파티클
-  vibrate([40,30,60]); // A4: 모바일 진동
   slowMo(0.5, 0.15); // 0.5초 슬로우모션
   setTimeout(()=>openCardDraft(), 900);
 }
@@ -4603,7 +4632,6 @@ function useSkill(key){
     setTimeout(()=>playerEl.classList.remove('dashing'),300);
     // B10: 질주 트레일 연출
     spawnDashTrail(player.x, player.y);
-    vibrate(15); // A4: 진동
     s.cd=s.max;
   }
   if(key==='E'){
@@ -4620,13 +4648,10 @@ function useSkill(key){
         e.x+=dx*60; e.y+=dy*60;
       }
     }
-    // v1.0.1: 전체 화면 백색 섬광 제거 (눈뽕 방지), 쉐이크만 유지
-    stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
     // B10: 충격파 링 DOM 연출
     spawnShockwaveRing(player.x, player.y, R);
     spawnESkillFx(player.x, player.y, hitEnemies); // GC 발키리 E 스킬 이펙트
     valkPlayAnim('skill'); // 발키리 E스킬 애니메이션
-    vibrate([20,10,40]); // A4: 진동
     s.cd=s.max;
   }
 }
@@ -4826,7 +4851,6 @@ function killEnemy(e){
   if(e.boss){
     state.bossDefeated=true;
     slowMo(0.6, 0.18); // C16: 보스 처치 슬로우모션
-    vibrate([60,30,80,30,100]); // A4: 보스 처치 진동
     showBanner('크라켄 처치!','보스를 쓰러뜨렸습니다!');
     // 보스 페이즈 클래스 초기화
     const bossHpBarEl=document.getElementById('bossHpBar');
@@ -5735,9 +5759,6 @@ function update(dt){
           const fl=document.getElementById('bossPhaseFlash');
           if(fl){ fl.style.background='rgba(220,20,20,.45)'; fl.style.animation='none'; void fl.offsetWidth;
             fl.style.animation='phaseFlash .7s ease-out forwards'; }
-          // 화면 흔들기 강화
-          stage.classList.add('shake');
-          setTimeout(()=>stage.classList.remove('shake'),400);
         }
       }
 
