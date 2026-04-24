@@ -886,6 +886,11 @@
   #draftRerollBtn.used{opacity:.4;cursor:not-allowed;filter:grayscale(.6)}
   /* 현재 보유 스킬 요약 */
   #draftCurrentBuild{display:none;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px;max-width:740px}
+  #nextWavePreview{display:none;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px;max-width:740px;padding:8px 16px;
+    border-radius:10px;background:rgba(0,10,30,.5);border:1px solid rgba(0,200,255,.15)}
+  #nextWavePreview .nwp-label{width:100%;text-align:center;font-size:11px;color:rgba(140,180,220,.6);letter-spacing:.12em;margin-bottom:4px}
+  #nextWavePreview .nwp-chip{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+    background:rgba(0,40,80,.7);border:1px solid rgba(0,180,255,.25);color:#9cd8ff}
   .dcb-chip{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
     background:rgba(30,50,80,.8);border:1px solid rgba(100,150,200,.3);color:rgba(180,210,240,.9)}
 
@@ -1109,6 +1114,20 @@
   .stt-live-row{display:flex;justify-content:space-between;gap:8px;font-size:10px;font-family:'Outfit',sans-serif;font-weight:700;color:var(--gold)}
 
   .panel,.btn,.draft-card,.skill-btn,.fslot .slot-ring,.dmg,.fly-rsc{transition-timing-function:cubic-bezier(.2,.8,.2,1)}
+
+  /* 콤보 30+ 화면 테두리 글로우 */
+  #stage.combo-godlike::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:35;
+    border-radius:4px;
+    box-shadow:inset 0 0 60px 20px rgba(255,80,200,.45),inset 0 0 120px 40px rgba(255,40,120,.2);
+    animation:comboGodlikePulse 0.6s ease-in-out infinite alternate}
+  @keyframes comboGodlikePulse{0%{opacity:.6}100%{opacity:1}}
+
+  /* 모바일 draft-card 탭 바운스 */
+  .draft-card:active{transform:scale(.93)!important;transition:transform .08s!important}
+
+  /* 웨이브 클리어 밝기 플래시 */
+  #waveFlash{position:absolute;inset:0;pointer-events:none;z-index:36;background:#fff;opacity:0;mix-blend-mode:screen}
+  @keyframes waveFlashAnim{0%{opacity:.7}100%{opacity:0}}
 
   /* ═══ 결과 화면 — v2.4 컴팩트 리디자인 (스크롤 없이 720px 내 전체 표시) ═══ */
   /* ═══════════════════════════════════
@@ -1859,6 +1878,7 @@
   </div>
   <canvas id="fx" width="1280" height="720"></canvas>
   <div id="flash"></div>
+  <div id="waveFlash"></div>
   <div id="vignette"></div>
 
   <div id="hud">
@@ -2008,6 +2028,7 @@
       <div class="card-row" id="cardRow"></div>
       <button id="draftRerollBtn" onclick="draftReroll()">🔄 다시 뽑기 <span id="rerollCostTxt">(자원 30)</span></button>
       <div id="draftCurrentBuild"></div>
+      <div id="nextWavePreview"></div>
     </div>
   </div>
 
@@ -2392,24 +2413,42 @@ function startBGM(){
     osc.start();
     _bgmNodes.push(osc,lfo);
   });
-  // 고음 아르페지오 루프
+  // 고음 아르페지오 루프 — 웨이브 진행에 따라 빨라짐
   const arpNotes=[261.6, 329.6, 392.0, 329.6, 523.2, 392.0];
   let arpIdx=0;
   function arpTick(){
     if(!_bgmPlaying) return;
     try{
       const ctx2=getAudioCtx();
+      const w=state&&state.wave||1;
+      // Wave가 높을수록 arp 볼륨 + 음량 증가
+      const intensity=Math.min(1, (w-1)/6); // 0(W1) ~ 1(W7)
       const osc=ctx2.createOscillator();
       osc.type='triangle';
-      osc.frequency.value=arpNotes[arpIdx%arpNotes.length];
+      // 후반 웨이브: 아르페지오에 약간 음정 올림 (+1음정)
+      const noteShift=w>=5?329.6/261.6:1;
+      osc.frequency.value=arpNotes[arpIdx%arpNotes.length]*noteShift;
       const g=ctx2.createGain();
-      g.gain.value=0.015;
-      g.gain.exponentialRampToValueAtTime(0.001,ctx2.currentTime+1.8);
+      g.gain.value=0.015+intensity*0.025;
+      g.gain.exponentialRampToValueAtTime(0.001,ctx2.currentTime+1.5);
       osc.connect(g); g.connect(ctx2.destination);
-      osc.start(ctx2.currentTime); osc.stop(ctx2.currentTime+1.8);
+      osc.start(ctx2.currentTime); osc.stop(ctx2.currentTime+1.5);
       arpIdx++;
+      // 보스 웨이브 (W7): 저음 펄스 추가
+      if(w>=7 && arpIdx%3===0){
+        try{
+          const p=ctx2.createOscillator(); p.type='sawtooth'; p.frequency.value=55+Math.random()*5;
+          const pg=ctx2.createGain(); pg.gain.value=0.04;
+          pg.gain.exponentialRampToValueAtTime(0.001,ctx2.currentTime+0.5);
+          p.connect(pg); pg.connect(ctx2.destination);
+          p.start(ctx2.currentTime); p.stop(ctx2.currentTime+0.5);
+        }catch(e2){}
+      }
     }catch(e){}
-    setTimeout(arpTick, 1200+Math.random()*600);
+    // 웨이브 높을수록 arp 간격 짧아짐: W1=1200ms → W7=650ms
+    const w2=state&&state.wave||1;
+    const baseInterval=1200-Math.min(550,(w2-1)*90);
+    setTimeout(arpTick, baseInterval+Math.random()*300);
   }
   setTimeout(arpTick, 2000);
 }
@@ -2479,6 +2518,9 @@ function slowMo(duration=0.45, factor=0.2){
 // ── A3: Wave Clear 색종이 파티클 ──
 const CONFETTI_COLORS=['#ffd86b','#00e5ff','#26ffa8','#ff4d6d','#9d7bff','#ffb830','#fff'];
 function waveClearCelebration(){
+  // 웨이브 클리어 밝기 플래시
+  const wf=document.getElementById('waveFlash');
+  if(wf){ wf.style.animation='none'; void wf.offsetWidth; wf.style.animation='waveFlashAnim .5s ease-out forwards'; }
   // 색종이 파티클만 (텍스트는 showBanner가 담당)
   const wrap=document.createElement('div');
   wrap.className='confetti-wrap';
@@ -3490,6 +3532,23 @@ function openCardDraft(){
         const ROMAN=['I','II','III','IV','V'];
         return `<span class="dcb-chip">${c.meta.name} ${ROMAN[c.stack-1]||c.stack}</span>`;
       }).join('');
+    }
+  }
+  // 다음 웨이브 예고
+  const nwpEl=document.getElementById('nextWavePreview');
+  if(nwpEl){
+    const nextWaveIdx=state.wave; // state.wave는 클리어된 웨이브 번호, 다음은 +1
+    const ENEMY_LABEL={sogari:'🐟 피라냐',bangeo:'⚔ 어인기사',gaori:'🦈 가오리',bokeo:'💥 복어',agwi:'👹 아귀'};
+    if(nextWaveIdx < WAVE_DEFS.length){
+      const nextDef=WAVE_DEFS[nextWaveIdx];
+      const isBossNext=(nextWaveIdx===WAVE_DEFS.length-1);
+      const chips=nextDef.map(g=>`<span class="nwp-chip">${ENEMY_LABEL[g.type]||g.type} ×${g.count}</span>`).join('');
+      nwpEl.innerHTML=`<div class="nwp-label">${isBossNext?'⚠ FINAL WAVE — 보스전':'다음 웨이브 예고'}</div>${chips}`;
+      nwpEl.style.display='flex';
+      if(isBossNext) nwpEl.style.borderColor='rgba(255,80,40,.4)';
+      else nwpEl.style.borderColor='rgba(0,200,255,.15)';
+    } else {
+      nwpEl.style.display='none';
     }
   }
   draft.classList.add('show');
@@ -4698,8 +4757,11 @@ function updateComboHud(){
     hud.classList.toggle('hot', state.stats.combo>=10);
     hud.classList.remove('pop'); void hud.offsetWidth; hud.classList.add('pop');
     checkComboMax(); // B11: 콤보 MAX 연출
+    // 콤보 30+ 화면 테두리 글로우
+    stage.classList.toggle('combo-godlike', state.stats.combo>=30);
   } else {
     hud.classList.remove('show');
+    stage.classList.remove('combo-godlike');
   }
   // 타이머 게이지 업데이트
   updateComboTimerGauge();
