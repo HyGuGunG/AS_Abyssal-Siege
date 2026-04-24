@@ -3533,12 +3533,11 @@ function showDraftTooltip(card, wrapEl, label){
   let ox=0, oy=0, cur=wrapEl;
   while(cur && cur!==draft){ ox+=cur.offsetLeft; oy+=cur.offsetTop; cur=cur.offsetParent; }
   const ww=wrapEl.offsetWidth, wh=wrapEl.offsetHeight;
-  let left=ox + ww/2 - TW/2;
-  let top=oy - TH - 12;
-  // 상단 벗어나면 카드 아래에 표시
-  if(top<pad) top=oy+wh+8;
-  // 좌우/하단 클램핑 (1280×720 내부 좌표계 기준)
-  left=Math.max(pad, Math.min(1280-TW-pad, left));
+  // 칩 오른쪽에 표시 시도, 넘치면 왼쪽
+  let left=ox + ww + 12;
+  let top=oy + wh/2 - TH/2;
+  if(left + TW + pad > 1280) left = ox - TW - 12;
+  // 상하 클램핑
   top=Math.max(pad, Math.min(720-TH-pad, top));
   tip.style.left=left+'px'; tip.style.top=top+'px';
   tip.classList.add('show');
