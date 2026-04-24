@@ -1922,6 +1922,18 @@
     35% {opacity:.9; transform:translate(-50%,-50%) scale(1.25)}
     100%{opacity:0;  transform:translate(-50%,-50%) scale(2.0)}
   }
+  /* ── 수면 리플 (상단 분위기) ── */
+  #waterSurface{position:absolute;top:0;left:0;right:0;height:60px;pointer-events:none;z-index:2;overflow:hidden}
+  .ws{position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(0,229,255,.12),rgba(100,220,255,.2),rgba(0,229,255,.12),transparent);
+    filter:blur(0.5px)}
+  .ws1{animation:wsRipple 7s ease-in-out infinite;animation-delay:0s;opacity:.7}
+  .ws2{animation:wsRipple 9s ease-in-out infinite;animation-delay:-2.5s;opacity:.5;top:8px}
+  .ws3{animation:wsRipple 11s ease-in-out infinite;animation-delay:-5s;opacity:.35;top:18px}
+  .ws4{animation:wsRipple 8s ease-in-out infinite;animation-delay:-7s;opacity:.25;top:30px}
+  @keyframes wsRipple{
+    0%,100%{transform:scaleX(0.7) translateX(-5%);opacity:.4}
+    50%{transform:scaleX(1.08) translateX(3%);opacity:1}}
   /* ── Wave start colored overlay ── */
   @keyframes waveOverlayFlash{0%{opacity:.38}35%{opacity:.2}100%{opacity:0}}
   /* ── 가호 위기 경보 애니메이션 ── */
@@ -2040,6 +2052,11 @@
   <div id="lightShafts">
     <div class="ls ls1"></div><div class="ls ls2"></div><div class="ls ls3"></div>
     <div class="ls ls4"></div><div class="ls ls5"></div>
+  </div>
+  <!-- 수면 리플 (상단 분위기 오버레이) -->
+  <div id="waterSurface">
+    <div class="ws ws1"></div><div class="ws ws2"></div><div class="ws ws3"></div>
+    <div class="ws ws4"></div>
   </div>
   <div id="world"></div>
 
@@ -3556,6 +3573,8 @@ function startGame(){
   state.rayProjectiles=[];
   state.mortarShells=[];
   startBGM();  // v1.6: BGM 시작
+  // 추가 state 필드 초기화
+  state._gaugeWarnT=0; state._heartbeatT=0;
   state.gateHp=state.gateHpMax;
   state.gaugeMax=100; state.gauge=state.gaugeMax;
   state.stats={kill:0, orb:0, crit:0, combo:0, maxCombo:0, comboTimer:0};
@@ -4870,6 +4889,20 @@ function showResult(win){
   if(score>prevBest && score>0){
     bestEl.textContent='★ NEW BEST RECORD ★';
     bestEl.className='result-best new-record';
+    // NEW BEST 달성 — 1초 후 골드 플래시 + 팡파레
+    setTimeout(()=>{
+      try{
+        const _nrOv=document.createElement('div');
+        _nrOv.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:10;opacity:0;'
+          +'background:radial-gradient(ellipse at 50% 40%,rgba(255,216,107,.5) 0%,transparent 65%);';
+        scr.appendChild(_nrOv);
+        requestAnimationFrame(()=>{ _nrOv.style.transition='opacity .25s ease-out'; _nrOv.style.opacity='1';
+          setTimeout(()=>{ _nrOv.style.opacity='0'; setTimeout(()=>{ if(_nrOv.parentNode) _nrOv.parentNode.removeChild(_nrOv); },300); },600); });
+        // 팡파레 음
+        playTone(880,.12,'triangle',.12); setTimeout(()=>playTone(1100,.1,'sine',.1),120);
+        setTimeout(()=>{ playTone(1320,.15,'triangle',.12); setTimeout(()=>playTone(1760,.18,'sine',.12),100); },260);
+      }catch(e){}
+    },1200);
   } else if(prevBest>0){
     bestEl.textContent='BEST '+prevBest.toLocaleString();
     bestEl.className='result-best';
@@ -5738,6 +5771,28 @@ function updateGateDamage(){
     state.gateDamageStage=newStage;
     const msgs=['','수문에 균열 발생!','수문 심각하게 손상!','수문 붕괴 직전!'];
     pushBattleLog(msgs[newStage]||`수문 손상도 ${[0,25,50,75][newStage]}% 도달!`);
+    // 단계 전환 드라마 배너 + 사운드
+    if(newStage>=1){
+      const _dmgBanners=[null,'⚠ 수문 균열!','🔥 수문 손상!','💀 수문 붕괴 직전!'];
+      const _dmgCols=[null,'#ffb830','#ff6a00','#ff4d6d'];
+      showBanner(_dmgBanners[newStage], newStage===3?'즉시 방어하라!':'');
+      try{
+        const _dc=document.createElement('div');
+        _dc.style.cssText='position:absolute;left:50%;top:60%;pointer-events:none;z-index:26;'
+          +'font-family:\'Outfit\',sans-serif;font-size:22px;font-weight:900;'
+          +`color:${_dmgCols[newStage]};text-shadow:0 0 18px ${_dmgCols[newStage]},0 2px 4px #000;letter-spacing:.1em;`
+          +'transform:translate(-50%,-50%) scale(.4);opacity:0;transition:transform .18s cubic-bezier(.12,.8,.3,1.3),opacity .15s';
+        _dc.textContent=(newStage===3?'⚠ ':'')+msgs[newStage];
+        stage.appendChild(_dc);
+        requestAnimationFrame(()=>{
+          _dc.style.transform='translate(-50%,-50%) scale(1)'; _dc.style.opacity='1';
+          setTimeout(()=>{ _dc.style.transition='opacity .3s ease-in'; _dc.style.opacity='0';
+            setTimeout(()=>{ if(_dc.parentNode)_dc.parentNode.removeChild(_dc); },350); },700);
+        });
+        if(newStage===3){ playTone(220,.2,'sawtooth',.15); setTimeout(()=>playTone(180,.15,'sawtooth',.12),200); }
+        else { playTone(330,.12,'triangle',.1); }
+      }catch(e){}
+    }
   }
 }
 
@@ -6849,6 +6904,8 @@ function update(dt){
     }
   }
 
+  // 파티클 풀 최대 제한 (성능 보호 — 초과 시 가장 오래된 것부터 삭제)
+  if(particles.length>320) particles.splice(0, particles.length-320);
   for(let i=particles.length-1;i>=0;i--){
     const p=particles[i];
     p.x+=p.vx*dt; p.y+=p.vy*dt;
@@ -6874,7 +6931,7 @@ function update(dt){
   stage.classList.toggle('enemy-near-gate', _hasNearGateE);
   // 가호 위기 경보 (10% 미만, 아직 고갈 전, 4초마다 한 번)
   if(!state.gaugeDepleted && state.gauge>0 && state.gauge<state.gaugeMax*0.1){
-    if(!state._gaugeWarnT) state._gaugeWarnT=0;
+    if(state._gaugeWarnT===undefined) state._gaugeWarnT=0;
     state._gaugeWarnT-=dt;
     if(state._gaugeWarnT<=0){
       state._gaugeWarnT=4;
@@ -6895,6 +6952,21 @@ function update(dt){
     if(!state.gaugeDepleted) triggerHitVignette();
   }
   state.prevGateHp=state.gateHp;
+  // 수문 위기 심박음 (HP < 30%)
+  if(state.gateHp>0 && state.gateHp/state.gateHpMax < 0.3 && state.running){
+    if(state._heartbeatT===undefined) state._heartbeatT=0;
+    state._heartbeatT-=dt;
+    if(state._heartbeatT<=0){
+      const _hpRatio=state.gateHp/state.gateHpMax;
+      const _hbInterval=_hpRatio<0.1?0.55:_hpRatio<0.2?0.75:1.1;
+      state._heartbeatT=_hbInterval;
+      try{
+        // 저음 심박: 두 번 연속 타격 (thump-thump)
+        playTone(55, 0.09, 'sawtooth', 0.06);
+        setTimeout(()=>playTone(50, 0.07, 'sawtooth', 0.05), 180);
+      }catch(e){}
+    }
+  } else { state._heartbeatT=0; }
 
   if(state.stats.comboTimer>0){
     state.stats.comboTimer-=dt;
