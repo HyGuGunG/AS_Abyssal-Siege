@@ -2099,7 +2099,7 @@ _graceOrbEl.style.cssText='position:absolute;pointer-events:none;z-index:17;tran
 stage.appendChild(_graceOrbEl);
 const _graceCtx=_graceOrbEl.getContext('2d');
 function _drawGraceOrb(ratio, gaugeVal){
-  const SW=190,SH=210,cx=SW/2,cy=115,RX=58,RY=80;
+  const SW=190,SH=210,cx=SW/2,cy=SH/2,RX=52,RY=70;
   _graceCtx.clearRect(0,0,SW,SH);
   const color=ratio>0.75?'#3ea7ff':ratio>0.5?'#26ffa8':ratio>0.25?'#ffd24d':ratio>0.1?'#ff4d6d':'#ff1a4d';
   // 배경 트랙
@@ -5144,8 +5144,8 @@ function updatePlayerGaugeTop(){
   if(_graceOrbEl){
     _graceOrbEl.style.display=show?'block':'none';
     if(show){
-      _graceOrbEl.style.left=(player.x+50)+'px';
-      _graceOrbEl.style.top=(player.y+50)+'px';
+      _graceOrbEl.style.left=player.x+'px';
+      _graceOrbEl.style.top=(player.y-20)+'px';
       _drawGraceOrb(state.gauge/state.gaugeMax, state.gauge);
     }
   }
