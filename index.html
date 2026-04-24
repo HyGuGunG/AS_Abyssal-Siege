@@ -6535,11 +6535,9 @@ function renderFx(dt){
     // 외곽 점선
     ctx.strokeStyle=`rgba(255,150,0,${ap})`;
     ctx.lineWidth=2;
-    ctx.setLineDash([8,5]);
-    ctx.lineDashOffset=-dashOff;
     ctx.shadowColor='rgba(255,140,0,0.4)';ctx.shadowBlur=6;
     ctx.beginPath();ctx.arc(player.x,player.y,player.attackRange,0,Math.PI*2);ctx.stroke();
-    ctx.setLineDash([]);ctx.shadowBlur=0;
+    ctx.shadowBlur=0;
     ctx.restore();
   }
   // 2) 아이템 획득 범위: 시안 점선 + 내부 그라디언트 + 반대방향 dashOffset
