@@ -3735,6 +3735,20 @@ function openFacilityDraft(slotIdx){
     wrap.appendChild(keycap);
     row.appendChild(wrap);
   });
+  // 리롤 버튼 숨기기 (시설 드래프트에는 없음)
+  const _frb=document.getElementById('draftRerollBtn');
+  if(_frb) _frb.style.display='none';
+  // 현재 보유 스킬 요약 (시설 드래프트에서도 표시)
+  const _fcb=document.getElementById('draftCurrentBuild');
+  if(_fcb){
+    _fcb.style.display='flex';
+    if(state.cards.length===0){
+      _fcb.innerHTML='<span class="dcb-chip" style="opacity:.5">보유 스킬 없음</span>';
+    } else {
+      const ROMAN=['I','II','III','IV','V'];
+      _fcb.innerHTML=state.cards.map(c=>`<span class="dcb-chip">${c.meta.name} ${ROMAN[c.stack-1]||c.stack}</span>`).join('');
+    }
+  }
   draft.classList.add('show');
   document.body.classList.add('draft-open');
 }
@@ -3768,6 +3782,8 @@ function selectFacility(f, el){
   setTimeout(()=>{
     document.getElementById('cardDraft').classList.remove('show');
     document.body.classList.remove('draft-open');
+    const _cb2=document.getElementById('draftCurrentBuild');
+    if(_cb2) _cb2.style.display='none';
     // 다음 슬롯 오픈 준비
     state.slotTier++;
     refreshSlotUI();
