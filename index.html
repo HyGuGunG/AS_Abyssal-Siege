@@ -7534,6 +7534,9 @@ if(AUTOPLAY){
     const _ssCss=document.createElement('style');
     _ssCss.textContent='*{animation-duration:0.001ms!important;animation-delay:0ms!important;transition-duration:0.001ms!important;transition-delay:0ms!important}';
     document.head.appendChild(_ssCss);
+    // body/html 배경을 검정으로 고정 (흰색 영역 방지)
+    document.documentElement.style.background='#000';
+    document.body.style.background='#000';
     // 2) 결과창을 body 최상위로 이동 (stage 스케일 영향 차단)
     const scr=document.getElementById('resultScreen');
     document.body.appendChild(scr);
@@ -7541,6 +7544,7 @@ if(AUTOPLAY){
     scr.style.top='0'; scr.style.left='0';
     scr.style.width='100vw'; scr.style.height='100vh';
     scr.style.zIndex='9999';
+    scr.style.background='#0a0a1a';
     // 3) state 직접 설정
     state.gateHp=1350; state.gateHpMax=1500;
     state.wave=7; state.waveMax=7;
@@ -7562,6 +7566,8 @@ if(AUTOPLAY){
       const _ssCss5=document.createElement('style');
       _ssCss5.textContent='*{animation-duration:0.001ms!important;animation-delay:0ms!important;transition-duration:0.001ms!important;transition-delay:0ms!important}';
       document.head.appendChild(_ssCss5);
+      document.documentElement.style.background='#000';
+      document.body.style.background='#000';
       // 최소 state 초기화
       state.running=true; state.phase='playing'; state.wave=7; state.waveMax=7;
       state.gateHp=900; state.gateHpMax=1500; state.gauge=45; state.gaugeMax=100;
@@ -7605,6 +7611,8 @@ if(AUTOPLAY){
       const _ssCss3=document.createElement('style');
       _ssCss3.textContent='*{animation-duration:0.001ms!important;animation-delay:0ms!important;transition-duration:0.001ms!important;transition-delay:0ms!important}';
       document.head.appendChild(_ssCss3);
+      document.documentElement.style.background='#000';
+      document.body.style.background='#000';
       // 최소 state 초기화 (audio 없이)
       state.running=true; state.phase='playing'; state.wave=3; state.waveMax=7;
       state.gateHp=1200; state.gateHpMax=1500; state.gauge=72; state.gaugeMax=100;
@@ -7642,6 +7650,8 @@ if(AUTOPLAY){
       const _ssCss4=document.createElement('style');
       _ssCss4.textContent='*{animation-duration:0.001ms!important;animation-delay:0ms!important;transition-duration:0.001ms!important;transition-delay:0ms!important}';
       document.head.appendChild(_ssCss4);
+      document.documentElement.style.background='#000';
+      document.body.style.background='#000';
       state.running=true; state.phase='playing'; state.wave=2; state.waveMax=7;
       state.gateHp=1400; state.gateHpMax=1500; state.gauge=85; state.gaugeMax=100;
       state.stats={kill:12,orb:3,crit:2,combo:0,maxCombo:9,comboTimer:0};
