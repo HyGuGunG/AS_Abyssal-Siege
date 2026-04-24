@@ -2240,10 +2240,10 @@ function _updateESkillPool(ctx2, dt){
 // 정면 촬영 후 src 매핑이 직관적으로 변경됨 (back-facing 때의 L/R 스왑 제거)
 const VALK_ANIMS = {
   idle:     { src:'AS_Assets/valk2_idle_sheet.png',     fw:340,  fh:420, cols:6, frames:34, fps:30, loop:true  },
-  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false },
-  attack_r: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false },
-  attack_l: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false },
-  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500,  fh:560, cols:6, frames:60, fps:30, loop:false },
+  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false, dispH:185 },
+  attack_r: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false, dispH:185 },
+  attack_l: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:185 },
+  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500,  fh:560, cols:6, frames:60, fps:30, loop:false, dispH:185 },
   move_r:   { src:'AS_Assets/valk2_move_r_sheet.png',  fw:260,  fh:460, cols:6, frames:40, fps:30, loop:true  },
   move_l:   { src:'AS_Assets/valk2_move_l_sheet.png',  fw:260,  fh:500, cols:6, frames:40, fps:30, loop:true  },
 };
