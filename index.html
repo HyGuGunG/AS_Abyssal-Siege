@@ -661,7 +661,7 @@
 
   /* ═══════ 카드 선택 UI ═══════ */
   #cardDraft{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(10,30,60,.92),rgba(0,5,15,.98));
-    display:none;flex-direction:column;align-items:center;justify-content:center;gap:28px;z-index:60;pointer-events:auto;padding:30px}
+    display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:60;pointer-events:auto;padding:24px}
   #cardDraft.show{display:flex}
   /* --- 발키리 강화 드래프트 배경 --- */
   #cardDraft.draft--hero{background:
@@ -3259,6 +3259,7 @@ function beginWave(n){
   state.waveSpawned=0;
   state.waveRetired=0;
   state.waveEndGrace=0;
+  state.draftRerollUsed=false; // Wave마다 리롤 1회 초기화
   const waveData=WAVE_DEFS[n-1];
   state.enemiesToSpawn=[];
   state.waveEnemyCounts={};
@@ -3526,6 +3527,10 @@ function selectCard(card,el){
   setTimeout(()=>{
     document.getElementById('cardDraft').classList.remove('show');
     document.body.classList.remove('draft-open');
+    const _rb=document.getElementById('draftRerollBtn');
+    if(_rb) _rb.style.display='none';
+    const _cb=document.getElementById('draftCurrentBuild');
+    if(_cb) _cb.style.display='none';
     beginWave(state.wave+1);
   }, 550);
 }
