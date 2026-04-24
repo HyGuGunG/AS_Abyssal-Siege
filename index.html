@@ -361,6 +361,13 @@
   /* 우상단 WAVE (v2.4 — COMBO 위, 우측 정렬) */
   #hudWave{top:var(--crop-top,10px);right:14px;transform:none;padding:5px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:0;
     min-width:130px;transition:top .3s}
+  #speedBtn{position:absolute;top:var(--crop-top,10px);right:158px;z-index:20;pointer-events:auto;
+    padding:4px 10px;border-radius:8px;background:rgba(20,35,60,.85);border:1px solid rgba(0,229,255,.35);
+    color:#9cd8ff;font-family:'Outfit',sans-serif;font-size:12px;font-weight:900;cursor:pointer;
+    transition:all .15s;letter-spacing:.05em;line-height:1.6}
+  #speedBtn:hover{background:rgba(0,229,255,.18);border-color:rgba(0,229,255,.7);color:#fff}
+  #speedBtn.fast{color:var(--gold);border-color:rgba(255,184,48,.5);background:rgba(60,40,10,.85)}
+  #speedBtn.vfast{color:#ff7eb3;border-color:rgba(255,80,180,.5);background:rgba(50,10,30,.85)}
   #hudWave .wv-tag{font-size:11px;color:var(--gold);letter-spacing:.25em;font-weight:900;text-shadow:0 0 8px var(--gold)}
   #hudWave .wv-num{font-family:'Outfit',sans-serif;font-size:22px;color:#fff;font-weight:900;letter-spacing:.06em}
   #hudWave .wv-num .slash{color:#6cc5ff;font-weight:400;margin:0 3px}
@@ -1871,6 +1878,8 @@
         <span style="opacity:.7;font-size:9px">마리</span>
       </div>
     </div>
+    <!-- 게임 속도 토글 버튼 -->
+    <button id="speedBtn" onclick="toggleGameSpeed()" title="게임 속도 변경">1x</button>
 
     <!-- v1.2.2: hudWaveInfo 제거 — 남은 적은 상단 WAVE 패널에 통합 -->
     <div class="panel" id="hudWaveInfo" style="display:none!important">
@@ -2079,8 +2088,9 @@
       </div>
     </div>
     <!-- BOTTOM: 다시 도전 버튼 가운데 -->
-    <div class="rs-bottom">
+    <div class="rs-bottom" style="display:flex;gap:12px;align-items:center;justify-content:center">
       <button class="btn" id="btnRetry">다시 도전</button>
+      <button class="btn" id="btnShare" onclick="shareResult()" style="background:rgba(0,180,80,.18);border-color:rgba(0,229,100,.4);font-size:13px;padding:10px 18px">📋 결과 공유</button>
     </div>
   </div>
 
@@ -2299,12 +2309,13 @@ Object.entries(VALK_ANIMS).forEach(([k,a])=>{
 // === 사운드 시스템 (Web Audio API 합성) ===
 let _audioCtx=null;
 function getAudioCtx(){ if(!_audioCtx) _audioCtx=new (window.AudioContext||window.webkitAudioContext)(); return _audioCtx; }
-function playTone(freq,dur,type='sine',vol=0.15,decay=true){
+function playTone(freq,dur,type='sine',vol=0.15,decay=true,pitchRand=0){
   try{
     const ctx=getAudioCtx();
     const osc=ctx.createOscillator();
     const gain=ctx.createGain();
-    osc.type=type; osc.frequency.value=freq;
+    const _f=pitchRand>0 ? freq*(1+(Math.random()*2-1)*pitchRand) : freq;
+    osc.type=type; osc.frequency.value=_f;
     gain.gain.value=vol;
     if(decay) gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
     osc.connect(gain); gain.connect(ctx.destination);
@@ -2326,22 +2337,31 @@ function playNoise(dur,vol=0.08){
   }catch(e){}
 }
 const SFX={
-  sword:()=>{ playTone(800,.08,'sawtooth',.1); playTone(1200,.06,'sine',.06); },
-  hit:()=>{ playTone(200,.1,'square',.12); playNoise(.08,.1); },
-  crit:()=>{ playTone(1000,.1,'sawtooth',.15); playTone(1500,.08,'sine',.1); playTone(600,.15,'triangle',.08); },
-  pickup:()=>{ playTone(880,.08,'sine',.1); playTone(1320,.1,'sine',.08); },
-  skill_q:()=>{ playTone(600,.15,'sine',.12); playTone(900,.12,'sine',.08); },
-  skill_e:()=>{ playNoise(.15,.15); playTone(300,.2,'sawtooth',.12); playTone(150,.3,'sine',.08); },
-  wave_start:()=>{ playTone(440,.15,'triangle',.12); setTimeout(()=>playTone(660,.15,'triangle',.12),150); setTimeout(()=>playTone(880,.2,'triangle',.15),300); },
-  boss_appear:()=>{ playTone(100,.4,'sawtooth',.2); playTone(80,.5,'square',.12); playNoise(.3,.12); },
-  boss_shot:()=>{ playTone(250,.12,'sawtooth',.08); playNoise(.06,.06); },
-  boss_slam:()=>{ playNoise(.25,.18); playTone(120,.3,'square',.15); },
-  gate_hit:()=>{ playNoise(.12,.12); playTone(150,.15,'square',.1); },
-  build:()=>{ playTone(500,.1,'triangle',.1); playTone(750,.1,'triangle',.08); },
-  victory:()=>{ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,.25,'triangle',.15),i*200)); },
+  // pitchRand=0.08 → ±8% 랜덤 변형으로 단조로움 해소
+  sword:()=>{ playTone(800,.08,'sawtooth',.1,true,0.08); playTone(1200,.06,'sine',.06,true,0.06); },
+  hit:()=>{ playTone(200,.1,'square',.12,true,0.1); playNoise(.08,.09); },
+  crit:()=>{ playTone(1000,.1,'sawtooth',.15); playTone(1500,.08,'sine',.1); playTone(600,.15,'triangle',.08);
+    // 임팩트 로우 펀치 추가
+    playTone(120,.12,'square',.1); },
+  pickup:()=>{ playTone(880,.08,'sine',.1,true,0.05); playTone(1320,.1,'sine',.08,true,0.05); },
+  skill_q:()=>{ playTone(600,.15,'sine',.12); playTone(900,.12,'sine',.08); playNoise(.08,.06); },
+  skill_e:()=>{ playNoise(.15,.15); playTone(300,.2,'sawtooth',.12); playTone(150,.3,'sine',.08);
+    // 저음 임팩트 보강
+    playTone(80,.25,'square',.1); },
+  wave_start:()=>{ playTone(440,.15,'triangle',.12); setTimeout(()=>playTone(660,.15,'triangle',.12),150); setTimeout(()=>playTone(880,.2,'triangle',.15),300);
+    setTimeout(()=>playTone(1100,.25,'sine',.12),500); },
+  boss_appear:()=>{ playTone(100,.4,'sawtooth',.2); playTone(80,.5,'square',.12); playNoise(.3,.12);
+    // 저음 울림 추가
+    setTimeout(()=>playTone(60,.6,'sine',.1),200); },
+  boss_shot:()=>{ playTone(250,.12,'sawtooth',.08,true,0.05); playNoise(.06,.06); },
+  boss_slam:()=>{ playNoise(.25,.18); playTone(120,.3,'square',.15); playTone(80,.4,'sine',.1); },
+  gate_hit:()=>{ playNoise(.12,.14); playTone(150,.15,'square',.12); playTone(100,.2,'sawtooth',.08); },
+  build:()=>{ playTone(500,.1,'triangle',.1); playTone(750,.12,'triangle',.09); playTone(1000,.1,'sine',.06); },
+  victory:()=>{ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,.25,'triangle',.15),i*200));
+    setTimeout(()=>{ playTone(1047,.4,'sine',.12); playNoise(.1,.06); }, 900); },
   defeat:()=>{ [400,350,300,200].forEach((f,i)=>setTimeout(()=>playTone(f,.3,'sawtooth',.12),i*250)); },
-  explode:()=>{ playNoise(.2,.18); playTone(80,.25,'square',.15); },
-  player_hit:()=>{ playTone(200,.08,'square',.1); playTone(150,.1,'sawtooth',.08); },
+  explode:()=>{ playNoise(.2,.2); playTone(80,.25,'square',.15); playTone(140,.15,'sawtooth',.1); },
+  player_hit:()=>{ playTone(200,.08,'square',.12,true,0.08); playTone(150,.1,'sawtooth',.08); playNoise(.05,.08); },
 };
 function playSound(name){ if(SFX[name]) SFX[name](); }
 
@@ -2440,6 +2460,17 @@ setTimeout(()=>{
 
 // ── C16: 슬로우모션 시스템 ──
 let _slowMoTimer=0, _slowMoFactor=1;
+let _gameSpeed=1;
+const _SPEED_STEPS=[1,1.5,2];
+function toggleGameSpeed(){
+  const idx=_SPEED_STEPS.indexOf(_gameSpeed);
+  _gameSpeed=_SPEED_STEPS[(idx+1)%_SPEED_STEPS.length];
+  const btn=document.getElementById('speedBtn');
+  if(btn){
+    btn.textContent=_gameSpeed+'x';
+    btn.className=_gameSpeed===1.5?'fast':_gameSpeed===2?'vfast':'';
+  }
+}
 function slowMo(duration=0.45, factor=0.2){
   _slowMoTimer = Math.max(_slowMoTimer, duration);
   _slowMoFactor = Math.min(_slowMoFactor, factor);
@@ -3231,6 +3262,7 @@ function startGame(){
   document.body.classList.add('game-playing');
   _paused=false; // 재시작 시 일시정지 초기화
   _slowMoTimer=0; _slowMoFactor=1; // 슬로우모션 초기화
+  _gameSpeed=1; const _sb=document.getElementById('speedBtn'); if(_sb){_sb.textContent='1x';_sb.className='';}
   _slotUnlockableShown=false; // 건설가능 마크 초기화
   _prevCombo=0; // 콤보MAX 초기화
   document.getElementById('titleScreen').classList.add('hidden');
@@ -3347,8 +3379,10 @@ function endWave(){
   _draft.classList.remove('show');
   const _row=document.getElementById('cardRow');
   if(_row) _row.innerHTML='';
-  showBanner(`WAVE ${state.wave} 클리어!`, '');
-  pushBattleLog(`WAVE ${state.wave} 클리어 — 스킬 선택`);
+  const _wkill=state.stats.kill, _wcombo=state.stats.maxCombo;
+  const _wSub=`처치 ${_wkill}  ·  최대 콤보 ${_wcombo}`;
+  showBanner(`WAVE ${state.wave} CLEAR`, _wSub);
+  pushBattleLog(`WAVE ${state.wave} 클리어 — 처치:${_wkill} 최대콤보:${_wcombo}`);
   waveClearCelebration(); // A3: 색종이 파티클
   vibrate([40,30,60]); // A4: 모바일 진동
   slowMo(0.5, 0.15); // 0.5초 슬로우모션
@@ -4226,6 +4260,28 @@ function calcGrade(score,win){
   if(score>=9000) return 'A';
   if(score>=6000) return 'B';
   return 'C';
+}
+
+// === 결과 공유 ===
+function shareResult(){
+  const s=state.stats;
+  const grade=calcGrade(calcScore(true), state.wave>=state.waveMax);
+  const skills=state.cards.map(c=>c.meta.name).join(', ')||'없음';
+  const mins=Math.floor(state.playElapsed/60), secs=Math.floor(state.playElapsed%60);
+  const timeStr=`${mins}:${String(secs).padStart(2,'0')}`;
+  const txt=`🌊 심해 습격 — Abyssal Siege\n`+
+    `등급: ${grade}  |  WAVE ${state.wave}/${state.waveMax}  |  ${timeStr}\n`+
+    `처치: ${s.kill}  콤보: ${s.maxCombo}  치명타: ${s.crit}\n`+
+    `빌드: ${skills}\n`+
+    `https://hygugung.github.io/AS_Abyssal-Siege/`;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(()=>showToast('📋 클립보드에 복사됐어요!'));
+  } else {
+    const ta=document.createElement('textarea');
+    ta.value=txt; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('📋 클립보드에 복사됐어요!');
+  }
 }
 
 // === 리더보드 (localStorage) ===
@@ -5356,7 +5412,7 @@ function updatePlayerAtkBar(){
 
 function loop(ts){
   if(!state.running) return;
-  const rawDt=Math.min(0.05,(ts-state.lastTs)/1000);
+  const rawDt=Math.min(0.05,(ts-state.lastTs)/1000)*_gameSpeed;
   state.lastTs=ts;
   // C16: 슬로우모션 — dt에 배율 적용
   let dt=rawDt;
