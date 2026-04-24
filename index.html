@@ -5002,16 +5002,6 @@ function killEnemy(e){
     if(_cp>=5) playTone(1100*_pitch, 0.05, 'sine', 0.06);
     // 5콤보 이상: 미세 히트스탑
     if(_cp>=5) hitStop(25);
-    // 처치 시 반경 70px 내 적 약한 넉백
-    const _kr=70, _kf=90;
-    for(const oe of enemies){
-      if(!oe._alive) continue;
-      const _kd=Math.hypot(oe.x-e.x,oe.y-e.y);
-      if(_kd<_kr&&_kd>1){
-        oe.x+=((oe.x-e.x)/_kd)*_kf*(1-_kd/_kr);
-        oe.y+=((oe.y-e.y)/_kd)*_kf*(1-_kd/_kr);
-      }
-    }
   }
   // v1.6: 콤보 HUD 업데이트
   updateComboHud();
