@@ -758,7 +758,7 @@
     margin:-2.5px 0 0 -2.5px;
     background:radial-gradient(circle,#fff 30%,#ffd060 70%,rgba(255,150,0,0) 100%);
     box-shadow:0 0 5px 2px rgba(255,210,80,.95),0 0 10px 3px rgba(255,150,0,.5);
-    offset-path:path('M -108,-153 L 108,-153 L 108,153 L -108,153 Z');
+    offset-path:path('M -110,-155 L 110,-155 L 110,155 L -110,155 Z');
     animation:legendOrbit var(--od,3s) linear infinite;
     animation-delay:var(--odel,0s);}
   @keyframes legendOrbit{from{offset-distance:0%}to{offset-distance:100%}}
@@ -883,7 +883,8 @@
   #nextWavePreview .nwp-chip{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
     background:rgba(0,40,80,.7);border:1px solid rgba(0,180,255,.25);color:#9cd8ff}
   .dcb-chip{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
-    background:rgba(30,50,80,.8);border:1px solid rgba(100,150,200,.3);color:rgba(180,210,240,.9)}
+    background:rgba(30,50,80,.8);border:1px solid rgba(100,150,200,.3);color:rgba(180,210,240,.9);
+    cursor:default;position:relative}
 
   /* ═══════ v0.9.9→v1.0.1: 카드 타입 분기 — 시설 vs 발키리 ═══════ */
 
@@ -3590,9 +3591,6 @@ function openCardDraft(){
     if(c.rarity==='전설'){
       spawnLegendaryParticles(el);
     }
-    // 툴팁 호버
-    wrap.addEventListener('mouseenter',()=>showDraftTooltip(c, wrap, '스킬 정보'));
-    wrap.addEventListener('mouseleave',()=>hideDraftTooltip());
     wrap.appendChild(el);
     // 키캡을 카드 바깥(wrap 하단 중앙)에 배치
     const keycap=document.createElement('div');
@@ -3620,9 +3618,19 @@ function openCardDraft(){
     } else {
       buildEl.innerHTML=state.cards.map(c=>{
         const ROMAN=['I','II','III','IV','V'];
-        return `<span class="dcb-chip">${c.meta.name} ${ROMAN[c.stack-1]||c.stack}</span>`;
+        return `<span class="dcb-chip" data-card-id="${c.id}">${c.meta.name} ${ROMAN[c.stack-1]||c.stack}</span>`;
       }).join('');
     }
+    // 보유 스킬 칩 툴팁 이벤트
+    buildEl.onmouseover=e=>{
+      const chip=e.target.closest('[data-card-id]');
+      if(!chip) return;
+      const found=state.cards.find(c=>c.id===chip.dataset.cardId);
+      if(found) showDraftTooltip(found.meta, chip, '보유 스킬');
+    };
+    buildEl.onmouseout=e=>{
+      if(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest('[data-card-id]')) hideDraftTooltip();
+    };
   }
   // 다음 웨이브 예고
   const nwpEl=document.getElementById('nextWavePreview');
@@ -3911,9 +3919,6 @@ function openFacilityDraft(slotIdx){
       <div class="card-stats">${fStatsHtml}</div>`;
     el.addEventListener('click',()=>selectFacility(f,el));
     if(f.rarity==='전설') spawnLegendaryParticles(el);
-    // 툴팁 호버
-    wrap.addEventListener('mouseenter',()=>showDraftTooltip(f, wrap, '시설 정보'));
-    wrap.addEventListener('mouseleave',()=>hideDraftTooltip());
     wrap.appendChild(el);
     const keycap=document.createElement('div');
     keycap.className='card-keycap';
@@ -3933,7 +3938,9 @@ function openFacilityDraft(slotIdx){
       _fcb.innerHTML='<span class="dcb-chip" style="opacity:.5">보유 스킬 없음</span>';
     } else {
       const ROMAN=['I','II','III','IV','V'];
-      _fcb.innerHTML=state.cards.map(c=>`<span class="dcb-chip">${c.meta.name} ${ROMAN[c.stack-1]||c.stack}</span>`).join('');
+      _fcb.innerHTML=state.cards.map(c=>`<span class="dcb-chip" data-card-id="${c.id}">${c.meta.name} ${ROMAN[c.stack-1]||c.stack}</span>`).join('');
+      _fcb.onmouseover=e=>{ const chip=e.target.closest('[data-card-id]'); if(!chip) return; const found=state.cards.find(c=>c.id===chip.dataset.cardId); if(found) showDraftTooltip(found.meta, chip, '보유 스킬'); };
+      _fcb.onmouseout=e=>{ if(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest('[data-card-id]')) hideDraftTooltip(); };
     }
   }
   draft.classList.add('show');
@@ -5416,7 +5423,7 @@ function spawnLegendaryParticles(cardEl){
       const spark=document.createElement('div');
       spark.className='legend-spark-fb';
       const angle=(i/FCOUNT)*Math.PI*2;
-      const rx=108, ry=153;
+      const rx=110, ry=155;
       const sx=(Math.cos(angle)*rx).toFixed(1)+'px';
       const sy=(Math.sin(angle)*ry).toFixed(1)+'px';
       spark.style.cssText=`position:absolute;width:5px;height:5px;border-radius:50%;
