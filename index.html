@@ -136,7 +136,7 @@
   .enemy{filter:drop-shadow(0 0 8px rgba(255,80,80,.4))}
   .enemy .hpbar{position:absolute;left:50%;top:-8px;transform:translateX(-50%);
     width:60px;height:4px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.3);border-radius:2px}
-  .enemy .hpbar .fill{height:100%;background:linear-gradient(90deg,#ff4d6d,#ffb347);border-radius:2px;transition:width .1s}
+  .enemy .hpbar .fill{height:100%;background:linear-gradient(90deg,#ff4d6d,#ffb347);border-radius:2px;transition:width .18s ease-out}
   /* 보스 전용 */
   .enemy.boss{filter:drop-shadow(0 0 16px rgba(157,123,255,.7)) drop-shadow(0 0 30px rgba(157,123,255,.3))}
   .enemy.boss .hpbar{width:120px;height:6px;top:-14px;border-color:rgba(157,123,255,.6)}
@@ -159,12 +159,20 @@
   .enemy{position:absolute;transform:translate(-50%,-50%);border-radius:50%;background:transparent}
   .enemy::before{content:'';position:absolute;inset:0;border-radius:50%;opacity:0;pointer-events:none;z-index:2}
   .enemy.e-hit{animation:enemyHitShake .15s ease-out}
+  .enemy.e-low-hp{box-shadow:0 0 10px 3px rgba(255,40,40,.55);animation:eLowHpPulse .7s ease-in-out infinite alternate}
+  /* 감속 빙결 */
+  .enemy.e-slowed img{filter:saturate(0.3) brightness(0.85) sepia(0.3) hue-rotate(160deg)!important}
+  .enemy.e-slowed{box-shadow:0 0 12px 4px rgba(100,180,255,.5)!important}
+  @keyframes eLowHpPulse{0%{box-shadow:0 0 8px 2px rgba(255,40,40,.45)}100%{box-shadow:0 0 18px 6px rgba(255,80,40,.75)}}
   .enemy.e-hit::before{background:rgba(255,255,255,1);animation:hitOverlay .2s ease-out forwards}
   .enemy.e-hit.fish::before{background:rgba(120,230,255,0.7);animation:hitOverlay .2s ease-out forwards}
   @keyframes hitOverlay{0%{opacity:1}60%{opacity:.4}100%{opacity:0}}
   @keyframes enemyHitShake{0%{transform:translate(-50%,-50%)}15%{transform:translate(calc(-50% + 6px),calc(-50% - 3px))}35%{transform:translate(calc(-50% - 5px),calc(-50% + 3px))}55%{transform:translate(calc(-50% + 4px),calc(-50% + 1px))}75%{transform:translate(calc(-50% - 2px),calc(-50% - 1px))}100%{transform:translate(-50%,-50%)}}
   /* 치명타 스케일 펄스 */
   .e-crit-pulse{animation:eCritPulse .14s ease-out!important}
+  /* 발키리 가호 회복 플래시 */
+  #player.grace-heal .valk-sprite{animation:graceHealFlash .35s ease-out!important}
+  @keyframes graceHealFlash{0%{filter:drop-shadow(0 0 14px #3ea7ff) brightness(1.8)}60%{filter:drop-shadow(0 0 20px #26ffa8) brightness(1.4)}100%{filter:none}}
   @keyframes eCritPulse{0%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) scale(1.35)}100%{transform:translate(-50%,-50%) scale(1)}}
   /* 웨이브 클리어 별 파티클 */
   @keyframes waveStarFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--svx,0px),var(--svy,-200px)) scale(0.2)}}
@@ -172,6 +180,8 @@
   .rs-stat{transition:opacity .3s,transform .3s}
   /* 리소스 획득 펄스 */
   .res-gain{animation:resGainPop .28s ease-out!important}
+  /* 콤보 브레이크 */
+  @keyframes comboBreakAnim{0%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}70%{opacity:.9;transform:translate(-50%,-60%) scale(1)}100%{opacity:0;transform:translate(-50%,-75%) scale(.85)}}
   @keyframes resGainPop{0%{transform:scale(1)}45%{transform:scale(1.28);color:#6ee7a0}100%{transform:scale(1)}}
   /* 성광 첨탑 버프 활성 표시 */
   .ft-holy-badge{display:inline-block;font-size:9px;background:rgba(200,160,255,.18);color:#c8a0ff;border:1px solid rgba(200,160,255,.4);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;letter-spacing:.05em}
@@ -273,6 +283,8 @@
   .boss-hp-fill{height:100%;background:linear-gradient(90deg,#5b0dcf,#9d7bff,#c8a0ff);
     border-radius:7px;transition:width .18s;
     box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 10px rgba(157,123,255,.5)}
+  .boss-hp-fill.boss-hit-flash{animation:bossHpFlash .18s ease-out!important}
+  @keyframes bossHpFlash{0%{filter:brightness(3) saturate(0)}50%{filter:brightness(1.8)}100%{filter:brightness(1)}}
   .boss-hp-text{font-family:'Outfit',sans-serif;font-size:12px;font-weight:900;color:#e0d0ff;margin-top:4px;
     letter-spacing:.06em;text-shadow:0 1px 3px #000}
   #bossHpBar.phase-2 .boss-hp-fill{background:linear-gradient(90deg,#8b3a00,#ff8c00,#ffb347)}
@@ -330,6 +342,9 @@
   #gate.dmg-3 .gate-img{filter:brightness(0.38) saturate(0.4) hue-rotate(220deg) sepia(0.15) contrast(1.15)}
   #gate.dmg-3 .gate-crack-overlay{opacity:1;animation:crackFlicker 2s ease-in-out infinite}
   @keyframes crackFlicker{0%,100%{opacity:1}50%{opacity:.7}}
+  /* 수문 피격 플래시 */
+  #gate.gate-hit{animation:gateHitFlash .16s ease-out}
+  @keyframes gateHitFlash{0%{filter:brightness(2.5) saturate(0)}50%{filter:brightness(1.6) saturate(0.4)}100%{filter:brightness(1)}}
 
   .item{filter:drop-shadow(0 0 10px var(--cyan));animation:bob 1.2s ease-in-out infinite}
   .item.normal{width:40px;height:40px;filter:drop-shadow(0 0 8px #b4c4d8)}
@@ -500,6 +515,13 @@
   .skill-info .status.cooling{color:#ffb6c0;background:rgba(255,77,109,.2);border:1px solid rgba(255,77,109,.5)}
   .skill-info .status.locked{color:#9cd8ff;background:rgba(0,229,255,.12);border:1px solid rgba(0,229,255,.3)}
   /* v0.9.8: skill-ready-badge 제거 — "READY" 상단 마크 삭제, 하단 상태 텍스트로 일원화 */
+  /* 쿨다운 완료 플래시 */
+  .skill-btn.skill-ready-flash{animation:skillReadyFlash .5s ease-out!important}
+  @keyframes skillReadyFlash{
+    0%{box-shadow:0 0 0 0 rgba(255,216,107,.95),0 4px 16px rgba(255,216,107,.5)}
+    40%{box-shadow:0 0 0 12px rgba(255,216,107,.4),0 4px 24px rgba(255,216,107,.9)}
+    100%{box-shadow:0 4px 16px rgba(255,216,107,.5)}
+  }
 
   /* Wave 배너 */
   #waveBanner{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);
@@ -631,8 +653,8 @@
   .fslot.built .facility-icon{font-size:32px;filter:drop-shadow(0 0 6px var(--cyan))}
   .fslot.built .facility-icon svg{width:36px;height:36px;display:block;
     filter:drop-shadow(0 0 5px currentColor)}
-  .fslot.firing .slot-ring{animation:slotFire .2s}
-  @keyframes slotFire{0%{transform:scale(1)}50%{transform:scale(1.12);box-shadow:0 0 24px var(--cyan)}100%{transform:scale(1)}}
+  .fslot.firing .slot-ring{animation:slotFire .25s ease-out}
+  @keyframes slotFire{0%{transform:scale(1)}40%{transform:scale(1.18);box-shadow:0 0 28px var(--cyan),0 0 50px rgba(0,229,255,.35),0 0 8px rgba(255,255,255,.5)}100%{transform:scale(1)}}
 
   /* 자원 투입 진행 링 */
   .fslot .deposit-ring{position:absolute;inset:-10px;pointer-events:none;opacity:0;transition:opacity .2s}
@@ -1239,6 +1261,29 @@
   .result-best.new-record{color:#ffd86b;animation:fadeSlideUp .4s .9s forwards,pulseGold 1.5s 1.3s ease-in-out infinite}
   @keyframes fadeSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   @keyframes pulseGold{0%,100%{opacity:1}50%{opacity:.55}}
+  /* 카운트업 완료 등급 팝 */
+  .grade-final-pop{animation:gradeFinalPop .45s ease-out!important}
+  @keyframes gradeFinalPop{0%{transform:scale(1)}30%{transform:scale(1.08)}65%{transform:scale(.97)}100%{transform:scale(1)}}
+  /* 보스 처치 쇼크웨이브 */
+  @keyframes bossDeathShockwave{
+    0%{transform:translate(-50%,-50%) scale(.2);opacity:1}
+    100%{transform:translate(-50%,-50%) scale(5.5);opacity:0}
+  }
+  /* 앰비언트 물결 파문 */
+  @keyframes ambientRipple{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}
+    20%{opacity:.8}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(3.5)}
+  }
+  /* 적 스폰 물 파문 */
+  @keyframes spawnSplash{
+    0%{opacity:.7;transform:translate(-50%,-50%) scale(.2)}
+    60%{opacity:.4;transform:translate(-50%,-50%) scale(1.1)}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}
+  }
+  .spawn-splash{position:absolute;border-radius:50%;pointer-events:none;z-index:3;
+    border:1.5px solid rgba(0,200,230,.5);
+    animation:spawnSplash .4s ease-out forwards}
 
   /* ── 우 패널: 배틀 리포트 ── */
   .rs-right{
@@ -1442,12 +1487,48 @@
   /* v1.0.6: 심해 배경 파티클 캔버스 */
   #bgParticleCanvas{position:absolute;inset:0;pointer-events:none;z-index:0}
 
+  /* 수중 빛줄기 오버레이 */
+  #lightShafts{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;mix-blend-mode:screen}
+  .ls{position:absolute;top:-60px;width:80px;height:380px;border-radius:50%;pointer-events:none;
+    background:linear-gradient(180deg,rgba(0,229,255,.09) 0%,rgba(60,200,255,.05) 55%,transparent 100%);
+    filter:blur(22px);transform-origin:top center;}
+  .ls1{left:8%;width:100px;animation:lsDrift 11s ease-in-out infinite;animation-delay:0s}
+  .ls2{left:22%;width:60px;height:280px;animation:lsDrift 14s ease-in-out infinite;animation-delay:-3.5s;opacity:.7}
+  .ls3{left:45%;width:120px;animation:lsDrift 9s ease-in-out infinite;animation-delay:-6s;opacity:.6}
+  .ls4{left:68%;width:70px;height:320px;animation:lsDrift 12s ease-in-out infinite;animation-delay:-2s;opacity:.75}
+  .ls5{left:84%;width:90px;animation:lsDrift 16s ease-in-out infinite;animation-delay:-8s;opacity:.5}
+  @keyframes lsDrift{
+    0%,100%{transform:skewX(-8deg) translateX(0);opacity:var(--ls-o,.08)}
+    30%{transform:skewX(-4deg) translateX(24px);opacity:calc(var(--ls-o,.08)*1.4)}
+    70%{transform:skewX(-12deg) translateX(-18px);opacity:calc(var(--ls-o,.08)*.7)}
+  }
+
+  /* 플레이어 피격 임팩트 링 */
+  .player-hit-ring{position:absolute;border-radius:50%;pointer-events:none;z-index:19;
+    border:2px solid rgba(255,60,60,.8);
+    animation:playerHitRing .38s ease-out forwards}
+  @keyframes playerHitRing{
+    0%{opacity:.9;transform:translate(-50%,-50%) scale(.3)}
+    60%{opacity:.5;transform:translate(-50%,-50%) scale(1.2)}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+  /* 시설 건설 빛기둥 */
+  .build-beam{position:absolute;pointer-events:none;z-index:22;
+    width:56px;transform:translate(-50%,-100%);
+    background:linear-gradient(to top,rgba(255,215,80,.9) 0%,rgba(255,180,40,.5) 40%,transparent 100%);
+    filter:blur(6px);
+    animation:buildBeamRise .65s ease-out forwards}
+  @keyframes buildBeamRise{
+    0%{opacity:.9;height:0px}
+    40%{opacity:1;height:220px}
+    100%{opacity:0;height:280px}}
+
   /* v1.6: 화면 전환 오버레이 */
   #screenFade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:100;transition:opacity .4s ease-in-out}
   #screenFade.active{opacity:1;pointer-events:auto}
 
   /* v1.6: 콤보 카운터 */
-  #comboHud{position:absolute;top:calc(var(--crop-top,10px) + 92px);right:14px;z-index:8;pointer-events:none;
+  #comboHud{position:absolute;top:calc(var(--crop-top,10px) + 128px);right:14px;z-index:8;pointer-events:none;
     font-family:'Outfit',sans-serif;text-align:right;opacity:0;transition:opacity .3s;transform-origin:right center;
     display:flex;flex-direction:column;align-items:flex-end;gap:2px}
   #comboHud.show{opacity:1}
@@ -1890,6 +1971,11 @@
   <div id="bossPhaseFlash"></div>
   <div id="bgFx"></div>
   <canvas id="bgParticleCanvas" width="1280" height="720"></canvas>
+  <!-- 수중 빛줄기 오버레이 -->
+  <div id="lightShafts">
+    <div class="ls ls1"></div><div class="ls ls2"></div><div class="ls ls3"></div>
+    <div class="ls ls4"></div><div class="ls ls5"></div>
+  </div>
   <div id="world"></div>
 
   <!-- 수문 -->
@@ -2539,6 +2625,21 @@ function stopBGM(){
   setTimeout(()=>{
     if(typeof state!=='undefined'&&state.running&&!_paused) playSound('bubble');
     _scheduleBubble();
+  }, delay);
+})();
+
+// 앰비언트 물결 파문 — 랜덤 위치에 주기적으로 CSS 링 생성
+(function _scheduleRipple(){
+  const delay=2200+Math.random()*3600;
+  setTimeout(()=>{
+    if(typeof state!=='undefined'&&state.running&&!_paused&&typeof stage!=='undefined'){
+      const rx=100+Math.random()*1080, ry=80+Math.random()*560;
+      const rEl=document.createElement('div');
+      rEl.style.cssText=`position:absolute;left:${rx}px;top:${ry}px;width:30px;height:12px;border-radius:50%;pointer-events:none;z-index:2;border:1px solid rgba(0,180,220,.25);animation:ambientRipple 1.4s ease-out forwards`;
+      stage.appendChild(rEl);
+      setTimeout(()=>{if(rEl.parentNode)rEl.parentNode.removeChild(rEl);},1500);
+    }
+    _scheduleRipple();
   }, delay);
 })();
 
@@ -3793,6 +3894,15 @@ function selectCard(card,el){
   pushBattleLog(`✦ 스킬 획득: ${card.name}`);
   // C16: 전설 카드 선택 시 슬로우모션
   if(card.rarity==='전설') slowMo(0.5, 0.15);
+  // 스킬 획득 파워업 파티클 — 발키리 주변 빛 버스트
+  const PCOLS=card.rarity==='전설'?['rgba(255,180,40,','rgba(255,215,80,','rgba(255,240,130,']:
+              card.rarity==='고유'?['rgba(157,123,255,','rgba(200,160,255,','rgba(220,190,255,']:
+              ['rgba(0,229,255,','rgba(0,180,200,','rgba(150,240,255,'];
+  for(let pi=0;pi<22;pi++){
+    const ang=Math.random()*Math.PI*2;
+    const spd=100+Math.random()*200;
+    particles.push({x:player.x,y:player.y,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,life:.5+Math.random()*.4,size:3+Math.random()*5,color:PCOLS[pi%PCOLS.length]});
+  }
   // v1.1.7: 스탯 패널 슬라이드 인 제거 (패널 삭제됨)
   setTimeout(()=>{
     document.getElementById('cardDraft').classList.remove('show');
@@ -4070,6 +4180,26 @@ function selectFacility(f, el){
   if(f.type==='aoe'||f.type==='mortar'||f.type==='siege') s.el.classList.add('aoe-facility');
   applyBuffFacilities();
   if(el) el.classList.add('selected');
+  // 건설 빛기둥 — 슬롯 위치에서 골든 빔 상승
+  try{
+    const sr=stage.getBoundingClientRect();
+    const slotR=s.el.getBoundingClientRect();
+    const scale=sr.width/1280;
+    const bx=(slotR.left+slotR.width/2-sr.left)/scale;
+    const by=(slotR.bottom-sr.top)/scale;
+    const beam=document.createElement('div');
+    beam.className='build-beam';
+    beam.style.left=bx+'px'; beam.style.top=by+'px';
+    stage.appendChild(beam);
+    setTimeout(()=>{if(beam.parentNode)beam.parentNode.removeChild(beam);},700);
+    // 파티클 버스트
+    const BCOLS=['rgba(255,215,80,','rgba(255,180,40,','rgba(255,240,120,'];
+    for(let bi=0;bi<18;bi++){
+      const ang=Math.random()*Math.PI*2;
+      const spd=80+Math.random()*160;
+      particles.push({x:bx,y:by,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd-60,life:.6+Math.random()*.3,size:3+Math.random()*4,color:BCOLS[bi%3]});
+    }
+  }catch(e){}
   setTimeout(()=>{
     document.getElementById('cardDraft').classList.remove('show');
     document.body.classList.remove('draft-open');
@@ -4488,15 +4618,29 @@ function victory(){
   if(state._resultPending) return;
   state._resultPending=true;
   stopBGM(); playSound('victory');
-  slowMo(0.5, 0.15); // 0.5초 슬로우모션
-  setTimeout(()=>{ state.running=false; state.phase='result'; showResult(true); }, 500);
+  slowMo(0.5, 0.15);
+  // 골든 승리 플래시
+  const vf=document.createElement('div');
+  vf.style.cssText='position:absolute;inset:0;z-index:90;pointer-events:none;'
+    +'background:radial-gradient(ellipse at 50% 40%,rgba(255,215,80,.7) 0%,rgba(255,160,20,.45) 35%,transparent 68%);'
+    +'opacity:0;transition:opacity .25s';
+  stage.appendChild(vf);
+  requestAnimationFrame(()=>{ vf.style.opacity='1'; setTimeout(()=>{ vf.style.transition='opacity .6s ease-in'; vf.style.opacity='0'; setTimeout(()=>{ if(vf.parentNode) vf.parentNode.removeChild(vf); },700); },500); });
+  setTimeout(()=>{ state.running=false; state.phase='result'; showResult(true); }, 900);
 }
 function gameOver(){
   if(state._resultPending) return;
   state._resultPending=true;
   stopBGM(); playSound('defeat');
-  slowMo(0.5, 0.15); // 0.5초 슬로우모션
-  setTimeout(()=>{ state.running=false; state.phase='result'; showResult(false); }, 500);
+  slowMo(0.5, 0.15);
+  // 레드 다크닝 오버레이
+  const gof=document.createElement('div');
+  gof.style.cssText='position:absolute;inset:0;z-index:90;pointer-events:none;'
+    +'background:radial-gradient(ellipse at 50% 70%,rgba(160,0,20,.7) 0%,rgba(80,0,10,.55) 40%,rgba(20,0,5,.3) 70%,transparent 90%);'
+    +'opacity:0;transition:opacity .3s';
+  stage.appendChild(gof);
+  requestAnimationFrame(()=>{ gof.style.opacity='1'; setTimeout(()=>{ gof.style.transition='opacity .5s'; gof.style.opacity='0'; setTimeout(()=>{ if(gof.parentNode) gof.parentNode.removeChild(gof); },600); },600); });
+  setTimeout(()=>{ state.running=false; state.phase='result'; showResult(false); }, 900);
 }
 
 // === 점수/등급 시스템 ===
@@ -4700,6 +4844,7 @@ function showResult(win){
     const targets={rsKill:state.stats.kill, rsOrb:state.stats.orb, rsCrit:state.stats.crit, rsScore:score};
     const dur=900;
     const start=performance.now();
+    let _done=false;
     function tick(){
       const t=Math.min(1,(performance.now()-start)/dur);
       const ease=1-Math.pow(1-t,3);
@@ -4707,7 +4852,14 @@ function showResult(win){
         const el=document.getElementById(id);
         if(el) el.textContent=id==='rsScore'?Math.round(val*ease).toLocaleString():Math.round(val*ease);
       }
-      if(t<1) requestAnimationFrame(tick);
+      if(t<1){ requestAnimationFrame(tick); }
+      else if(!_done){
+        _done=true;
+        // 카운트업 완료 — 스코어 펄스 + 등급 글로우 강화
+        const scoreEl=document.getElementById('rsScore');
+        if(scoreEl){ scoreEl.style.transition='transform .2s,text-shadow .2s'; scoreEl.style.transform='scale(1.12)'; scoreEl.style.textShadow='0 0 28px var(--gold),0 0 48px rgba(255,216,107,.5)'; setTimeout(()=>{ scoreEl.style.transform=''; scoreEl.style.textShadow=''; },300); }
+        if(win){ gradeEl.classList.add('grade-final-pop'); setTimeout(()=>gradeEl.classList.remove('grade-final-pop'),500); }
+      }
     }
     requestAnimationFrame(tick);
   }, 600);
@@ -4775,6 +4927,21 @@ function spawnEnemy(type){
   world.appendChild(el);
   e.el=el; e._hpFill=el.querySelector('.fill'); e._sfill=el.querySelector('.sfill');
   e._shootT=0; e._hovering=false;
+  // 스폰 팝인 (보스는 좀 더 느리게)
+  if(!def.boss){
+    el.style.transform='translate(-50%,-50%) scale(0.05)';
+    el.style.transition='transform .22s cubic-bezier(.12,.8,.3,1.4)';
+    requestAnimationFrame(()=>{ el.style.transform='translate(-50%,-50%) scale(1)'; setTimeout(()=>{ el.style.transition=''; },250); });
+    // 스폰 물 파문 링
+    setTimeout(()=>{
+      const sp=document.createElement('div');
+      sp.className='spawn-splash';
+      sp.style.left=x+'px'; sp.style.top=y+'px';
+      sp.style.width=def.size+'px'; sp.style.height=(def.size*0.42)+'px';
+      world.appendChild(sp);
+      setTimeout(()=>{if(sp.parentNode)sp.parentNode.removeChild(sp);},450);
+    }, 80);
+  }
   enemies.push(e);
 }
 
@@ -4793,9 +4960,11 @@ function useSkill(key){
     const dirX=player.vx/len, dirY=player.vy/len;
     const dist=200;
     const tx=player.x+dirX*dist, ty=player.y+dirY*dist;
-    for(let i=0;i<22;i++){
-      const t=i/22;
-      particles.push({x:player.x+(tx-player.x)*t,y:player.y+(ty-player.y)*t,vx:(Math.random()-.5)*40,vy:(Math.random()-.5)*40,life:.65,size:8,color:'rgba(122,245,255,'});
+    for(let i=0;i<28;i++){
+      const t=i/28;
+      const px=player.x+(tx-player.x)*t, py=player.y+(ty-player.y)*t;
+      particles.push({x:px+(Math.random()-.5)*12,y:py+(Math.random()-.5)*12,vx:(Math.random()-.5)*50,vy:(Math.random()-.5)*50,life:.5+Math.random()*.25,size:5+Math.random()*5,color:'rgba(122,245,255,'});
+      if(i%4===0) particles.push({x:px,y:py,vx:(Math.random()-.5)*20,vy:(Math.random()-.5)*20,life:.8,size:10+Math.random()*6,color:'rgba(180,255,255,'});
     }
     player.x=Math.max(40,Math.min(W-40,tx));
     player.y=Math.max(40,Math.min(H-120,ty));
@@ -4805,6 +4974,22 @@ function useSkill(key){
     }
     player.invul=0.3;
     playerEl.classList.add('dashing');
+    // 대시 잔상 DOM (3개)
+    for(let ai=0;ai<3;ai++){
+      setTimeout(()=>{
+        const ghost=document.createElement('div');
+        const prevX=player.x-(dirX*dist*(1-ai/3));
+        const prevY=player.y-(dirY*dist*(1-ai/3));
+        ghost.style.cssText=`position:absolute;left:${prevX}px;top:${prevY}px;`
+          +`width:${playerEl.offsetWidth||48}px;height:${playerEl.offsetHeight||48}px;`
+          +`transform:translate(-50%,-50%);pointer-events:none;z-index:6;`
+          +`opacity:${0.4-ai*0.1};filter:drop-shadow(0 0 8px rgba(0,229,255,.6)) brightness(0.7) saturate(0.5);`
+          +`transition:opacity .2s;`;
+        ghost.innerHTML=playerEl.innerHTML;
+        stage.appendChild(ghost);
+        setTimeout(()=>{ ghost.style.opacity='0'; setTimeout(()=>{ if(ghost.parentNode) ghost.parentNode.removeChild(ghost); },220); },60);
+      },ai*40);
+    }
     setTimeout(()=>playerEl.classList.remove('dashing'),300);
     // B10: 질주 트레일 연출
     spawnDashTrail(player.x, player.y);
@@ -4931,6 +5116,13 @@ function dealDamage(e,dmg,crit=false){
     if(isFish) spawnGCGlowFx(e.x, e.y, 44, 0.35);
     // 어인 기사/가오리: 번개 틱 효과
     if(e.type==='bangeo'||e.type==='gaori') spawnGCLightFx(e.x, e.y, 38);
+    // 일반 타격 미니 스파크 (2~3개)
+    const _hc2={sogari:'rgba(255,140,60,',bangeo:'rgba(80,200,255,',gaori:'rgba(0,229,255,',agwi:'rgba(100,220,110,',bokeo:'rgba(255,90,60,'};
+    const hc2=(_hc2[e.type]||'rgba(200,230,255,');
+    for(let i=0;i<3;i++){
+      const ang=Math.random()*Math.PI*2, spd=60+Math.random()*100;
+      particles.push({x:e.x,y:e.y,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd-25,life:.18+Math.random()*.1,size:1.5+Math.random()*2,color:hc2});
+    }
   }
 
   // 피격 CSS 연출 (물고기 타입은 fish 클래스 추가)
@@ -4940,6 +5132,8 @@ function dealDamage(e,dmg,crit=false){
     e.el.classList.add('e-hit');
     if(isFish) e.el.classList.add('fish');
     setTimeout(()=>{ if(e.el){ e.el.classList.remove('e-hit'); e.el.classList.remove('fish'); } }, 180);
+    // 잔여 HP 위험 표시 (20% 미만, 보스 제외)
+    if(!e.boss) e.el.classList.toggle('e-low-hp', e.hp/e.hpMax < 0.2 && e.hp > 0);
   }
   if(crit){
     state.stats.crit++; playSound('crit'); hitStop(40);
@@ -5039,6 +5233,15 @@ function killEnemy(e){
     bdf.style.cssText='position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(255,215,80,.6) 0%,rgba(157,123,255,.35) 42%,transparent 70%);z-index:28;pointer-events:none;opacity:1;transition:opacity 1.1s ease-out';
     stage.appendChild(bdf);
     requestAnimationFrame(()=>{ bdf.style.opacity='0'; setTimeout(()=>{ if(bdf.parentNode) bdf.parentNode.removeChild(bdf); },1200); });
+    // 보스 처치 쇼크웨이브 링 (3개, 순차 확장)
+    for(let sw=0;sw<3;sw++){
+      setTimeout(()=>{
+        const swEl=document.createElement('div');
+        swEl.style.cssText=`position:absolute;left:${e.x}px;top:${e.y}px;width:60px;height:60px;border-radius:50%;pointer-events:none;z-index:27;transform:translate(-50%,-50%) scale(1);border:${3-sw}px solid rgba(${sw===0?'157,123,255':sw===1?'255,215,80':'255,255,255'},.8);animation:bossDeathShockwave .55s ease-out forwards`;
+        stage.appendChild(swEl);
+        setTimeout(()=>{if(swEl.parentNode)swEl.parentNode.removeChild(swEl);},600);
+      }, sw*120);
+    }
     // 강화된 파티클 (보라+금+백)
     for(let i=0;i<50;i++) particles.push({x:e.x,y:e.y,vx:(Math.random()-.5)*480,vy:(Math.random()-.5)*480,life:1.2,size:6+Math.random()*8,color:'rgba(157,123,255,'});
     for(let i=0;i<35;i++) particles.push({x:e.x,y:e.y,vx:(Math.random()-.5)*360,vy:-80-Math.random()*320,life:1.5,size:5+Math.random()*6,color:'rgba(255,215,80,'});
@@ -5190,6 +5393,9 @@ function spawnGateDmgFloat(dmg){
   el.textContent='🏰 -'+Math.round(dmg);
   stage.appendChild(el);
   setTimeout(()=>{if(el.parentNode)el.parentNode.removeChild(el)},900);
+  // 수문 피격 플래시
+  const gfl=document.getElementById('gate');
+  if(gfl){ gfl.classList.remove('gate-hit'); void gfl.offsetWidth; gfl.classList.add('gate-hit'); setTimeout(()=>gfl.classList.remove('gate-hit'),160); }
 }
 
 // v1.0.6: tier별 수치 텍스트 색상 맵
@@ -5205,22 +5411,26 @@ function applyTierTextColor(el, tier){
   }
 }
 
-// v1.0.6: 심해 배경 파티클
+// v1.0.6: 심해 배경 파티클 (버블 스타일 강화)
 const bgParticles=[];
 const bgPCtx=(()=>{
   const c=document.getElementById('bgParticleCanvas');
   if(!c) return null;
-  for(let i=0;i<40;i++){
+  // 작은 빛점 30개 + 버블 링 20개
+  for(let i=0;i<50;i++){
+    const isBubble=i>=30;
     const r=180+Math.round(Math.random()*20);
     const g=230+Math.round(Math.random()*25);
     bgParticles.push({
       x:Math.random()*1280,
       y:Math.random()*720,
-      size:1+Math.random()*2,
-      speed:0.1+Math.random()*0.3,
-      opacity:0.15+Math.random()*0.35,
-      drift:Math.random()*0.4-0.2,
-      r:r, g:g
+      size:isBubble?(2.5+Math.random()*4):(0.8+Math.random()*1.8),
+      speed:isBubble?(0.08+Math.random()*0.18):(0.12+Math.random()*0.32),
+      opacity:isBubble?(0.18+Math.random()*0.25):(0.12+Math.random()*0.28),
+      drift:Math.random()*0.6-0.3,
+      wobble:Math.random()*Math.PI*2,
+      wobbleSpeed:0.02+Math.random()*0.04,
+      r:r, g:g, isBubble
     });
   }
   return c.getContext('2d');
@@ -5230,14 +5440,27 @@ function renderBgParticles(){
   bgPCtx.clearRect(0,0,1280,720);
   for(const p of bgParticles){
     p.y-=p.speed;
-    p.x+=p.drift*0.3;
-    if(p.y<-5){p.y=725;p.x=Math.random()*1280;}
-    if(p.x<-5) p.x=1285;
-    if(p.x>1285) p.x=-5;
+    p.wobble+=p.wobbleSpeed;
+    p.x+=p.drift*0.25+Math.sin(p.wobble)*0.35;
+    if(p.y<-8){p.y=730;p.x=Math.random()*1280;}
+    if(p.x<-8) p.x=1288;
+    if(p.x>1288) p.x=-8;
     bgPCtx.beginPath();
     bgPCtx.arc(p.x,p.y,p.size,0,Math.PI*2);
-    bgPCtx.fillStyle=`rgba(${p.r},${p.g},255,${p.opacity})`;
-    bgPCtx.fill();
+    if(p.isBubble){
+      // 버블 링 스타일: 얇은 테두리 + 하이라이트
+      bgPCtx.strokeStyle=`rgba(${p.r},${p.g},255,${p.opacity})`;
+      bgPCtx.lineWidth=0.9;
+      bgPCtx.stroke();
+      // 상단 하이라이트
+      bgPCtx.beginPath();
+      bgPCtx.arc(p.x-p.size*0.3,p.y-p.size*0.3,p.size*0.35,0,Math.PI*2);
+      bgPCtx.fillStyle=`rgba(255,255,255,${p.opacity*0.55})`;
+      bgPCtx.fill();
+    } else {
+      bgPCtx.fillStyle=`rgba(${p.r},${p.g},255,${p.opacity})`;
+      bgPCtx.fill();
+    }
   }
 }
 
@@ -5453,6 +5676,12 @@ function triggerHitVignette(){
   void vignetteEl.offsetWidth;
   vignetteEl.classList.add('hit');
   setTimeout(()=>vignetteEl.classList.remove('hit'), 160);
+  // 임팩트 링 — 플레이어 주변 확장 원
+  const ring=document.createElement('div');
+  ring.className='player-hit-ring';
+  ring.style.cssText=`left:${player.x}px;top:${player.y}px;width:68px;height:68px;`;
+  stage.appendChild(ring);
+  setTimeout(()=>{if(ring.parentNode)ring.parentNode.removeChild(ring);},420);
 }
 
 function updateWaveRing(){
@@ -5780,7 +6009,22 @@ function update(dt){
       player.y+=dy/dist*overlap;
     }
   }
-  if(player.invul>0) player.invul-=dt;
+  if(player.invul>0){
+    player.invul-=dt;
+    // 무적 프레임 깜빡임 (0.12초 주기)
+    playerEl.style.opacity=((Math.floor(performance.now()/120)%2===0)?'0.35':'1');
+    if(player.invul<=0) playerEl.style.opacity='1';
+  }
+
+  // 이동 에너지 트레일 — 0.065초마다 플레이어 뒤에 희미한 파티클
+  if(!player._trailT) player._trailT=0;
+  player._trailT+=dt;
+  if(player.moving && player._trailT>0.065){
+    player._trailT=0;
+    particles.push({x:player.x+(Math.random()-.5)*8,y:player.y+(Math.random()-.5)*8,
+      vx:(Math.random()-.5)*25,vy:(Math.random()-.5)*25,
+      life:0.28,size:2+Math.random()*2.5,color:'rgba(0,200,255,'});
+  }
 
   for(const k of ['Q','E']){
     if(skills[k].cd>0) skills[k].cd=Math.max(0,skills[k].cd-dt);
@@ -5821,6 +6065,8 @@ function update(dt){
     // 감속 디버프 적용
     const spdMul=e._slowed&&e._slowed>0?0.5:1;
     if(e._slowed) e._slowed-=dt;
+    // 감속 시각 (빙결 파란 틴트)
+    if(e.el) e.el.classList.toggle('e-slowed', !!(e._slowed&&e._slowed>0));
     if(e.ai==='rush'){
       const near=Math.hypot(player.x-e.x,player.y-e.y)<280 ? {x:player.x,y:player.y}:{x:tgtX,y:tgtY};
       moveTowards(e,near.x,near.y,dt,spdMul);
@@ -6308,6 +6554,11 @@ function update(dt){
     const p=projectiles[i];
     p.x+=p.vx*dt; p.y+=p.vy*dt;
     p.life-=dt;
+    // 투사체 스파크 트레일 (30% 확률, 일반 투사체만)
+    if(!p.color && Math.random()<0.3){
+      particles.push({x:p.x,y:p.y,vx:(Math.random()-.5)*40,vy:(Math.random()-.5)*40,
+        life:0.12,size:1.5+Math.random()*2,color:p.crit?'rgba(255,200,50,':'rgba(0,210,255,'});
+    }
     let consumed=false;
     for(const e of enemies){
       if(Math.hypot(e.x-p.x,e.y-p.y)<e.r+8){
@@ -6397,6 +6648,9 @@ function update(dt){
           }
           state.stats.orb++;
           for(let k=0;k<10;k++) particles.push({x:it.x,y:it.y,vx:(Math.random()-.5)*200,vy:(Math.random()-.5)*200,life:.5,size:5,color:'rgba(0,229,255,'});
+          // 발키리 회복 글로우 플래시
+          playerEl.classList.remove('grace-heal'); void playerEl.offsetWidth; playerEl.classList.add('grace-heal');
+          setTimeout(()=>playerEl.classList.remove('grace-heal'),350);
         } else if(it.kind==='rsc'){
           state.resources+=it.amount;
           updateResourceHud();
@@ -6446,7 +6700,21 @@ function update(dt){
   if(state.stats.comboTimer>0){
     state.stats.comboTimer-=dt;
     updateComboTimerGauge();
-    if(state.stats.comboTimer<=0){ state.stats.combo=0; updateComboHud(); }
+    if(state.stats.comboTimer<=0){
+      const _bc=state.stats.combo;
+      state.stats.combo=0; updateComboHud();
+      // 콤보 브레이크 알림 (5콤보 이상일 때만)
+      if(_bc>=5){
+        const bf=document.createElement('div');
+        bf.style.cssText=`position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);`
+          +`font-family:'Outfit',sans-serif;font-size:20px;font-weight:900;color:rgba(255,80,80,.9);`
+          +`text-shadow:0 0 12px rgba(255,40,40,.7),0 2px 4px #000;letter-spacing:.15em;`
+          +`pointer-events:none;z-index:20;animation:comboBreakAnim .7s ease-out forwards`;
+        bf.textContent='COMBO BREAK ×'+_bc;
+        stage.appendChild(bf);
+        setTimeout(()=>{ if(bf.parentNode) bf.parentNode.removeChild(bf); },750);
+      }
+    }
   }
 
   // v1.4: 보스웨이브(최종) — 호위병 전멸 후 크라켄 스폰, 크라켄 처치 시 victory
@@ -6828,6 +7096,14 @@ function updateHud(){
     const rdy=document.getElementById('rdy'+k);
     const stat=document.getElementById('stat'+k);
     const s=skills[k];
+    // 쿨다운 완료 감지 → 버튼 플래시
+    if(!s._prevCd) s._prevCd=s.cd;
+    if(s._prevCd>0 && s.cd<=0 && btn){
+      btn.classList.add('skill-ready-flash');
+      setTimeout(()=>btn.classList.remove('skill-ready-flash'),500);
+      playTone(k==='Q'?880:660,.08,'sine',.06);
+    }
+    s._prevCd=s.cd;
     const qLocked=(k==='Q' && !player.moving && s.cd<=0);
     if(s.cd>0){
       cdEl.classList.remove('hidden');
@@ -6878,9 +7154,13 @@ function updateHud(){
   if(bossE){
     bossBar.classList.remove('hidden');
     const bPct=Math.max(0,bossE.hp/bossE.hpMax*100);
+    const prevBPct=bossBar._lastBPct||100;
     document.getElementById('bossHpFill').style.width=bPct+'%';
     document.getElementById('bossHpText').textContent=Math.round(Math.max(0,bossE.hp)).toLocaleString();
     document.getElementById('bossHpMaxText').textContent=bossE.hpMax.toLocaleString();
+    // 보스 HP 피격 플래시
+    if(bPct<prevBPct-0.1){ const bf=document.getElementById('bossHpFill'); bf.classList.remove('boss-hit-flash'); void bf.offsetWidth; bf.classList.add('boss-hit-flash'); setTimeout(()=>bf.classList.remove('boss-hit-flash'),180); }
+    bossBar._lastBPct=bPct;
     // 페이즈별 색상 변화
     const fill=document.getElementById('bossHpFill');
     if(bPct>66) fill.style.background='linear-gradient(90deg,#7b2ff2,#c8a0ff)';
