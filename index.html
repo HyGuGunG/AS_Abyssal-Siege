@@ -2173,6 +2173,11 @@ _graceOrbEl.width=190; _graceOrbEl.height=210;
 _graceOrbEl.style.cssText='position:absolute;pointer-events:none;z-index:20;transform:translate(-50%,-50%);display:none;';
 stage.appendChild(_graceOrbEl);
 const _graceCtx=_graceOrbEl.getContext('2d');
+// ── graceOrb 아이콘 DOM 엘리먼트 (canvas emoji 렌더링 불안정 → DOM으로 분리) ──
+const _graceIconEl=document.createElement('span');
+_graceIconEl.style.cssText='position:absolute;pointer-events:none;z-index:21;transform:translate(-50%,-50%);font-size:12px;line-height:1;display:none;';
+_graceIconEl.textContent='✨';
+stage.appendChild(_graceIconEl);
 function _drawGraceOrb(ratio, gaugeVal){
   const SW=190,SH=210,cx=SW/2,cy=SH/2,RX=52,RY=70;
   _graceCtx.clearRect(0,0,SW,SH);
@@ -2192,22 +2197,15 @@ function _drawGraceOrb(ratio, gaugeVal){
     _graceCtx.fillStyle=color;_graceCtx.shadowColor=color;_graceCtx.shadowBlur=16;
     _graceCtx.fill();_graceCtx.shadowBlur=0;
   }
-  // 수치 — arc 위 공간에 아이콘(좌) + 숫자(우) 나란히 표시
+  // 수치 — arc 위 공간에 숫자 표시 (아이콘은 DOM _graceIconEl로 별도 표시)
   const numY=cy-RY-12;
-  _graceCtx.textBaseline='middle';
-  // ✨ 아이콘 — 이모지 전용 폰트 사용
-  _graceCtx.font='12px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
-  _graceCtx.textAlign='right';
-  _graceCtx.fillStyle='rgba(255,255,255,0.9)';
-  _graceCtx.fillText('✨',cx-1,numY);
-  // 숫자
   _graceCtx.font='900 13px Outfit,sans-serif';
-  _graceCtx.textAlign='left';
+  _graceCtx.textAlign='center';_graceCtx.textBaseline='middle';
   _graceCtx.fillStyle='rgba(0,0,0,0.8)';
-  _graceCtx.fillText(Math.round(gaugeVal||0),cx+2,numY+1);
+  _graceCtx.fillText(Math.round(gaugeVal||0),cx+1,numY+1);
   _graceCtx.fillStyle=color;
   _graceCtx.shadowColor=color;_graceCtx.shadowBlur=8;
-  _graceCtx.fillText(Math.round(gaugeVal||0),cx+1,numY);
+  _graceCtx.fillText(Math.round(gaugeVal||0),cx,numY);
   _graceCtx.shadowBlur=0;
 }
 const flashEl=document.getElementById('flash');
@@ -5477,9 +5475,14 @@ function updatePlayerGaugeTop(){
   // graceOrb arc canvas — 캐릭터 중심에 위치, 수치 통합 표시
   if(_graceOrbEl){
     _graceOrbEl.style.display=show?'block':'none';
+    // 아이콘 DOM: arc numY 위치 = player.y-20 - canvas_cy + canvas_RY + 12 - 13(icon)
+    // canvas 중심 cy=105, RY=70, numY=23 → 실제 y = (player.y-20) + (23-105) = player.y-102
+    _graceIconEl.style.display=show?'block':'none';
     if(show){
       _graceOrbEl.style.left=player.x+'px';
       _graceOrbEl.style.top=(player.y-20)+'px';
+      _graceIconEl.style.left=player.x+'px';
+      _graceIconEl.style.top=(player.y-107)+'px';
       _drawGraceOrb(state.gauge/state.gaugeMax, state.gauge);
     }
   }
