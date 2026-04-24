@@ -3488,6 +3488,61 @@ function drawThreeCards(){
   }
   return picks;
 }
+// ── 드래프트 카드 툴팁 ──
+const _RARITY_COLORS_HEX={'일반':'#aaa','고급':'#4caf50','희귀':'#42a5f5','고유':'#9D7BFF','전설':'#FF9800'};
+function showDraftTooltip(card, wrapEl, label){
+  const tip=document.getElementById('draftTooltip');
+  const draft=document.getElementById('cardDraft');
+  if(!tip||!draft) return;
+  // 콘텐츠 채우기
+  tip.querySelector('.dt-tip-label').textContent='✦ '+(label||'스킬 정보');
+  // 아이콘
+  const iconTxt=tip.querySelector('#dtTipIconTxt');
+  const iconImg=tip.querySelector('#dtTipIconImg');
+  const isImgIcon = card.icon && (card.icon.startsWith('AS_')||card.icon.includes('/'));
+  if(isImgIcon){
+    iconImg.src=card.icon; iconImg.style.display='block'; iconTxt.style.display='none';
+  } else {
+    iconTxt.textContent=card.icon||''; iconTxt.style.display='flex'; iconImg.style.display='none';
+  }
+  // 레어리티 + 이름
+  const rarityEl=tip.querySelector('#dtTipRarity');
+  rarityEl.textContent=card.rarity||'';
+  rarityEl.style.color=_RARITY_COLORS_HEX[card.rarity]||'#aaa';
+  tip.querySelector('#dtTipName').textContent=card.name||'';
+  // 스택 정보 (스킬만)
+  const stackEl=tip.querySelector('#dtTipStack');
+  if(card.maxStack){
+    const stack=typeof cardStackOf==='function'?cardStackOf(card.id):0;
+    const ROMAN=['I','II','III','IV','V'];
+    stackEl.textContent=stack>0?`현재 ${ROMAN[stack-1]||stack}단계 / 최대 ${ROMAN[card.maxStack-1]||card.maxStack}단계`:`신규 획득 (최대 ${ROMAN[card.maxStack-1]||card.maxStack}단계)`;
+    stackEl.style.display='block';
+  } else { stackEl.style.display='none'; }
+  // 설명
+  tip.querySelector('#dtTipDesc').textContent=card.desc||'';
+  // 스탯
+  const statsEl=tip.querySelector('#dtTipStats');
+  if(card.stats&&card.stats.length){
+    statsEl.innerHTML=card.stats.map(s=>`<div class="dt-tip-stat"><span class="s-icon">${s.icon}</span><span class="s-val">${s.val}</span><span class="s-lbl">${s.label}</span></div>`).join('');
+    statsEl.style.display='flex';
+  } else { statsEl.innerHTML=''; statsEl.style.display='none'; }
+  // 위치 계산 (카드 위쪽, 좌우 클램핑)
+  const TW=210, pad=8;
+  const wr=wrapEl.getBoundingClientRect();
+  const dr=draft.getBoundingClientRect();
+  let left=(wr.left-dr.left)+(wr.width/2)-(TW/2);
+  let top=(wr.top-dr.top)-tip.offsetHeight-16;
+  // 화면 위로 벗어나면 카드 아래에 표시
+  if(top<pad) top=(wr.bottom-dr.top)+8;
+  // 좌우 클램핑
+  left=Math.max(pad, Math.min(dr.width-TW-pad, left));
+  tip.style.left=left+'px'; tip.style.top=top+'px';
+  tip.classList.add('show');
+}
+function hideDraftTooltip(){
+  const tip=document.getElementById('draftTooltip');
+  if(tip) tip.classList.remove('show');
+}
 function openCardDraft(){
   const picks=drawThreeCards();
   if(picks.length===0){ beginWave(state.wave+1); return; }
@@ -3532,6 +3587,9 @@ function openCardDraft(){
     if(c.rarity==='전설'){
       spawnLegendaryParticles(el);
     }
+    // 툴팁 호버
+    wrap.addEventListener('mouseenter',()=>showDraftTooltip(c, wrap, '스킬 정보'));
+    wrap.addEventListener('mouseleave',()=>hideDraftTooltip());
     wrap.appendChild(el);
     // 키캡을 카드 바깥(wrap 하단 중앙)에 배치
     const keycap=document.createElement('div');
@@ -3649,6 +3707,7 @@ function selectCard(card,el){
   setTimeout(()=>{
     document.getElementById('cardDraft').classList.remove('show');
     document.body.classList.remove('draft-open');
+    hideDraftTooltip();
     const _rb=document.getElementById('draftRerollBtn');
     if(_rb) _rb.style.display='none';
     const _cb=document.getElementById('draftCurrentBuild');
@@ -3849,6 +3908,9 @@ function openFacilityDraft(slotIdx){
       <div class="card-stats">${fStatsHtml}</div>`;
     el.addEventListener('click',()=>selectFacility(f,el));
     if(f.rarity==='전설') spawnLegendaryParticles(el);
+    // 툴팁 호버
+    wrap.addEventListener('mouseenter',()=>showDraftTooltip(f, wrap, '시설 정보'));
+    wrap.addEventListener('mouseleave',()=>hideDraftTooltip());
     wrap.appendChild(el);
     const keycap=document.createElement('div');
     keycap.className='card-keycap';
@@ -3904,6 +3966,7 @@ function selectFacility(f, el){
   setTimeout(()=>{
     document.getElementById('cardDraft').classList.remove('show');
     document.body.classList.remove('draft-open');
+    hideDraftTooltip();
     const _cb2=document.getElementById('draftCurrentBuild');
     if(_cb2) _cb2.style.display='none';
     // 다음 슬롯 오픈 준비
