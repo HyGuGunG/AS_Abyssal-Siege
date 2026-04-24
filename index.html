@@ -7558,34 +7558,33 @@ if(AUTOPLAY){
     });
   }
   if(p.includes('showboss')){
-    setTimeout(()=>{
-      try{
-        startGame();
-        setTimeout(()=>{
-          // Wave 7로 강제 점프, 호위병 스킵, 크라켄 즉시 소환
-          enemies.forEach(e=>{ if(e._alive){ e._alive=false; if(e.el&&e.el.parentNode)e.el.parentNode.removeChild(e.el); } });
-          enemies.length=0;
-          beginWave(7);
-          state.enemiesToSpawn=[];
-          state.waveSpawned=state.currentWaveTotal;
-          state.bossSpawned=false;
-          spawnBoss();
-          // 크라켄 DOM 위치를 즉시 화면 중앙에 배치 (가상시간으로는 이동 불가)
-          setTimeout(()=>{
-            const boss=enemies.find(e=>e.isBoss||e.ai==='boss'||e.type==='kraken');
-            if(boss){
-              boss.x=640; boss.y=260;
-              if(boss.el){
-                boss.el.style.left=(boss.x-boss.r)+'px';
-                boss.el.style.top=(boss.y-boss.r)+'px';
-              }
-              // 보스 방향/웨이포인트도 설정
-              boss._bossWpX=640; boss._bossWpY=260;
-            }
-          },200);
-        },250);
-      }catch(e){}
-    },80);
+    try{
+      const _ssCss5=document.createElement('style');
+      _ssCss5.textContent='*{animation-duration:0.001ms!important;animation-delay:0ms!important;transition-duration:0.001ms!important;transition-delay:0ms!important}';
+      document.head.appendChild(_ssCss5);
+      // 최소 state 초기화
+      state.running=true; state.phase='playing'; state.wave=7; state.waveMax=7;
+      state.gateHp=900; state.gateHpMax=1500; state.gauge=45; state.gaugeMax=100;
+      state.stats={kill:45,orb:12,crit:9,combo:0,maxCombo:24,comboTimer:0};
+      state.enemiesToSpawn=[]; state.waveSpawned=99; state.currentWaveTotal=99;
+      state.facilitySlots=FACILITY_SLOT_DEFS.map(d=>({...d,unlocked:false,facility:null,attackCD:0,el:null,depositProgress:0,deposited:0,_rscAccum:0,_flyT:0,_warnedNoRsc:false}));
+      state.bossSpawned=false; state.bossDefeated=false; state.bossProjectiles=[]; state.mortarShells=[]; state.rayProjectiles=[];
+      state.battleLog=[]; state.gateCracks=[]; state.cards=[];
+      state._gaugeWarnT=0; state._heartbeatT=0;
+      document.body.classList.add('game-playing');
+      document.getElementById('titleScreen').classList.add('hidden');
+      try{ renderFacilitySlots(); }catch(ex){}
+      enemies.length=0; items.length=0; projectiles.length=0; particles.length=0;
+      player.x=640; player.y=490;
+      spawnBoss();
+      // 보스 즉시 화면 중앙 배치
+      const boss=enemies.find(e=>e.boss||e.type==='kraken');
+      if(boss){
+        boss.x=640; boss.y=260;
+        if(boss.el){ boss.el.style.left=(boss.x-boss.r)+'px'; boss.el.style.top=(boss.y-boss.r)+'px'; }
+      }
+      try{ updateHud(); }catch(ex){}
+    }catch(e){ console.error('showboss err',e); }
   }
 
   // ?showtitle : 타이틀 화면 스크린샷용 — 애니메이션 즉시 완료
@@ -7600,75 +7599,64 @@ if(AUTOPLAY){
     });
   }
 
-  // ?showgameplay : Wave 3 전투 장면 강제 세팅 (게임플레이 스크린샷용)
+  // ?showgameplay : Wave 3 전투 장면 강제 세팅 (게임플레이 스크린샷용, 동기 실행)
   if(p.includes('showgameplay')){
-    setTimeout(()=>{
-      try{
-        startGame();
-        setTimeout(()=>{
-          // 1) Wave 3 상태 세팅
-          state.wave=3; state.waveMax=7;
-          state.phase='playing'; state.running=true;
-          _paused=true; // render()는 유지, update()는 정지
-          state.stats={kill:23,orb:7,crit:4,maxCombo:18};
-          state.combo=12; state.maxCombo=18;
-          state.enemiesToSpawn=[]; state.waveSpawned=99; state.currentWaveTotal=99;
-          document.getElementById('titleScreen').classList.add('hidden');
-          // 2) 기존 적 제거
-          enemies.forEach(e=>{ if(e.el&&e.el.parentNode) e.el.parentNode.removeChild(e.el); });
-          enemies.length=0;
-          // 3) 적 수동 배치 — 화면 전체 분산 (8마리)
-          const pl=[
-            // 후방 (멀리서 접근 중)
-            {type:'sogari', x:150,  y: 90},
-            {type:'agwi',   x:760,  y:130},
-            {type:'bangeo', x:1090, y:150},
-            // 중거리
-            {type:'gaori',  x:990,  y:250},
-            {type:'bokeo',  x:255,  y:275},
-            {type:'bangeo', x:420,  y:300},
-            {type:'sogari', x:820,  y:280},
-            // 근접 (전투 중)
-            {type:'sogari', x:560,  y:390},
-            {type:'bangeo', x:730,  y:380},
-          ];
-          pl.forEach(({type,x,y})=>{
-            spawnEnemy(type);
-            const e=enemies[enemies.length-1];
-            e.x=x; e.y=y; e._alive=true;
-            if(e.el){ e.el.style.left=(x-e.r)+'px'; e.el.style.top=(y-e.r)+'px'; }
-          });
-          // 4) 발키리 중앙 배치
-          player.x=640; player.y=490;
-          // 5) HUD 갱신
-          try{ updateHud(); }catch(ex){}
-          // 6) Wave 배너 숨기기
-          const wb=document.getElementById('waveBanner');
-          if(wb){ wb.classList.remove('show'); wb.style.opacity='0'; }
-        },300);
-      }catch(e){ console.error('showgameplay err',e); }
-    },80);
+    try{
+      const _ssCss3=document.createElement('style');
+      _ssCss3.textContent='*{animation-duration:0.001ms!important;animation-delay:0ms!important;transition-duration:0.001ms!important;transition-delay:0ms!important}';
+      document.head.appendChild(_ssCss3);
+      // 최소 state 초기화 (audio 없이)
+      state.running=true; state.phase='playing'; state.wave=3; state.waveMax=7;
+      state.gateHp=1200; state.gateHpMax=1500; state.gauge=72; state.gaugeMax=100;
+      state.stats={kill:23,orb:7,crit:4,combo:12,maxCombo:18,comboTimer:0};
+      state.enemiesToSpawn=[]; state.waveSpawned=99; state.currentWaveTotal=99;
+      state.facilitySlots=FACILITY_SLOT_DEFS.map(d=>({...d,unlocked:false,facility:null,attackCD:0,el:null,depositProgress:0,deposited:0,_rscAccum:0,_flyT:0,_warnedNoRsc:false}));
+      state.bossSpawned=false; state.bossDefeated=false; state.bossProjectiles=[]; state.mortarShells=[]; state.rayProjectiles=[];
+      state.battleLog=[]; state.gateCracks=[]; state.cards=[];
+      state._gaugeWarnT=0; state._heartbeatT=0;
+      document.body.classList.add('game-playing');
+      document.getElementById('titleScreen').classList.add('hidden');
+      try{ renderFacilitySlots(); }catch(ex){}
+      // 적 수동 배치
+      const _pl=[
+        {type:'sogari',x:150,y:90},{type:'agwi',x:760,y:130},{type:'bangeo',x:1090,y:150},
+        {type:'gaori',x:990,y:250},{type:'bokeo',x:255,y:275},{type:'bangeo',x:420,y:300},
+        {type:'sogari',x:820,y:280},{type:'sogari',x:560,y:390},{type:'bangeo',x:730,y:380},
+      ];
+      _pl.forEach(({type,x,y})=>{
+        spawnEnemy(type);
+        const e=enemies[enemies.length-1];
+        e.x=x; e.y=y; e._alive=true;
+        if(e.el){ e.el.style.left=x+'px'; e.el.style.top=y+'px'; }
+      });
+      player.x=640; player.y=490;
+      try{ updateHud(); }catch(ex){}
+      const wb=document.getElementById('waveBanner');
+      if(wb){ wb.classList.remove('show'); wb.style.opacity='0'; }
+    }catch(e){ console.error('showgameplay err',e); }
   }
 
-  // ?showdraft : 카드 드래프트 화면 스크린샷용
+  // ?showdraft : 카드 드래프트 화면 스크린샷용 (동기)
   if(p.includes('showdraft')){
-    const _ssCss2=document.createElement('style');
-    _ssCss2.textContent='*{animation-duration:0.001ms!important;animation-delay:0ms!important;transition-duration:0.001ms!important;transition-delay:0ms!important}';
-    document.head.appendChild(_ssCss2);
-    setTimeout(()=>{
-      try{
-        startGame();
-        setTimeout(()=>{
-          state.wave=2; state.running=true; state.phase='playing';
-          document.getElementById('titleScreen').classList.add('hidden');
-          enemies.forEach(e=>{ if(e.el&&e.el.parentNode) e.el.parentNode.removeChild(e.el); });
-          enemies.length=0; state.enemiesToSpawn=[]; state.waveSpawned=99; state.currentWaveTotal=99;
-          player.x=640; player.y=490;
-          state.stats.kill=12;
-          openCardDraft();
-        },200);
-      }catch(e){}
-    },80);
+    try{
+      const _ssCss4=document.createElement('style');
+      _ssCss4.textContent='*{animation-duration:0.001ms!important;animation-delay:0ms!important;transition-duration:0.001ms!important;transition-delay:0ms!important}';
+      document.head.appendChild(_ssCss4);
+      state.running=true; state.phase='playing'; state.wave=2; state.waveMax=7;
+      state.gateHp=1400; state.gateHpMax=1500; state.gauge=85; state.gaugeMax=100;
+      state.stats={kill:12,orb:3,crit:2,combo:0,maxCombo:9,comboTimer:0};
+      state.enemiesToSpawn=[]; state.waveSpawned=99; state.currentWaveTotal=99;
+      state.facilitySlots=FACILITY_SLOT_DEFS.map(d=>({...d,unlocked:false,facility:null,attackCD:0,el:null,depositProgress:0,deposited:0,_rscAccum:0,_flyT:0,_warnedNoRsc:false}));
+      state.bossSpawned=false; state.bossDefeated=false; state.bossProjectiles=[]; state.mortarShells=[]; state.rayProjectiles=[];
+      state.battleLog=[]; state.gateCracks=[]; state.cards=[];
+      state._gaugeWarnT=0; state._heartbeatT=0;
+      document.body.classList.add('game-playing');
+      document.getElementById('titleScreen').classList.add('hidden');
+      try{ renderFacilitySlots(); }catch(ex){}
+      enemies.length=0; items.length=0; projectiles.length=0; particles.length=0;
+      player.x=640; player.y=490;
+      openCardDraft();
+    }catch(e){ console.error('showdraft err',e); }
   }
 })();
 
