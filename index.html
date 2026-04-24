@@ -5419,6 +5419,19 @@ function update(dt){
           e.y=Math.max(GAORI_Y_MIN, Math.min(GAORI_Y_MAX, ny));
         }
 
+        // ─ 동종 분리: 다른 가오리와 너무 가까우면 밀어냄 ─
+        const SEP_R=90; // 이 거리 이하면 반발
+        for(const other of enemies){
+          if(other===e || other.ai!=='hover_shoot' || !other._hovering) continue;
+          const sdx=e.x-other.x, sdy=e.y-other.y;
+          const sd=Math.hypot(sdx,sdy)||0.1;
+          if(sd<SEP_R){
+            const push=(SEP_R-sd)/SEP_R*80*dt;
+            e.x=Math.max(80,Math.min(W-80, e.x+sdx/sd*push));
+            e.y=Math.max(GAORI_Y_MIN,Math.min(GAORI_Y_MAX, e.y+sdy/sd*push));
+          }
+        }
+
         // ─ 사격 타이머 (거리 무관, 항상 카운트) ─
         e._shootT+=dt;
         const pct=Math.min(e._shootT/curInterval,1)*100;
