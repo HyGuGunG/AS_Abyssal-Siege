@@ -2239,14 +2239,14 @@ function _updateESkillPool(ctx2, dt){
 // === 발키리 스프라이트 애니메이션 정의 ===
 // 정면 촬영 후 src 매핑이 직관적으로 변경됨 (back-facing 때의 L/R 스왑 제거)
 // attack·skill은 개별 dispH 지정 (캡처 화각 차이 보정), 나머지는 VALK_DISP_H 기본값 사용
-// dispH 보정: idle fh=420 캐릭터 75%→97px 기준
-// attack/skill fh=560-580 캐릭터 59%→dispH=165에서 97px 일치
+// dispH 보정: idle fh=420 캐릭터 74%→97px 기준
+// attack_f 60%→dispH=162, attack_r/l side포즈 67%→dispH=145
 const VALK_ANIMS = {
   idle:     { src:'AS_Assets/valk2_idle_sheet.png',     fw:340,  fh:420, cols:6, frames:34, fps:30, loop:true  },
-  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false, dispH:165 },
-  attack_r: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false, dispH:165 },
-  attack_l: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:165 },
-  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500,  fh:560, cols:6, frames:60, fps:30, loop:false, dispH:165 },
+  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false, dispH:162 },
+  attack_r: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false, dispH:145 },
+  attack_l: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:145 },
+  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500,  fh:560, cols:6, frames:60, fps:30, loop:false, dispH:162 },
   move_r:   { src:'AS_Assets/valk2_move_r_sheet.png',  fw:260,  fh:460, cols:6, frames:40, fps:30, loop:true  },
   move_l:   { src:'AS_Assets/valk2_move_l_sheet.png',  fw:260,  fh:500, cols:6, frames:40, fps:30, loop:true  },
 };
