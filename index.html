@@ -7649,6 +7649,27 @@ if(AUTOPLAY){
       }catch(e){ console.error('showgameplay err',e); }
     },80);
   }
+
+  // ?showdraft : 카드 드래프트 화면 스크린샷용
+  if(p.includes('showdraft')){
+    const _ssCss2=document.createElement('style');
+    _ssCss2.textContent='*{animation-duration:0.001ms!important;animation-delay:0ms!important;transition-duration:0.001ms!important;transition-delay:0ms!important}';
+    document.head.appendChild(_ssCss2);
+    setTimeout(()=>{
+      try{
+        startGame();
+        setTimeout(()=>{
+          state.wave=2; state.running=true; state.phase='playing';
+          document.getElementById('titleScreen').classList.add('hidden');
+          enemies.forEach(e=>{ if(e.el&&e.el.parentNode) e.el.parentNode.removeChild(e.el); });
+          enemies.length=0; state.enemiesToSpawn=[]; state.waveSpawned=99; state.currentWaveTotal=99;
+          player.x=640; player.y=490;
+          state.stats.kill=12;
+          openCardDraft();
+        },200);
+      }catch(e){}
+    },80);
+  }
 })();
 
 // ═══════════════════════════════════════
