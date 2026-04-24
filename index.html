@@ -869,6 +869,18 @@
   .draft-card-wrap:hover .card-keycap{background:rgba(255,255,255,.22);color:#fff;border-color:rgba(255,255,255,.5)}
   .draft-card.selected{animation:cardPick .5s ease-out forwards}
   @keyframes cardPick{0%{transform:scale(1)}50%{transform:scale(1.12);box-shadow:0 0 60px var(--gold)}100%{transform:scale(0) rotate(8deg);opacity:0}}
+  /* 리롤 버튼 */
+  #draftRerollBtn{display:none;align-items:center;gap:8px;margin-top:14px;padding:8px 20px;border-radius:10px;
+    background:linear-gradient(135deg,rgba(40,60,90,.9),rgba(20,35,60,.9));
+    border:1px solid rgba(0,229,255,.35);color:rgba(200,230,255,.85);
+    font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;
+    transition:all .15s;box-shadow:0 2px 12px rgba(0,0,0,.5)}
+  #draftRerollBtn:hover:not(.used){border-color:rgba(0,229,255,.7);color:#fff;box-shadow:0 0 18px rgba(0,229,255,.3);transform:translateY(-2px)}
+  #draftRerollBtn.used{opacity:.4;cursor:not-allowed;filter:grayscale(.6)}
+  /* 현재 보유 스킬 요약 */
+  #draftCurrentBuild{display:none;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px;max-width:740px}
+  .dcb-chip{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+    background:rgba(30,50,80,.8);border:1px solid rgba(100,150,200,.3);color:rgba(180,210,240,.9)}
 
   /* ═══════ v0.9.9→v1.0.1: 카드 타입 분기 — 시설 vs 발키리 ═══════ */
 
@@ -1985,6 +1997,8 @@
         <div class="dt-main" style="display:none"></div>
       </div>
       <div class="card-row" id="cardRow"></div>
+      <button id="draftRerollBtn" onclick="draftReroll()">🔄 다시 뽑기 <span id="rerollCostTxt">(자원 30)</span></button>
+      <div id="draftCurrentBuild"></div>
     </div>
   </div>
 
@@ -3193,6 +3207,7 @@ function startGame(){
   state.resources=0;
   state.slotTier=0;
   state.gaugeDepleted=false;
+  state.draftRerollUsed=false;
   state.facilitySlots=FACILITY_SLOT_DEFS.map(d=>({...d, unlocked:false, facility:null, attackCD:0, el:null, depositProgress:0, deposited:0, _rscAccum:0, _flyT:0, _warnedNoRsc:false}));
   renderFacilitySlots();
   updateResourceHud(false);
@@ -3421,8 +3436,79 @@ function openCardDraft(){
     row.appendChild(wrap);
   });
   state.draftPicks=picks;
+  // 리롤 버튼
+  const rerollBtn=document.getElementById('draftRerollBtn');
+  if(rerollBtn){
+    const REROLL_COST=30;
+    rerollBtn.style.display='flex';
+    rerollBtn.classList.toggle('used', state.draftRerollUsed || state.resources < REROLL_COST);
+    document.getElementById('rerollCostTxt').textContent=`(자원 ${REROLL_COST})`;
+  }
+  // 현재 보유 스킬 요약
+  const buildEl=document.getElementById('draftCurrentBuild');
+  if(buildEl){
+    buildEl.style.display='flex';
+    if(state.cards.length===0){
+      buildEl.innerHTML='<span class="dcb-chip" style="opacity:.5">보유 스킬 없음</span>';
+    } else {
+      buildEl.innerHTML=state.cards.map(c=>{
+        const ROMAN=['I','II','III','IV','V'];
+        return `<span class="dcb-chip">${c.meta.name} ${ROMAN[c.stack-1]||c.stack}</span>`;
+      }).join('');
+    }
+  }
   draft.classList.add('show');
   document.body.classList.add('draft-open');
+}
+function draftReroll(){
+  if(state.phase!=='carddraft') return;
+  const REROLL_COST=30;
+  if(state.draftRerollUsed || state.resources < REROLL_COST) return;
+  state.draftRerollUsed=true;
+  state.resources=Math.max(0, state.resources-REROLL_COST);
+  updateResourceHud();
+  // 카드 행 초기화 후 재드로우
+  const row=document.getElementById('cardRow');
+  row.innerHTML='';
+  const picks=drawThreeCards();
+  state.draftPicks=picks;
+  picks.forEach((c,i)=>{
+    const stack=cardStackOf(c.id);
+    const maxStack=c.maxStack;
+    const nextTier=stack+1;
+    const ROMAN=['I','II','III','IV','V'];
+    const romanStr=ROMAN[nextTier-1]||(''+nextTier);
+    const stackLabel=stack>0?`${romanStr} (${stack}/${maxStack})`:`NEW`;
+    const wrap=document.createElement('div');
+    wrap.className='draft-card-wrap';
+    const el=document.createElement('div');
+    el.className='draft-card r-'+RARITY_COLORS[c.rarity]+' card--hero';
+    const statsHtml=c.stats?c.stats.map(s=>`<div class="card-stat"><span class="stat-icon">${s.icon}</span><span class="stat-val">${s.val}</span><span class="stat-lbl">${s.label}</span></div>`).join(''):'';
+    const iconHtml = c.icon && (c.icon.startsWith('AS_') || c.icon.includes('/'))
+      ? `<img class="card-icon-img" src="${c.icon}${_VER}" onerror="this.style.opacity='.3'">`
+      : `<div class="card-icon">${c.icon}</div>`;
+    el.innerHTML=`
+      <div class="rarity-tag">${c.rarity}</div>
+      <div class="card-icon-wrap">${iconHtml}</div>
+      <div class="card-name">${c.name}${stack>0?' <span style="font-size:0.7em;opacity:.7">'+ROMAN[stack-1]+'</span>':''}</div>
+      <div class="card-desc">${c.desc}</div>
+      <div class="card-stack">${stackLabel}</div>
+      <div class="card-stats">${statsHtml}</div>`;
+    el.addEventListener('click',()=>selectCard(c,el));
+    if(c.rarity==='전설') spawnLegendaryParticles(el);
+    wrap.appendChild(el);
+    const keycap=document.createElement('div');
+    keycap.className='card-keycap';
+    keycap.setAttribute('data-key-idx', i+1);
+    keycap.textContent=i+1;
+    wrap.appendChild(keycap);
+    row.appendChild(wrap);
+  });
+  // 리롤 버튼 비활성화
+  const rerollBtn=document.getElementById('draftRerollBtn');
+  if(rerollBtn) rerollBtn.classList.add('used');
+  // 리롤 파티클
+  playTone(600,.12,'triangle',.1); playTone(900,.1,'sine',.07);
 }
 function selectCard(card,el){
   if(state.phase!=='carddraft') return;
@@ -4679,6 +4765,25 @@ function killEnemy(e){
   state.stats.kill++; state.stats.combo++;
   state.stats.comboTimer=2.5;
   if(state.stats.combo>state.stats.maxCombo) state.stats.maxCombo=state.stats.combo;
+  // 콤보 처치 SFX: 콤보수에 따라 피치 상승
+  if(!e.boss){
+    const _cp=state.stats.combo;
+    const _pitch=Math.min(1+(_cp-1)*0.08, 2.2);
+    playTone(700*_pitch, 0.07, 'sawtooth', 0.09);
+    if(_cp>=5) playTone(1100*_pitch, 0.05, 'sine', 0.06);
+    // 5콤보 이상: 미세 히트스탑
+    if(_cp>=5) hitStop(25);
+    // 처치 시 반경 70px 내 적 약한 넉백
+    const _kr=70, _kf=90;
+    for(const oe of enemies){
+      if(!oe._alive) continue;
+      const _kd=Math.hypot(oe.x-e.x,oe.y-e.y);
+      if(_kd<_kr&&_kd>1){
+        oe.x+=((oe.x-e.x)/_kd)*_kf*(1-_kd/_kr);
+        oe.y+=((oe.y-e.y)/_kd)*_kf*(1-_kd/_kr);
+      }
+    }
+  }
   // v1.6: 콤보 HUD 업데이트
   updateComboHud();
   // v1.1.7: comboRow hot 애니메이션 제거 (패널 삭제됨)
@@ -5960,7 +6065,7 @@ function update(dt){
       pushBattleLog('⚠ 가호 고갈 — 수문 내구도 감소 중');
     }
   }
-  vignetteEl.classList.toggle('warn', state.gaugeDepleted);
+  vignetteEl.classList.toggle('warn', state.gaugeDepleted || (state.gauge > 0 && state.gauge < state.gaugeMax * 0.25));
   // HP가 감소한 순간 감지 → 피격 핏빛 글로우
   if(state.gateHp<state.prevGateHp-0.5){
     if(!state.gaugeDepleted) triggerHitVignette();
