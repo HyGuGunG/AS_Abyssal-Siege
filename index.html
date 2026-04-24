@@ -85,15 +85,14 @@
   #player .valk-sprite{filter:drop-shadow(0 0 12px rgba(0,229,255,.6))}
   #player.dashing .valk-sprite{filter:drop-shadow(0 0 22px var(--cyan)) brightness(1.35)}
   #player.hit .valk-sprite{filter:drop-shadow(0 0 14px var(--red)) brightness(1.6)}
-  /* 가호 실드 아우라 (v2.3 — canvas 버블 보완 ambient glow) */
+  /* 가호 실드 아우라 — arc가 메인, 여기는 ambient glow만 */
   #player .aura{
     position:absolute;
-    /* 머리 바로 위~발 아래까지만, 게이지(player.y-90)는 벗어나게 축소 */
-    inset:-20px -25px;
+    inset:-8px -10px;
     border-radius:50%;
     pointer-events:none;
-    background:radial-gradient(circle,rgba(60,180,255,.04) 30%,rgba(60,180,255,.12) 55%,rgba(60,200,255,.06) 68%,transparent 82%);
-    box-shadow:0 0 22px 8px rgba(60,190,255,.13);
+    background:radial-gradient(circle,rgba(60,180,255,.03) 30%,rgba(60,180,255,.07) 60%,transparent 80%);
+    box-shadow:0 0 14px 4px rgba(60,190,255,.10);
     animation:auraPulse 2.5s ease-in-out infinite;
     transition:opacity .4s;
     opacity:var(--aura-o,1);
@@ -2092,30 +2091,42 @@ const world=document.getElementById('world');
 const fx=document.getElementById('fx');
 const ctx=fx.getContext('2d');
 
-// ── graceOrb canvas (가호 게이지 타원형 아크) ──
+// ── graceOrb canvas (가호 게이지 타원형 아크 + 수치 통합) ──
 const _graceOrbEl=document.createElement('canvas');
 _graceOrbEl.id='graceOrb';
-_graceOrbEl.width=_graceOrbEl.height=175;
+_graceOrbEl.width=190; _graceOrbEl.height=210;
 _graceOrbEl.style.cssText='position:absolute;pointer-events:none;z-index:17;transform:translate(-50%,-50%);display:none;';
 stage.appendChild(_graceOrbEl);
 const _graceCtx=_graceOrbEl.getContext('2d');
-function _drawGraceOrb(ratio){
-  const S=175,cx=S/2,cy=S/2,RX=48,RY=68;
-  _graceCtx.clearRect(0,0,S,S);
-  // 트랙
-  _graceCtx.beginPath();_graceCtx.ellipse(cx,cy,RX,RY,0,0,Math.PI*2);
-  _graceCtx.strokeStyle='rgba(255,255,255,0.08)';_graceCtx.lineWidth=4;_graceCtx.stroke();
-  if(ratio<=0) return;
+function _drawGraceOrb(ratio, gaugeVal){
+  const SW=190,SH=210,cx=SW/2,cy=115,RX=58,RY=80;
+  _graceCtx.clearRect(0,0,SW,SH);
   const color=ratio>0.75?'#3ea7ff':ratio>0.5?'#26ffa8':ratio>0.25?'#ffd24d':ratio>0.1?'#ff4d6d':'#ff1a4d';
-  const start=-Math.PI/2,end=start+Math.PI*2*Math.min(ratio,1);
-  _graceCtx.beginPath();_graceCtx.ellipse(cx,cy,RX,RY,0,start,end);
-  _graceCtx.strokeStyle=color;_graceCtx.lineWidth=5;_graceCtx.lineCap='round';
-  _graceCtx.shadowColor=color;_graceCtx.shadowBlur=10;_graceCtx.stroke();_graceCtx.shadowBlur=0;
-  // 끝점 dot
-  const ex=cx+RX*Math.cos(end),ey=cy+RY*Math.sin(end);
-  _graceCtx.beginPath();_graceCtx.arc(ex,ey,4,0,Math.PI*2);
-  _graceCtx.fillStyle=color;_graceCtx.shadowColor=color;_graceCtx.shadowBlur=12;
-  _graceCtx.fill();_graceCtx.shadowBlur=0;
+  // 배경 트랙
+  _graceCtx.beginPath();_graceCtx.ellipse(cx,cy,RX,RY,0,0,Math.PI*2);
+  _graceCtx.strokeStyle='rgba(255,255,255,0.07)';_graceCtx.lineWidth=5;_graceCtx.stroke();
+  if(ratio>0){
+    // 메인 arc
+    const start=-Math.PI/2,end=start+Math.PI*2*Math.min(ratio,1);
+    _graceCtx.beginPath();_graceCtx.ellipse(cx,cy,RX,RY,0,start,end);
+    _graceCtx.strokeStyle=color;_graceCtx.lineWidth=7;_graceCtx.lineCap='round';
+    _graceCtx.shadowColor=color;_graceCtx.shadowBlur=18;_graceCtx.stroke();_graceCtx.shadowBlur=0;
+    // 끝점 dot
+    const ex=cx+RX*Math.cos(end),ey=cy+RY*Math.sin(end);
+    _graceCtx.beginPath();_graceCtx.arc(ex,ey,5,0,Math.PI*2);
+    _graceCtx.fillStyle=color;_graceCtx.shadowColor=color;_graceCtx.shadowBlur=16;
+    _graceCtx.fill();_graceCtx.shadowBlur=0;
+  }
+  // 수치 — arc 위 공간에 표시
+  const numY=cy-RY-12;
+  _graceCtx.font='900 12px Outfit,sans-serif';
+  _graceCtx.textAlign='center';_graceCtx.textBaseline='middle';
+  _graceCtx.fillStyle='rgba(0,0,0,0.75)';
+  _graceCtx.fillText('✨ '+Math.round(gaugeVal||0),cx+1,numY+1);
+  _graceCtx.fillStyle=color;
+  _graceCtx.shadowColor=color;_graceCtx.shadowBlur=7;
+  _graceCtx.fillText('✨ '+Math.round(gaugeVal||0),cx,numY);
+  _graceCtx.shadowBlur=0;
 }
 const flashEl=document.getElementById('flash');
 const vignetteEl=document.getElementById('vignette');
@@ -5118,49 +5129,24 @@ function updatePlayerGaugeTop(){
   if(nx-pw/2<4) nx=pw/2+4;
   if(nx+pw/2>W-4) nx=W-pw/2-4;
   if(ny<4) ny=4;
-  pgt.style.left=nx+'px';
-  pgt.style.top=ny+'px';
-  // 가호 바 업데이트
+  // #playerGaugeTop은 graceOrb arc로 통합 — 숨김
+  pgt.style.display='none';
   const gp=state.gauge/state.gaugeMax*100;
-  const gFill=document.getElementById('pgtGaugeFill');
-  if(gFill){
-    gFill.style.width=gp+'%';
-    const tiers=['tier-blue','tier-green','tier-yellow','tier-red','tier-blink'];
-    const cls=gp>75?'tier-blue':gp>50?'tier-green':gp>25?'tier-yellow':gp>10?'tier-red':'tier-blink';
-    tiers.forEach(c=>gFill.classList.remove(c));
-    gFill.classList.add(cls);
-  }
-  const valEl=document.getElementById('pgtGaugeText');
-  if(valEl) valEl.textContent=Math.round(state.gauge);
-  pgt.classList.toggle('depleted', state.gaugeDepleted);
-  // 가호 아우라 연출 업데이트
+  // 가호 아우라 연출 업데이트 (ambient glow)
   const aura=document.getElementById('playerAura');
   if(aura){
-    // 선형 불투명도: 0%=완전투명, 100%=완전불투명, 최소 0.18(잔상 유지)
     const auraOpacity=(gp<=0||state.gaugeDepleted)?0:Math.max(0.18,Math.min(1,gp/100));
     aura.style.setProperty('--aura-o',auraOpacity.toFixed(2));
     aura.classList.toggle('warn',gp<=30&&gp>0&&!state.gaugeDepleted);
     aura.classList.toggle('depleted',state.gaugeDepleted);
   }
-  // tier 색상 연동
-  const gaugeTierCls=gp>75?'tier-blue':gp>50?'tier-green':gp>25?'tier-yellow':gp>10?'tier-red':'tier-blink';
-  applyTierTextColor(valEl, gaugeTierCls);
-  // contextual auto-fade
-  const now=performance.now();
-  if(Math.round(state.gauge)!==_pgtLastGauge){
-    _pgtLastGauge=Math.round(state.gauge); _pgtGaugeChangeT=now;
-    pgt.style.opacity='1';
-  }
-  const urgent=gp<=30;
-  if(!urgent && now-_pgtGaugeChangeT>3000) pgt.style.opacity='0.3';
-  else pgt.style.opacity='1';
-  // graceOrb canvas 업데이트
+  // graceOrb arc canvas — 캐릭터 중심에 위치, 수치 통합 표시
   if(_graceOrbEl){
     _graceOrbEl.style.display=show?'block':'none';
     if(show){
-      _graceOrbEl.style.left=player.x+'px';
-      _graceOrbEl.style.top=(player.y-20)+'px';
-      _drawGraceOrb(state.gauge/state.gaugeMax);
+      _graceOrbEl.style.left=(player.x+50)+'px';
+      _graceOrbEl.style.top=(player.y+50)+'px';
+      _drawGraceOrb(state.gauge/state.gaugeMax, state.gauge);
     }
   }
 }
