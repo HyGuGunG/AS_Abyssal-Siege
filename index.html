@@ -2109,6 +2109,9 @@
         <span style="opacity:.8">남은 적</span>
         <span style="font-family:'Outfit',sans-serif;color:var(--amber);font-weight:900;font-size:13px;text-shadow:0 0 4px var(--amber)" id="remainCount">0</span>
         <span style="opacity:.7;font-size:9px">마리</span>
+        <span style="opacity:.4;margin:0 2px">·</span>
+        <span style="opacity:.8">처치</span>
+        <span style="font-family:'Outfit',sans-serif;color:#26ffe9;font-weight:900;font-size:13px;text-shadow:0 0 4px rgba(38,255,233,.55)" id="killCount">0</span>
       </div>
     </div>
     <!-- 게임 속도 토글 버튼 -->
@@ -3669,22 +3672,6 @@ function beginWave(n){
     stage.appendChild(_wov);
     requestAnimationFrame(()=>{ _wov.style.animation='waveOverlayFlash .65s ease-out forwards'; });
     setTimeout(()=>{ if(_wov.parentNode) _wov.parentNode.removeChild(_wov); },750);
-    // 시네마틱 웨이브 번호 카드
-    const _wcard=document.createElement('div');
-    const _isFW2=n===state.waveMax;
-    _wcard.style.cssText='position:absolute;left:50%;top:48%;pointer-events:none;z-index:36;'
-      +'font-family:\'Outfit\',sans-serif;font-weight:900;letter-spacing:.25em;text-align:center;'
-      +'transform:translate(-50%,-50%) scale(.5);opacity:0;'
-      +'transition:transform .22s cubic-bezier(.12,.8,.3,1.4),opacity .18s ease-out;'
-      +'text-shadow:0 0 40px rgba(0,229,255,.7),0 0 80px rgba(0,200,220,.3),0 4px 12px #000;'
-      +(n===state.waveMax?'color:#ff4d6d;font-size:80px;':'color:#fff;font-size:68px;');
-    _wcard.textContent=_isFW2?'FINAL':('WAVE '+n);
-    stage.appendChild(_wcard);
-    requestAnimationFrame(()=>{
-      _wcard.style.transform='translate(-50%,-50%) scale(1)'; _wcard.style.opacity='1';
-      setTimeout(()=>{ _wcard.style.transition='opacity .3s ease-in'; _wcard.style.opacity='0';
-        setTimeout(()=>{ if(_wcard.parentNode) _wcard.parentNode.removeChild(_wcard); },350); },480);
-    });
   }catch(e){}
   dlog('beginWave', n, 'total', total);
   updateHud();
@@ -7359,6 +7346,8 @@ function updateHud(){
   const isBossWv=(state.wave===state.waveMax);
   if(isBossWv && !state.bossSpawned) remainEnemies+=1;
   document.getElementById('remainCount').textContent=remainEnemies;
+  const _kcEl=document.getElementById('killCount');
+  if(_kcEl) _kcEl.textContent=state.stats.kill;
 
   const gp=state.gauge/state.gaugeMax*100;
   // v1.0.5: 가호 바는 playerInfoBar 내부에서 처리
@@ -7477,6 +7466,8 @@ function showBanner(main, sub){
 
 // v1.6: 화면 전환 효과 적용 게임 시작
 document.getElementById('btnStart').addEventListener('click',()=>screenFade(startGame));
+// title-anim(delay:.85s + duration:.6s = 1.45s) 완료 후 idle 펄스 클래스 적용
+setTimeout(()=>{ const _b=document.getElementById('btnStart'); if(_b) _b.classList.add('btn-pulse-active'); }, 1600);
 document.getElementById('btnRetry').addEventListener('click',()=>screenFade(startGame));
 if(location.hash==='#auto'){ setTimeout(()=>screenFade(startGame),300); }
 // v0.9.7 자동플레이: 헤드리스 검증용. rAF 대신 setInterval로 논리 진행.
