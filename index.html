@@ -2240,12 +2240,12 @@ function _updateESkillPool(ctx2, dt){
 // 정면 촬영 후 src 매핑이 직관적으로 변경됨 (back-facing 때의 L/R 스왑 제거)
 const VALK_ANIMS = {
   idle:     { src:'AS_Assets/valk2_idle_sheet.png',     fw:340,  fh:420, cols:6, frames:34, fps:30, loop:true  },
-  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false, dispH:190 },
-  attack_r: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false, dispH:190 },
-  attack_l: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:190 },
-  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500,  fh:560, cols:6, frames:60, fps:30, loop:false, dispH:190 },
-  move_r:   { src:'AS_Assets/valk2_move_r_sheet.png',  fw:260,  fh:460, cols:6, frames:40, fps:30, loop:true  },
-  move_l:   { src:'AS_Assets/valk2_move_l_sheet.png',  fw:260,  fh:500, cols:6, frames:40, fps:30, loop:true  },
+  attack_f: { src:'AS_Assets/valk2_attack_f_sheet.png', fw:500,  fh:560, cols:6, frames:36, fps:30, loop:false, dispH:190, offsetY:-18 },
+  attack_r: { src:'AS_Assets/valk2_attack_r_sheet.png', fw:1024, fh:580, cols:6, frames:36, fps:30, loop:false, dispH:190, offsetY:-18 },
+  attack_l: { src:'AS_Assets/valk2_attack_l_sheet.png', fw:1024, fh:560, cols:6, frames:36, fps:30, loop:false, dispH:190, offsetY:-18 },
+  skill:    { src:'AS_Assets/valk2_skill_sheet.png',    fw:500,  fh:560, cols:6, frames:60, fps:30, loop:false, dispH:190, offsetY:-18 },
+  move_r:   { src:'AS_Assets/valk2_move_r_sheet.png',  fw:260,  fh:460, cols:6, frames:40, fps:30, loop:true,  dispH:149 },
+  move_l:   { src:'AS_Assets/valk2_move_l_sheet.png',  fw:260,  fh:500, cols:6, frames:40, fps:30, loop:true,  dispH:147 },
 };
 const VALK_DISP_H = 130;  // 모든 애니메이션 통일 표시 높이 (px)
 
@@ -2917,7 +2917,8 @@ function valkPlayAnim(name,onEnd){
 
   // skill만 단방향 캡처 → 좌향 시 CSS 반전
   const needsFlip=(name==='skill' && typeof player!=='undefined' && player.facing<0);
-  playerSpriteEl.style.transform=`translate(-50%,-50%)${needsFlip?' scaleX(-1)':''}`;
+  const offsetY=a.offsetY||0;
+  playerSpriteEl.style.transform=`translate(-50%,calc(-50% + ${offsetY}px))${needsFlip?' scaleX(-1)':''}`;
 
   const dispH=a.dispH||VALK_DISP_H;
   const uniformScale=dispH/a.fh;
