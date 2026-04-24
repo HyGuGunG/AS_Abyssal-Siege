@@ -616,7 +616,8 @@
     transition:transform .15s,box-shadow .15s}
   #titleScreen .btn:hover{transform:translateY(-3px) scale(1.03);
     box-shadow:0 12px 36px rgba(245,185,66,.55),0 4px 12px rgba(0,0,0,.6)}
-  #titleScreen .btn{animation:btnStartIdle 2.4s ease-in-out infinite!important}
+  /* idle pulse — JS로 title-anim 완료 후 적용 (btn-pulse-active 클래스) */
+  #btnStart.btn-pulse-active{animation:btnStartIdle 2.4s ease-in-out infinite}
   @keyframes btnStartIdle{0%,100%{box-shadow:0 8px 28px rgba(245,185,66,.45),0 2px 8px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.4)}50%{box-shadow:0 10px 42px rgba(245,185,66,.72),0 0 60px rgba(245,185,66,.18),0 4px 12px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.4)}}
   #titleScreen .btn::after{content:'';position:absolute;inset:0;
     background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
