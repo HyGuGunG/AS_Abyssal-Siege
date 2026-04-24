@@ -3540,6 +3540,22 @@ function hideDraftTooltip(){
   const tip=document.getElementById('draftTooltip');
   if(tip) tip.classList.remove('show');
 }
+// 칩 툴팁 위치 보정 (getBoundingClientRect scale 오차 방지 — offsetParent 방식)
+function _repositionChipTooltip(chip){
+  const tt=document.getElementById('cardTooltip');
+  const stageEl=document.getElementById('stage');
+  if(!tt||!stageEl) return;
+  let ox=0,oy=0,cur=chip;
+  while(cur&&cur!==stageEl){ox+=cur.offsetLeft;oy+=cur.offsetTop;cur=cur.offsetParent;}
+  const cw=chip.offsetWidth,ch=chip.offsetHeight;
+  const TW=tt.offsetWidth||200,TH=tt.offsetHeight||120;
+  let left=ox+cw/2-TW/2;
+  let top=oy-TH-8;
+  if(top<4) top=oy+ch+8;
+  left=Math.max(4,Math.min(1280-TW-4,left));
+  top=Math.max(4,Math.min(720-TH-4,top));
+  tt.style.left=left+'px'; tt.style.top=top+'px';
+}
 function openCardDraft(){
   const picks=drawThreeCards();
   if(picks.length===0){ beginWave(state.wave+1); return; }
@@ -3619,8 +3635,7 @@ function openCardDraft(){
     buildEl.querySelectorAll('[data-card-id]').forEach(chip=>{
       const found=state.cards.find(c=>c.id===chip.dataset.cardId);
       if(!found) return;
-      chip.addEventListener('mouseenter',e=>showCardTooltip(found.meta,found.stack,e));
-      chip.addEventListener('mousemove',e=>moveCardTooltip(e));
+      chip.addEventListener('mouseenter',e=>{showCardTooltip(found.meta,found.stack,e);_repositionChipTooltip(chip);});
       chip.addEventListener('mouseleave',hideCardTooltip);
     });
   }
