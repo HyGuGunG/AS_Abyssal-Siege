@@ -2192,10 +2192,16 @@ function _drawGraceOrb(ratio, gaugeVal){
     _graceCtx.fillStyle=color;_graceCtx.shadowColor=color;_graceCtx.shadowBlur=16;
     _graceCtx.fill();_graceCtx.shadowBlur=0;
   }
-  // 수치 — arc 위 공간에 표시 (이모지 없이 숫자만 center 정렬)
+  // 수치 — arc 위 공간에 아이콘 + 숫자 표시
   const numY=cy-RY-12;
-  _graceCtx.font='900 13px Outfit,sans-serif';
   _graceCtx.textAlign='center';_graceCtx.textBaseline='middle';
+  // ✨ 아이콘
+  _graceCtx.font='11px sans-serif';
+  _graceCtx.fillStyle='rgba(0,0,0,0.7)';
+  _graceCtx.fillText('✨',cx+1,numY-13);
+  _graceCtx.fillText('✨',cx,numY-13);
+  // 숫자
+  _graceCtx.font='900 13px Outfit,sans-serif';
   _graceCtx.fillStyle='rgba(0,0,0,0.8)';
   _graceCtx.fillText(Math.round(gaugeVal||0),cx+1,numY+1);
   _graceCtx.fillStyle=color;
