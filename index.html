@@ -722,7 +722,8 @@
 
   /* ═══════ 카드 선택 UI ═══════ */
   #cardDraft{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(10,30,60,.92),rgba(0,5,15,.98));
-    display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:60;pointer-events:auto;padding:24px}
+    display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:18px;z-index:60;pointer-events:auto;padding:24px;
+    overflow-y:auto;overflow-x:hidden}
   #cardDraft.show{display:flex;animation:draftFadeIn .35s ease-out}
   @keyframes draftFadeIn{0%{opacity:0;transform:scale(.93)}100%{opacity:1;transform:scale(1)}}
   /* --- 발키리 강화 드래프트 배경 --- */
@@ -1760,6 +1761,15 @@
   body.portrait-mode #hudWave .wv-tag{font-size:8px}
   body.portrait-mode #hudWave .wv-num{font-size:14px}
   body.portrait-mode #hudWaveInfo{min-width:100px;font-size:9px;padding:4px 6px}
+  /* 타이틀 화면 버튼 (portrait) */
+  body.portrait-mode #titleScreen{padding-bottom:10px}
+  body.portrait-mode #titleScreen .btn{padding:12px 32px;font-size:14px;margin-top:8px}
+  body.portrait-mode .title-valk{height:55%;right:10px}
+  /* 카드 드래프트 (portrait) */
+  body.portrait-mode #cardDraft{padding:12px 10px;gap:10px}
+  body.portrait-mode #cardDraft .draft-title .dt-title{font-size:22px}
+  body.portrait-mode #cardDraft .card-row{flex-wrap:wrap;justify-content:center;gap:12px}
+  body.portrait-mode .draft-card{width:clamp(150px,44vw,200px);height:250px}
 
   /* === 모바일 가로 (wide-mode) UI 최적화 === */
   /* skillBar는 #mobileSkillPanel이 대체 → 새 CSS 블록에서 display:none 처리됨 */
@@ -1775,6 +1785,10 @@
   body.wide-mode #hudWave .wv-tag{font-size:9px}
   body.wide-mode #hudWave .wv-num{font-size:18px}
   body.wide-mode #hudWaveInfo{min-width:120px;font-size:10px;padding:6px 8px}
+  /* 카드 드래프트 (wide, 화면 높이 부족 시 축소) */
+  body.wide-mode #cardDraft{padding:12px 24px;gap:10px}
+  body.wide-mode #cardDraft .draft-title .dt-title{font-size:24px}
+  body.wide-mode .draft-card{height:260px}
 
   /* 건설 슬롯 항상 가시 보장 */
   .fslot{z-index:4!important}
